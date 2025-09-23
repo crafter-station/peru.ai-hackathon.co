@@ -84,12 +84,15 @@ export default function HeroSection() {
       {/* Loading overlay */}
       <LoadingOverlay isLoading={isLoading} />
 
-      {/* Dark overlay for better text readability - non-interactive */}
-      <div className="absolute inset-0 bg-black/40 pointer-events-none z-20" />
-      
-      {/* Subtle gradient overlay with brand colors - non-interactive */}
-      <div className="absolute inset-0 bg-gradient-to-br from-red-900/20 via-transparent to-red-900/20 pointer-events-none z-20" 
-           style={{ background: 'linear-gradient(135deg, #B91F2E20 0%, transparent 40%, #B91F2E20 100%)' }} />
+      {/* Enhanced overlay for better contrast and visual depth - non-interactive */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black/30 via-black/20 to-black/40 pointer-events-none z-20" />
+
+      {/* Subtle brand gradient overlay with improved vibrancy - non-interactive */}
+      <div className="absolute inset-0 bg-gradient-to-br from-red-900/15 via-transparent to-red-900/15 pointer-events-none z-20"
+           style={{
+             background: 'linear-gradient(135deg, #B91F2E15 0%, rgba(185, 31, 46, 0.08) 30%, transparent 50%, rgba(185, 31, 46, 0.08) 70%, #B91F2E15 100%)',
+             mixBlendMode: 'overlay'
+           }} />
 
       {/* Top section with Peru flag */}
       <div className="absolute top-6 left-6 z-20">
@@ -143,13 +146,16 @@ export default function HeroSection() {
                 className="transition-transform duration-300 hover:scale-105"
                 style={{ pointerEvents: 'auto' }}
               >
-                <Image 
-                  src="/BY_THC.svg" 
-                  alt="By The Hackathon Company" 
+                <Image
+                  src="/BY_THC.svg"
+                  alt="By The Hackathon Company"
                   width={120}
                   height={40}
-                  className="h-8 md:h-10 w-auto opacity-90 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
-                  style={{ filter: 'drop-shadow(0 2px 8px rgba(255, 255, 255, 0.2))' }}
+                  className="h-8 md:h-10 w-auto transition-all duration-300 cursor-pointer"
+                  style={{
+                    filter: 'brightness(1.1) contrast(1.2) drop-shadow(0 0 12px rgba(255, 255, 255, 0.4)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))',
+                    opacity: '0.95'
+                  }}
                 />
               </a>
             </div>
@@ -163,13 +169,16 @@ export default function HeroSection() {
                 className="transition-transform duration-300 hover:scale-105"
                 style={{ pointerEvents: 'auto' }}
               >
-                <Image 
-                  src="/In_partnership_with_ MAKERS.svg" 
-                  alt="In partnership with MAKERS" 
+                <Image
+                  src="/In_partnership_with_ MAKERS.svg"
+                  alt="In partnership with MAKERS"
                   width={180}
                   height={32}
-                  className="h-6 md:h-8 w-auto opacity-90 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
-                  style={{ filter: 'drop-shadow(0 2px 8px rgba(255, 255, 255, 0.2))' }}
+                  className="h-6 md:h-8 w-auto transition-all duration-300 cursor-pointer"
+                  style={{
+                    filter: 'brightness(1.1) contrast(1.2) drop-shadow(0 0 12px rgba(255, 255, 255, 0.4)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))',
+                    opacity: '0.95'
+                  }}
                 />
               </a>
             </div>
