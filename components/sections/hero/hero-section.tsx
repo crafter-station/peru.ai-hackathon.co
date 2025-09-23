@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import Image from "next/image";
+import useSound from "use-sound";
 import { Background3DScene } from "./background-3d-scene";
 import { LoadingOverlay } from "./loading-overlay";
 
@@ -15,6 +16,9 @@ export default function HeroSection() {
   const [scene3DLoaded, setScene3DLoaded] = useState(false);
   const [enableControls, setEnableControls] = useState(true);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Button click sound
+  const [play] = useSound("/sounds/bite.mp3", { volume: 0.5 });
 
   const handle3DLoad = () => {
     setScene3DLoaded(true);
@@ -204,17 +208,19 @@ export default function HeroSection() {
           transition-all duration-1000 transform
           ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}
         `} style={{ transitionDelay: '1.6s' }}>
-          <a 
+          <a
             href="https://chat.whatsapp.com/H6RV2cFfL47CCXVzVmHedR?mode=ems_share_t"
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => play()}
             className="px-8 py-4 bg-brand-red text-white font-bold text-lg rounded-lg hover:bg-brand-red-dark transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
             style={{ pointerEvents: 'auto' }}
           >
             Únete al WhatsApp
           </a>
-          <button 
+          <button
             onClick={() => {
+              play();
               const detailsSection = document.getElementById('details');
               if (detailsSection) {
                 detailsSection.scrollIntoView({ behavior: 'smooth' });
