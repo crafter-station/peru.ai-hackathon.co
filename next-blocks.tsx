@@ -289,8 +289,8 @@ const Scene = () => {
       
       <Environment 
           files={isMobileDevice 
-          ? "https://26evcbcedv5nczlx.public.blob.vercel-storage.com/MACHUPICHI-DITHERING-7M.jpg"
-          : "https://26evcbcedv5nczlx.public.blob.vercel-storage.com/MACHUPICHI-DITHERING-7M.jpg"
+          ? "https://26evcbcedv5nczlx.public.blob.vercel-storage.com/machu-picchu-1X.jpg"
+          : "https://26evcbcedv5nczlx.public.blob.vercel-storage.com/machu-picchu-1X.jpg"
         }
         background
       />
