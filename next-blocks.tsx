@@ -206,7 +206,7 @@ const BoxLetter = ({ letter, position }: BoxLetterProps) => {
 
             // Peru flag colors across letter columns: Red-White-Red
             const PERU_RED = '#D91023'
-            const PERU_WHITE = '#FFFFFF'
+            const PERU_WHITE = '#D91023'
             const PERU_RED_EDGE = '#8A0E18'
             const PERU_WHITE_EDGE = '#4A4A4A'
 
@@ -289,8 +289,8 @@ const Scene = () => {
       
       <Environment 
           files={isMobileDevice 
-          ? "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/download3-7FArHVIJTFszlXm2045mQDPzsZqAyo.jpg"
-          : "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/dither_it_M3_Drone_Shot_equirectangular-jpg_San_Francisco_Big_City_1287677938_12251179%20(1)-NY2qcmpjkyG6rDp1cPGIdX0bHk3hMR.jpg"
+          ? "https://26evcbcedv5nczlx.public.blob.vercel-storage.com/MACHUPICHI-DITHERING-7M.jpg"
+          : "https://26evcbcedv5nczlx.public.blob.vercel-storage.com/MACHUPICHI-DITHERING-7M.jpg"
         }
         background
       />
