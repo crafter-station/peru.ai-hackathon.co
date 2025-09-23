@@ -272,14 +272,14 @@ const Scene = () => {
         - Arranged in two lines for better fit and readability
       */}
       <group position={[0, 0, 0]} rotation={[0, Math.PI / 6, 0]}>
-        {/* Top row: "IA" */}
-        <group position={[0, 1.5, 0]}>
-          <BoxLetter letter="A" position={[-1.5, 0, 0]} />
-          <BoxLetter letter="I" position={[1.5, 0, 0]} />
-        </group>
+        {/* Top row: "IA" - commented out */}
+        {/* <group position={[0, 1.5, 0]}>
+          <BoxLetter letter="I" position={[-1.5, 0, 0]} />
+          <BoxLetter letter="A" position={[1.5, 0, 0]} />
+        </group> */}
 
-        {/* Bottom row: "HACKATHON" */}
-        <group position={[0, -1.5, 0]}>
+        {/* Bottom row: "HACKATHON" - commented out */}
+        {/* <group position={[0, -1.5, 0]}>
           <BoxLetter letter="H" position={[-11, 0, 0]} />
           <BoxLetter letter="A" position={[-8, 0, 0]} />
           <BoxLetter letter="C" position={[-5.5, 0, 0]} />
@@ -289,7 +289,7 @@ const Scene = () => {
           <BoxLetter letter="H" position={[5, 0, 0]} />
           <BoxLetter letter="O" position={[8, 0, 0]} />
           <BoxLetter letter="N" position={[11, 0, 0]} />
-        </group>
+        </group> */}
       </group>
       <OrbitControls
         ref={orbitControlsRef}
@@ -402,17 +402,17 @@ const BlockLetter = ({ letter, size = 'large' }: { letter: string; size?: 'large
 };
 
 /**
- * Loading component that shows 2D "AI HACKATHON" text while 3D model loads
+ * Loading component that shows 2D "IA HACKATHON" text while 3D model loads
  */
 const LoadingComponent = () => {
   return (
     <div className="absolute inset-0 flex items-center justify-center bg-background">
       {/* Main loading content */}
       <div className="text-center">
-        {/* AI text using block letters */}
+        {/* IA text using block letters */}
         <div className="flex justify-center items-center mb-6">
-          <BlockLetter letter="A" size="large" />
           <BlockLetter letter="I" size="large" />
+          <BlockLetter letter="A" size="large" />
         </div>
         
         {/* HACKATHON text using block letters */}
@@ -448,7 +448,7 @@ const LoadingEffect = ({ onLoaded }: { onLoaded: () => void }) => {
     // Wait for next frame to ensure everything is rendered
     const timer = setTimeout(() => {
       onLoaded();
-    }, 1500); // Minimum loading time
+    }, 100); // Minimum loading time
 
     return () => clearTimeout(timer);
   }, [onLoaded]);
@@ -469,14 +469,14 @@ const LoadingEffect = ({ onLoaded }: { onLoaded: () => void }) => {
  *    - Z: all cubes at same depth (0)
  * 5. Letters arranged in two rows: "IA" on top, "HACKATHON" on bottom
  * 6. Entire text group rotated for 3D perspective view
- * 7. Loading state shows 2D "AI HACKATHON" until 3D model is ready
+ * 7. Loading state shows 2D "IA HACKATHON" until 3D model is ready
  */
 export default function Component() {
   const [isSceneLoaded, setIsSceneLoaded] = useState(false);
 
   return (
     <div className="relative w-full h-screen bg-background">
-      {/* Loading state - 2D "AI HACKATHON" */}
+      {/* Loading state - 2D "IA HACKATHON" */}
       <div className={`absolute inset-0 transition-opacity duration-1000 ${isSceneLoaded ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
         <LoadingComponent />
       </div>
