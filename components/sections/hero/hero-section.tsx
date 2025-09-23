@@ -1,199 +1,10 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Environment } from "@react-three/drei";
+import { Canvas } from "@react-three/fiber";
 import Image from "next/image";
-
-// Import the block letter components from ia-hackathon-blocks
-/**
- * Block-style letter component to simulate Minecraft/3D block font
- */
-const BlockLetter = ({ letter, size = 'large' }: { letter: string; size?: 'large' | 'small' }) => {
-  const getLetterBlocks = (letter: string) => {
-    const patterns: Record<string, number[][]> = {
-      A: [
-        [0, 1, 1, 1, 0],
-        [1, 0, 0, 0, 1],
-        [1, 1, 1, 1, 1],
-        [1, 0, 0, 0, 1],
-        [1, 0, 0, 0, 1],
-      ],
-      I: [
-        [1, 1, 1],
-        [0, 1, 0],
-        [0, 1, 0],
-        [0, 1, 0],
-        [1, 1, 1],
-      ],
-      H: [
-        [1, 0, 0, 0, 1],
-        [1, 0, 0, 0, 1],
-        [1, 1, 1, 1, 1],
-        [1, 0, 0, 0, 1],
-        [1, 0, 0, 0, 1],
-      ],
-      C: [
-        [0, 1, 1, 1],
-        [1, 0, 0, 0],
-        [1, 0, 0, 0],
-        [1, 0, 0, 0],
-        [0, 1, 1, 1],
-      ],
-      K: [
-        [1, 0, 0, 1],
-        [1, 0, 1, 0],
-        [1, 1, 0, 0],
-        [1, 0, 1, 0],
-        [1, 0, 0, 1],
-      ],
-      T: [
-        [1, 1, 1],
-        [0, 1, 0],
-        [0, 1, 0],
-        [0, 1, 0],
-        [0, 1, 0],
-      ],
-      O: [
-        [0, 1, 1, 1, 0],
-        [1, 0, 0, 0, 1],
-        [1, 0, 0, 0, 1],
-        [1, 0, 0, 0, 1],
-        [0, 1, 1, 1, 0],
-      ],
-      N: [
-        [1, 0, 0, 0, 1],
-        [1, 1, 0, 0, 1],
-        [1, 0, 1, 0, 1],
-        [1, 0, 0, 1, 1],
-        [1, 0, 0, 0, 1],
-      ],
-    };
-    return patterns[letter] || patterns['A'];
-  };
-
-  const pattern = getLetterBlocks(letter);
-  const blockSize = size === 'large' ? 'w-3 h-3 md:w-4 md:h-4' : 'w-2 h-2 md:w-3 md:h-3';
-  
-  return (
-    <div className="inline-block mx-1">
-      {pattern.map((row, rowIndex) => (
-        <div key={`${letter}-r${rowIndex}-${row.join('')}`} className="flex">
-          {row.map((block, colIndex) => (
-            <div
-              key={`${letter}-b${rowIndex}${colIndex}-${block}`}
-              className={`${blockSize} ${block ? 'bg-white' : 'bg-transparent'}`}
-            />
-          ))}
-        </div>
-      ))}
-    </div>
-  );
-};
-
-const isMobile = () => {
-  if (typeof window === "undefined") return false;
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-    navigator.userAgent
-  );
-};
-
-/**
- * 3D Background Scene with rotating environment
- */
-const Background3DScene = ({ onLoad }: { onLoad?: () => void }) => {
-  const orbitControlsRef = useRef<React.ElementRef<typeof OrbitControls>>(null);
-  const [isMobileDevice, setIsMobileDevice] = useState(false);
-  const frameCount = useRef(0);
-
-  useEffect(() => {
-    setIsMobileDevice(isMobile());
-  }, []);
-
-  // Use frame hook to detect when scene is ready
-  useFrame(() => {
-    frameCount.current += 1;
-    // After a few frames, consider the scene loaded
-    if (frameCount.current === 10 && onLoad) {
-      onLoad();
-    }
-  });
-
-  return (
-    <>
-        <OrbitControls
-          ref={orbitControlsRef}
-          enableZoom={true}
-          enablePan={true}
-          enableRotate={true}
-          autoRotate
-          autoRotateSpeed={0.3}
-          minDistance={3}
-          maxDistance={15}
-          minPolarAngle={Math.PI / 6}
-          maxPolarAngle={Math.PI - Math.PI / 6}
-          dampingFactor={0.05}
-          enableDamping={true}
-          zoomSpeed={0.8}
-          panSpeed={0.8}
-          rotateSpeed={0.5}
-        />
-
-      <ambientLight intensity={0.3} />
-      <directionalLight position={[5, 5, 5]} intensity={0.3} color="#ffffff" />
-
-      <Environment
-        files={
-          isMobileDevice
-            ? "https://26evcbcedv5nczlx.public.blob.vercel-storage.com/machu-picchu-1X.jpg"
-            : "https://26evcbcedv5nczlx.public.blob.vercel-storage.com/machu-picchu-1X.jpg"
-        }
-        background
-      />
-    </>
-  );
-};
-
-/**
- * Loading component that shows 2D "IA HACKATHON" text while 3D model loads
- */
-const LoadingOverlay = ({ isLoading }: { isLoading: boolean }) => {
-  return (
-    <div className={`
-      absolute inset-0 z-40 flex items-center justify-center bg-background
-      transition-all duration-500 transform
-      ${isLoading ? 'opacity-100' : 'opacity-0 pointer-events-none'}
-    `}>
-      <div className="text-center">
-        {/* IA text using block letters */}
-        <div className="flex justify-center items-center mb-6">
-          <BlockLetter letter="I" size="large" />
-          <BlockLetter letter="A" size="large" />
-        </div>
-        
-        {/* HACKATHON text using block letters */}
-        <div className="flex justify-center items-center flex-wrap mb-6">
-          <BlockLetter letter="H" size="small" />
-          <BlockLetter letter="A" size="small" />
-          <BlockLetter letter="C" size="small" />
-          <BlockLetter letter="K" size="small" />
-          <BlockLetter letter="A" size="small" />
-          <BlockLetter letter="T" size="small" />
-          <BlockLetter letter="H" size="small" />
-          <BlockLetter letter="O" size="small" />
-          <BlockLetter letter="N" size="small" />
-        </div>
-        
-        {/* Simple loading indicator */}
-        <div className="flex items-center justify-center space-x-1">
-          <div className="w-2 h-2 bg-white animate-pulse"></div>
-          <div className="w-2 h-2 bg-white animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-          <div className="w-2 h-2 bg-white animate-pulse" style={{ animationDelay: '0.4s' }}></div>
-        </div>
-      </div>
-    </div>
-  );
-};
+import { Background3DScene } from "./background-3d-scene";
+import { LoadingOverlay } from "./loading-overlay";
 
 /**
  * Hero section with Peruvian-themed IA HACKATHON display
@@ -202,6 +13,8 @@ export default function HeroSection() {
   const [isLoading, setIsLoading] = useState(true);
   const [isVisible, setIsVisible] = useState(false);
   const [scene3DLoaded, setScene3DLoaded] = useState(false);
+  const [enableControls, setEnableControls] = useState(true);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handle3DLoad = () => {
     setScene3DLoaded(true);
@@ -225,24 +38,61 @@ export default function HeroSection() {
     }
   }, [scene3DLoaded]);
 
+  // Handle scroll detection to disable 3D controls during scrolling
+  useEffect(() => {
+    const handleScrollEvent = () => {
+      // Disable controls when scrolling
+      setEnableControls(false);
+      
+      // Clear existing timeout
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+      
+      // Re-enable controls after scrolling stops (300ms delay for responsiveness)
+      scrollTimeoutRef.current = setTimeout(() => {
+        setEnableControls(true);
+      }, 300);
+    };
+
+    // Add both scroll and wheel listeners for comprehensive scroll detection
+    window.addEventListener('scroll', handleScrollEvent, { passive: true });
+    window.addEventListener('wheel', handleScrollEvent, { passive: true });
+    
+    // Cleanup
+    return () => {
+      window.removeEventListener('scroll', handleScrollEvent);
+      window.removeEventListener('wheel', handleScrollEvent);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, []);
+
   return (
     <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
       {/* 3D Background with Machu Picchu environment */}
-      <div className="absolute inset-0 z-10">
+      <div 
+        className="absolute inset-0 z-10 transition-all duration-200" 
+        style={{ pointerEvents: enableControls ? 'auto' : 'none' }}
+      >
         <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
-          <Background3DScene onLoad={handle3DLoad} />
+          <Background3DScene onLoad={handle3DLoad} enableControls={enableControls} />
         </Canvas>
       </div>
 
       {/* Loading overlay */}
       <LoadingOverlay isLoading={isLoading} />
 
-      {/* Dark overlay for better text readability - non-interactive */}
-      <div className="absolute inset-0 bg-black/40 pointer-events-none z-20" />
-      
-      {/* Subtle gradient overlay with brand colors - non-interactive */}
-      <div className="absolute inset-0 bg-gradient-to-br from-red-900/20 via-transparent to-red-900/20 pointer-events-none z-20" 
-           style={{ background: 'linear-gradient(135deg, #B91F2E20 0%, transparent 40%, #B91F2E20 100%)' }} />
+      {/* Enhanced overlay for better contrast and visual depth - non-interactive */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black/30 via-black/20 to-black/40 pointer-events-none z-20" />
+
+      {/* Subtle brand gradient overlay with improved vibrancy - non-interactive */}
+      <div className="absolute inset-0 bg-gradient-to-br from-red-900/15 via-transparent to-red-900/15 pointer-events-none z-20"
+           style={{
+             background: 'linear-gradient(135deg, #B91F2E15 0%, rgba(185, 31, 46, 0.08) 30%, transparent 50%, rgba(185, 31, 46, 0.08) 70%, #B91F2E15 100%)',
+             mixBlendMode: 'overlay'
+           }} />
 
       {/* Top section with Peru flag */}
       <div className="absolute top-6 left-6 z-20">
@@ -296,13 +146,16 @@ export default function HeroSection() {
                 className="transition-transform duration-300 hover:scale-105"
                 style={{ pointerEvents: 'auto' }}
               >
-                <Image 
-                  src="/BY_THC.svg" 
-                  alt="By The Hackathon Company" 
+                <Image
+                  src="/BY_THC.svg"
+                  alt="By The Hackathon Company"
                   width={120}
                   height={40}
-                  className="h-8 md:h-10 w-auto opacity-90 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
-                  style={{ filter: 'drop-shadow(0 2px 8px rgba(255, 255, 255, 0.2))' }}
+                  className="h-8 md:h-10 w-auto transition-all duration-300 cursor-pointer"
+                  style={{
+                    filter: 'brightness(1.1) contrast(1.2) drop-shadow(0 0 12px rgba(255, 255, 255, 0.4)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))',
+                    opacity: '0.95'
+                  }}
                 />
               </a>
             </div>
@@ -316,13 +169,16 @@ export default function HeroSection() {
                 className="transition-transform duration-300 hover:scale-105"
                 style={{ pointerEvents: 'auto' }}
               >
-                <Image 
-                  src="/In_partnership_with_ MAKERS.svg" 
-                  alt="In partnership with MAKERS" 
+                <Image
+                  src="/In_partnership_with_ MAKERS.svg"
+                  alt="In partnership with MAKERS"
                   width={180}
                   height={32}
-                  className="h-6 md:h-8 w-auto opacity-90 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
-                  style={{ filter: 'drop-shadow(0 2px 8px rgba(255, 255, 255, 0.2))' }}
+                  className="h-6 md:h-8 w-auto transition-all duration-300 cursor-pointer"
+                  style={{
+                    filter: 'brightness(1.1) contrast(1.2) drop-shadow(0 0 12px rgba(255, 255, 255, 0.4)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))',
+                    opacity: '0.95'
+                  }}
                 />
               </a>
             </div>
@@ -348,13 +204,22 @@ export default function HeroSection() {
           transition-all duration-1000 transform
           ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}
         `} style={{ transitionDelay: '1.6s' }}>
-          <button 
+          <a 
+            href="https://chat.whatsapp.com/H6RV2cFfL47CCXVzVmHedR?mode=ems_share_t"
+            target="_blank"
+            rel="noopener noreferrer"
             className="px-8 py-4 bg-brand-red text-white font-bold text-lg rounded-lg hover:bg-brand-red-dark transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
             style={{ pointerEvents: 'auto' }}
           >
-            Registrarse Ahora
-          </button>
+            Únete al WhatsApp
+          </a>
           <button 
+            onClick={() => {
+              const detailsSection = document.getElementById('details');
+              if (detailsSection) {
+                detailsSection.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
             className="px-8 py-4 bg-white text-brand-red font-bold text-lg rounded-lg border-2 border-brand-red hover:bg-red-50 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
             style={{ pointerEvents: 'auto' }}
           >
