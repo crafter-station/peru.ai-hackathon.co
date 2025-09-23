@@ -5,6 +5,92 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Environment } from "@react-three/drei";
 import Image from "next/image";
 
+// Import the block letter components from ia-hackathon-blocks
+/**
+ * Block-style letter component to simulate Minecraft/3D block font
+ */
+const BlockLetter = ({ letter, size = 'large' }: { letter: string; size?: 'large' | 'small' }) => {
+  const getLetterBlocks = (letter: string) => {
+    const patterns: Record<string, number[][]> = {
+      A: [
+        [0, 1, 1, 1, 0],
+        [1, 0, 0, 0, 1],
+        [1, 1, 1, 1, 1],
+        [1, 0, 0, 0, 1],
+        [1, 0, 0, 0, 1],
+      ],
+      I: [
+        [1, 1, 1],
+        [0, 1, 0],
+        [0, 1, 0],
+        [0, 1, 0],
+        [1, 1, 1],
+      ],
+      H: [
+        [1, 0, 0, 0, 1],
+        [1, 0, 0, 0, 1],
+        [1, 1, 1, 1, 1],
+        [1, 0, 0, 0, 1],
+        [1, 0, 0, 0, 1],
+      ],
+      C: [
+        [0, 1, 1, 1],
+        [1, 0, 0, 0],
+        [1, 0, 0, 0],
+        [1, 0, 0, 0],
+        [0, 1, 1, 1],
+      ],
+      K: [
+        [1, 0, 0, 1],
+        [1, 0, 1, 0],
+        [1, 1, 0, 0],
+        [1, 0, 1, 0],
+        [1, 0, 0, 1],
+      ],
+      T: [
+        [1, 1, 1],
+        [0, 1, 0],
+        [0, 1, 0],
+        [0, 1, 0],
+        [0, 1, 0],
+      ],
+      O: [
+        [0, 1, 1, 1, 0],
+        [1, 0, 0, 0, 1],
+        [1, 0, 0, 0, 1],
+        [1, 0, 0, 0, 1],
+        [0, 1, 1, 1, 0],
+      ],
+      N: [
+        [1, 0, 0, 0, 1],
+        [1, 1, 0, 0, 1],
+        [1, 0, 1, 0, 1],
+        [1, 0, 0, 1, 1],
+        [1, 0, 0, 0, 1],
+      ],
+    };
+    return patterns[letter] || patterns['A'];
+  };
+
+  const pattern = getLetterBlocks(letter);
+  const blockSize = size === 'large' ? 'w-3 h-3 md:w-4 md:h-4' : 'w-2 h-2 md:w-3 md:h-3';
+  
+  return (
+    <div className="inline-block mx-1">
+      {pattern.map((row, rowIndex) => (
+        <div key={`${letter}-r${rowIndex}-${row.join('')}`} className="flex">
+          {row.map((block, colIndex) => (
+            <div
+              key={`${letter}-b${rowIndex}${colIndex}-${block}`}
+              className={`${blockSize} ${block ? 'bg-white' : 'bg-transparent'}`}
+            />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const isMobile = () => {
   if (typeof window === "undefined") return false;
   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
@@ -69,21 +155,40 @@ const Background3DScene = ({ onLoad }: { onLoad?: () => void }) => {
 };
 
 /**
- * Loading overlay component with dots animation
+ * Loading component that shows 2D "IA HACKATHON" text while 3D model loads
  */
 const LoadingOverlay = ({ isLoading }: { isLoading: boolean }) => {
   return (
     <div className={`
-      absolute inset-0 z-40 flex items-center justify-center
+      absolute inset-0 z-40 flex items-center justify-center bg-background
       transition-all duration-500 transform
       ${isLoading ? 'opacity-100' : 'opacity-0 pointer-events-none'}
     `}>
       <div className="text-center">
-        {/* Loading dots */}
-        <div className="flex justify-center space-x-2">
-          <div className="w-3 h-3 bg-white rounded-full animate-bounce shadow-lg"></div>
-          <div className="w-3 h-3 bg-white rounded-full animate-bounce shadow-lg" style={{ animationDelay: '0.1s' }}></div>
-          <div className="w-3 h-3 bg-white rounded-full animate-bounce shadow-lg" style={{ animationDelay: '0.2s' }}></div>
+        {/* IA text using block letters */}
+        <div className="flex justify-center items-center mb-6">
+          <BlockLetter letter="I" size="large" />
+          <BlockLetter letter="A" size="large" />
+        </div>
+        
+        {/* HACKATHON text using block letters */}
+        <div className="flex justify-center items-center flex-wrap mb-6">
+          <BlockLetter letter="H" size="small" />
+          <BlockLetter letter="A" size="small" />
+          <BlockLetter letter="C" size="small" />
+          <BlockLetter letter="K" size="small" />
+          <BlockLetter letter="A" size="small" />
+          <BlockLetter letter="T" size="small" />
+          <BlockLetter letter="H" size="small" />
+          <BlockLetter letter="O" size="small" />
+          <BlockLetter letter="N" size="small" />
+        </div>
+        
+        {/* Simple loading indicator */}
+        <div className="flex items-center justify-center space-x-1">
+          <div className="w-2 h-2 bg-white animate-pulse"></div>
+          <div className="w-2 h-2 bg-white animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+          <div className="w-2 h-2 bg-white animate-pulse" style={{ animationDelay: '0.4s' }}></div>
         </div>
       </div>
     </div>

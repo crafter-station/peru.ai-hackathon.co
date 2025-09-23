@@ -448,7 +448,7 @@ const LoadingEffect = ({ onLoaded }: { onLoaded: () => void }) => {
     // Wait for next frame to ensure everything is rendered
     const timer = setTimeout(() => {
       onLoaded();
-    }, 1500); // Minimum loading time
+    }, 100); // Minimum loading time
 
     return () => clearTimeout(timer);
   }, [onLoaded]);
