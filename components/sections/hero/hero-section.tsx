@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Environment } from "@react-three/drei";
-import * as THREE from "three";
+import Image from "next/image";
 
 const isMobile = () => {
   if (typeof window === "undefined") return false;
@@ -16,7 +16,7 @@ const isMobile = () => {
  * 3D Background Scene with rotating environment
  */
 const Background3DScene = ({ onLoad }: { onLoad?: () => void }) => {
-  const orbitControlsRef = useRef<any>(null);
+  const orbitControlsRef = useRef<React.ElementRef<typeof OrbitControls>>(null);
   const [isMobileDevice, setIsMobileDevice] = useState(false);
   const frameCount = useRef(0);
 
@@ -145,9 +145,11 @@ export default function HeroSection() {
           transition-all duration-1000 transform
           ${isVisible ? 'opacity-40 translate-x-0' : 'opacity-0 -translate-x-4'}
         `} style={{ transitionDelay: '300ms' }}>
-          <img 
+          <Image 
             src="/PE_FLAG.svg" 
             alt="Perú" 
+            width={40}
+            height={24}
             className="w-8 h-5 md:w-10 md:h-6 drop-shadow-sm hover:opacity-60 hover:scale-105 transition-all duration-300"
           />
         </div>
@@ -162,11 +164,14 @@ export default function HeroSection() {
           ${isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'}
         `} style={{ transitionDelay: '500ms' }}>
           <div className="flex justify-center items-center">
-            <img 
+            <Image 
               src="/IA_HACK_BRAND.svg" 
               alt="IA HACKATHON" 
+              width={800}
+              height={200}
               className="w-full max-w-2xl h-auto drop-shadow-2xl hover:scale-105 transition-transform duration-300"
               style={{ filter: 'drop-shadow(0 0 20px rgba(255, 255, 255, 0.3))' }}
+              priority
             />
           </div>
         </div>
@@ -186,9 +191,11 @@ export default function HeroSection() {
                 className="transition-transform duration-300 hover:scale-105"
                 style={{ pointerEvents: 'auto' }}
               >
-                <img 
+                <Image 
                   src="/BY_THC.svg" 
                   alt="By The Hackathon Company" 
+                  width={120}
+                  height={40}
                   className="h-8 md:h-10 w-auto opacity-90 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
                   style={{ filter: 'drop-shadow(0 2px 8px rgba(255, 255, 255, 0.2))' }}
                 />
@@ -204,9 +211,11 @@ export default function HeroSection() {
                 className="transition-transform duration-300 hover:scale-105"
                 style={{ pointerEvents: 'auto' }}
               >
-                <img 
+                <Image 
                   src="/In_partnership_with_ MAKERS.svg" 
                   alt="In partnership with MAKERS" 
+                  width={180}
+                  height={32}
                   className="h-6 md:h-8 w-auto opacity-90 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
                   style={{ filter: 'drop-shadow(0 2px 8px rgba(255, 255, 255, 0.2))' }}
                 />
