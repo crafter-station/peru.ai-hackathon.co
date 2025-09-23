@@ -18,5 +18,7 @@
     "lib": "@/lib",
     "hooks": "@/hooks"
   },
-  "registries": {}
+  "registries": {
+    "@elements": "https://tryelements.dev/r/{name}.json"
+  }
 }
