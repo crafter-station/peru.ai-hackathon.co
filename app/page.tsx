@@ -1,5 +1,5 @@
-import NextBlocks from "@/next-blocks"
+import NextBlocks from "@/next-blocks";
 
 export default function Page() {
-  return <NextBlocks />
+  return <NextBlocks />;
 }
