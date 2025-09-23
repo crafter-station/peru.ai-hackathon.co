@@ -101,7 +101,7 @@ const isMobile = () => {
 /**
  * 3D Background Scene with rotating environment
  */
-const Background3DScene = ({ onLoad }: { onLoad?: () => void }) => {
+const Background3DScene = ({ onLoad, enableControls }: { onLoad?: () => void; enableControls: boolean }) => {
   const orbitControlsRef = useRef<React.ElementRef<typeof OrbitControls>>(null);
   const [isMobileDevice, setIsMobileDevice] = useState(false);
   const frameCount = useRef(0);
@@ -123,10 +123,10 @@ const Background3DScene = ({ onLoad }: { onLoad?: () => void }) => {
     <>
         <OrbitControls
           ref={orbitControlsRef}
-          enableZoom={true}
-          enablePan={true}
-          enableRotate={true}
-          autoRotate
+          enableZoom={enableControls}
+          enablePan={enableControls}
+          enableRotate={enableControls}
+          autoRotate={true}
           autoRotateSpeed={0.3}
           minDistance={3}
           maxDistance={15}
@@ -202,6 +202,8 @@ export default function HeroSection() {
   const [isLoading, setIsLoading] = useState(true);
   const [isVisible, setIsVisible] = useState(false);
   const [scene3DLoaded, setScene3DLoaded] = useState(false);
+  const [enableControls, setEnableControls] = useState(true);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handle3DLoad = () => {
     setScene3DLoaded(true);
@@ -225,12 +227,46 @@ export default function HeroSection() {
     }
   }, [scene3DLoaded]);
 
+  // Handle scroll detection to disable 3D controls during scrolling
+  useEffect(() => {
+    const handleScrollEvent = () => {
+      // Disable controls when scrolling
+      setEnableControls(false);
+      
+      // Clear existing timeout
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+      
+      // Re-enable controls after scrolling stops (300ms delay for responsiveness)
+      scrollTimeoutRef.current = setTimeout(() => {
+        setEnableControls(true);
+      }, 300);
+    };
+
+    // Add both scroll and wheel listeners for comprehensive scroll detection
+    window.addEventListener('scroll', handleScrollEvent, { passive: true });
+    window.addEventListener('wheel', handleScrollEvent, { passive: true });
+    
+    // Cleanup
+    return () => {
+      window.removeEventListener('scroll', handleScrollEvent);
+      window.removeEventListener('wheel', handleScrollEvent);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, []);
+
   return (
     <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
       {/* 3D Background with Machu Picchu environment */}
-      <div className="absolute inset-0 z-10">
+      <div 
+        className="absolute inset-0 z-10 transition-all duration-200" 
+        style={{ pointerEvents: enableControls ? 'auto' : 'none' }}
+      >
         <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
-          <Background3DScene onLoad={handle3DLoad} />
+          <Background3DScene onLoad={handle3DLoad} enableControls={enableControls} />
         </Canvas>
       </div>
 
@@ -348,13 +384,22 @@ export default function HeroSection() {
           transition-all duration-1000 transform
           ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}
         `} style={{ transitionDelay: '1.6s' }}>
-          <button 
+          <a 
+            href="https://chat.whatsapp.com/H6RV2cFfL47CCXVzVmHedR?mode=ems_share_t"
+            target="_blank"
+            rel="noopener noreferrer"
             className="px-8 py-4 bg-brand-red text-white font-bold text-lg rounded-lg hover:bg-brand-red-dark transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
             style={{ pointerEvents: 'auto' }}
           >
-            Registrarse Ahora
-          </button>
+            Únete al WhatsApp
+          </a>
           <button 
+            onClick={() => {
+              const detailsSection = document.getElementById('details');
+              if (detailsSection) {
+                detailsSection.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
             className="px-8 py-4 bg-white text-brand-red font-bold text-lg rounded-lg border-2 border-brand-red hover:bg-red-50 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
             style={{ pointerEvents: 'auto' }}
           >
