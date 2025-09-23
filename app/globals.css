@@ -125,6 +125,9 @@
   body {
     @apply bg-background text-foreground;
   }
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 @layer utilities {
@@ -146,5 +149,26 @@
   
   .hover\:bg-brand-red-dark:hover {
     background-color: #A01B26;
+  }
+
+  .dither-divider {
+    height: 120px;
+    position: relative;
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.12) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0) 70%);
+    background-size: 6px 6px, 100% 100%;
+    filter: grayscale(100%);
+  }
+
+  /* Neutral halftone pattern for section backgrounds */
+  .dither-bg {
+    background-image: radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+    background-size: 6px 6px;
+    background-blend-mode: normal;
+  }
+
+  .dark .dither-bg {
+    background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
   }
 }
