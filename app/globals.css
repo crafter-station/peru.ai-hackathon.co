@@ -135,6 +135,15 @@
     font-family: var(--font-typekit);
   }
   
+  /* Hide scrollbar for horizontally scrolling nav while keeping scrollability */
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+  }
+  
   .bg-brand-red {
     background-color: var(--brand-red);
   }

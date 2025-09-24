@@ -50,11 +50,7 @@ export const Background3DScene = ({ onLoad, enableControls }: { onLoad?: () => v
       <directionalLight position={[5, 5, 5]} intensity={0.3} color="#ffffff" />
 
       <Environment
-        files={
-          isMobileDevice
-            ? "https://26evcbcedv5nczlx.public.blob.vercel-storage.com/machu-picchu-mobile.jpg"
-            : "https://26evcbcedv5nczlx.public.blob.vercel-storage.com/machu-picchu-1X.jpg"
-        }
+        files="https://26evcbcedv5nczlx.public.blob.vercel-storage.com/machu-picchu-1X.jpg"
         background
       />
     </>
