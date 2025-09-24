@@ -129,8 +129,7 @@ export default function HeroSection() {
               alt="IA HACKATHON" 
               width={800}
               height={200}
-              className="w-full max-w-2xl h-auto drop-shadow-2xl transition-opacity duration-300"
-              style={{ filter: 'drop-shadow(0 0 20px rgba(255, 255, 255, 0.3))' }}
+              className="w-full max-w-2xl h-auto transition-opacity duration-300"
               priority
             />
           </div>
@@ -158,7 +157,7 @@ export default function HeroSection() {
                   height={40}
                   className="h-8 md:h-10 w-auto transition-all duration-300 cursor-pointer"
                   style={{
-                    filter: 'brightness(1.1) contrast(1.2) drop-shadow(0 0 12px rgba(255, 255, 255, 0.4)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))',
+                    filter: 'brightness(1.1) contrast(1.2)',
                     opacity: '0.95'
                   }}
                 />
@@ -181,7 +180,7 @@ export default function HeroSection() {
                   height={32}
                   className="h-6 md:h-8 w-auto transition-all duration-300 cursor-pointer"
                   style={{
-                    filter: 'brightness(1.1) contrast(1.2) drop-shadow(0 0 12px rgba(255, 255, 255, 0.4)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))',
+                    filter: 'brightness(1.1) contrast(1.2)',
                     opacity: '0.95'
                   }}
                 />
