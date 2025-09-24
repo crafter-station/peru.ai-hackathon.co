@@ -16,6 +16,8 @@ export default function HeroSection() {
   const [isVisible, setIsVisible] = useState(false);
   const [scene3DLoaded, setScene3DLoaded] = useState(false);
   const [enableControls, setEnableControls] = useState(true);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [backdropOpacity, setBackdropOpacity] = useState(0.7);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Button click sound
@@ -89,6 +91,12 @@ export default function HeroSection() {
       {/* Loading overlay */}
       <LoadingOverlay isLoading={isLoading} />
 
+      {/* Custom dark backdrop for 3D scene - adjustable opacity */}
+      <div 
+        className="absolute inset-0 bg-black pointer-events-none z-15"
+        style={{ opacity: backdropOpacity }}
+      />
+
       {/* Enhanced overlay for better contrast and visual depth - non-interactive */}
       <div className="absolute inset-0 bg-gradient-to-br from-black/30 via-black/20 to-black/40 pointer-events-none z-20" />
 
@@ -151,7 +159,7 @@ export default function HeroSection() {
                 style={{ pointerEvents: 'auto' }}
               >
                 <Image
-                  src="/BY_THC.svg"
+                  src="/THC-BRAND-WHITE.svg"
                   alt="By The Hackathon Company"
                   width={120}
                   height={40}
@@ -174,7 +182,7 @@ export default function HeroSection() {
                 style={{ pointerEvents: 'auto' }}
               >
                 <Image
-                  src="/In_partnership_with_ MAKERS.svg"
+                  src="/partner_makers.svg"
                   alt="In partnership with MAKERS"
                   width={180}
                   height={32}
@@ -240,6 +248,26 @@ export default function HeroSection() {
         </div>
 
       </div>
+
+      {/* Opacity Control Panel - Commented out, using 70% default */}
+      {/* <div className="absolute top-6 right-6 z-40 bg-black/60 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+        <div className="text-white text-sm font-medium mb-2">Backdrop Opacity</div>
+        <div className="flex items-center gap-3">
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.05"
+            value={backdropOpacity}
+            onChange={(e) => setBackdropOpacity(parseFloat(e.target.value))}
+            className="w-32 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+            style={{ pointerEvents: 'auto' }}
+          />
+          <span className="text-white text-sm font-mono min-w-[3rem] text-right">
+            {Math.round(backdropOpacity * 100)}%
+          </span>
+        </div>
+      </div> */}
 
       {/* Scroll indicator */}
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce z-20">

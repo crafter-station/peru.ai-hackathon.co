@@ -50,9 +50,10 @@ export const Background3DScene = ({ onLoad, enableControls }: { onLoad?: () => v
       <directionalLight position={[5, 5, 5]} intensity={0.3} color="#ffffff" />
 
       <Environment
-        // files="https://26evcbcedv5nczlx.public.blob.vercel-storage.com/machu-picchu-darker-low-1x.jpg"
-        files="https://26evcbcedv5nczlx.public.blob.vercel-storage.com/machu-picchu-1X.jpg"
-        // files="https://26evcbcedv5nczlx.public.blob.vercel-storage.com/machu-pichu-dark-1x-low.jpg"
+        
+        // files="https://26evcbcedv5nczlx.public.blob.vercel-storage.com/machu-picchu-1X.jpg"
+        files="https://26evcbcedv5nczlx.public.blob.vercel-storage.com/machu-picchu-darker-low-1x-B.jpg"
+        
         background
       />
     </>
