@@ -28,7 +28,7 @@ export default function FooterSection() {
             </div>
             <p className="text-muted-foreground text-sm leading-relaxed max-w-md">
               El evento de inteligencia artificial más importante del Perú. 
-              Únete a nosotros para 48 horas de innovación y tecnología.
+              Únete a nosotros para 24 horas de innovación y tecnología.
             </p>
             <div className="flex items-center gap-2 mt-4">
               <Image 

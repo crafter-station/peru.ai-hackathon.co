@@ -1,9 +1,67 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
+type CountdownState = {
+  days: string;
+  hours: string;
+  minutes: string;
+  seconds: string;
+  isPast: boolean;
+};
+
+function calculateTimeLeft(target: number): CountdownState {
+  const now = Date.now();
+  const distance = target - now;
+
+  if (distance <= 0) {
+    return {
+      days: "00",
+      hours: "00",
+      minutes: "00",
+      seconds: "00",
+      isPast: true,
+    };
+  }
+
+  const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
+  const minutes = Math.floor((distance / (1000 * 60)) % 60);
+  const seconds = Math.floor((distance / 1000) % 60);
+
+  return {
+    days: String(days).padStart(2, "0"),
+    hours: String(hours).padStart(2, "0"),
+    minutes: String(minutes).padStart(2, "0"),
+    seconds: String(seconds).padStart(2, "0"),
+    isPast: false,
+  };
+}
+
 export default function DetailsSection() {
+  const eventTimestamp = useRef<number>(new Date("2025-11-29T09:00:00-05:00").getTime());
+  const [timeLeft, setTimeLeft] = useState<CountdownState>(() => calculateTimeLeft(eventTimestamp.current));
+
+  useEffect(() => {
+    const timerId = window.setInterval(() => {
+      setTimeLeft((current) => {
+        const next = calculateTimeLeft(eventTimestamp.current);
+        if (!current.isPast && next.isPast) {
+          clearInterval(timerId);
+        }
+        return next;
+      });
+    }, 1000);
+
+    setTimeLeft(calculateTimeLeft(eventTimestamp.current));
+
+    return () => {
+      clearInterval(timerId);
+    };
+  }, []);
+
   return (
     <section id="details" className="min-h-screen py-20 px-4 md:px-8 bg-background dither-bg relative">
       <div className="max-w-4xl mx-auto">
@@ -16,6 +74,40 @@ export default function DetailsSection() {
             Todo lo que necesitas saber sobre el IA Hackathon Peru 2025
           </p>
         </div>
+
+        {!timeLeft.isPast && (
+          <div className="flex justify-center mb-14">
+            <div className="inline-flex flex-col sm:flex-row items-center gap-4 px-6 py-4 rounded-2xl bg-brand-red/5 backdrop-blur-sm border border-brand-red/20 shadow-lg">
+              <span className="text-xs uppercase tracking-[0.3em] text-brand-red/80">
+                Cuenta regresiva
+              </span>
+              <div className="flex gap-4">
+                {[{
+                  label: "Días",
+                  value: timeLeft.days,
+                }, {
+                  label: "Horas",
+                  value: timeLeft.hours,
+                }, {
+                  label: "Minutos",
+                  value: timeLeft.minutes,
+                }, {
+                  label: "Segundos",
+                  value: timeLeft.seconds,
+                }].map((segment) => (
+                  <div key={segment.label} className="text-center">
+                    <div className="text-3xl font-semibold text-foreground">
+                      {segment.value}
+                    </div>
+                    <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                      {segment.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Event Cards */}
         <div className="grid md:grid-cols-2 gap-8 mb-12">
@@ -68,7 +160,7 @@ export default function DetailsSection() {
                   </svg>
                 </div>
                 <h4 className="font-semibold text-foreground mb-1">Duración</h4>
-                <p className="text-muted-foreground text-sm">48 horas de innovación</p>
+                <p className="text-muted-foreground text-sm">24 horas de innovación</p>
               </div>
 
               <div>
