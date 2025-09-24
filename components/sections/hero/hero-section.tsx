@@ -194,10 +194,10 @@ export default function HeroSection() {
           max-w-2xl mx-auto mb-12 transition-all duration-1000 transform
           ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}
         `} style={{ transitionDelay: '1.2s' }}>
-          <p className="text-lg md:text-xl text-white leading-relaxed mb-6 drop-shadow-lg">
+          <p className="text-lg md:text-xl text-white leading-relaxed mb-6 drop-shadow-lg" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)' }}>
             Únete al evento de inteligencia artificial más importante del Perú
           </p>
-          <p className="text-base md:text-lg text-gray-200 drop-shadow-lg">
+          <p className="text-base md:text-lg text-gray-200 drop-shadow-lg" style={{ textShadow: '1px 1px 3px rgba(0, 0, 0, 0.7)' }}>
             Innovación • Tecnología • Futuro
           </p>
         </div>
@@ -213,7 +213,7 @@ export default function HeroSection() {
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => play()}
-            className="px-8 py-4 bg-brand-red text-white font-bold text-lg rounded-lg hover:bg-brand-red-dark transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+            className="px-8 py-4 min-h-[44px] min-w-[44px] bg-brand-red text-white font-bold text-lg rounded-lg hover:bg-brand-red-dark transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
             style={{ pointerEvents: 'auto' }}
           >
             Únete al WhatsApp
@@ -226,7 +226,7 @@ export default function HeroSection() {
                 detailsSection.scrollIntoView({ behavior: 'smooth' });
               }
             }}
-            className="px-8 py-4 bg-white text-brand-red font-bold text-lg rounded-lg border-2 border-brand-red hover:bg-red-50 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+            className="px-8 py-4 min-h-[44px] min-w-[44px] bg-white text-brand-red font-bold text-lg rounded-lg border-2 border-brand-red hover:bg-red-50 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
             style={{ pointerEvents: 'auto' }}
           >
             Ver Detalles

@@ -34,16 +34,16 @@ export const Background3DScene = ({ onLoad, enableControls }: { onLoad?: () => v
           enablePan={enableControls}
           enableRotate={enableControls}
           autoRotate={true}
-          autoRotateSpeed={0.3}
+          autoRotateSpeed={isMobileDevice ? 0.2 : 0.3}
           minDistance={3}
           maxDistance={15}
           minPolarAngle={Math.PI / 6}
           maxPolarAngle={Math.PI - Math.PI / 6}
-          dampingFactor={0.05}
+          dampingFactor={isMobileDevice ? 0.08 : 0.05}
           enableDamping={true}
-          zoomSpeed={0.8}
-          panSpeed={0.8}
-          rotateSpeed={0.5}
+          zoomSpeed={isMobileDevice ? 0.6 : 0.8}
+          panSpeed={isMobileDevice ? 0.6 : 0.8}
+          rotateSpeed={isMobileDevice ? 0.4 : 0.5}
         />
 
       <ambientLight intensity={0.3} />
@@ -52,7 +52,7 @@ export const Background3DScene = ({ onLoad, enableControls }: { onLoad?: () => v
       <Environment
         files={
           isMobileDevice
-            ? "https://26evcbcedv5nczlx.public.blob.vercel-storage.com/machu-picchu-1X.jpg"
+            ? "https://26evcbcedv5nczlx.public.blob.vercel-storage.com/machu-picchu-mobile.jpg"
             : "https://26evcbcedv5nczlx.public.blob.vercel-storage.com/machu-picchu-1X.jpg"
         }
         background
