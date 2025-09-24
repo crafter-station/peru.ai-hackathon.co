@@ -94,6 +94,28 @@ const adelleMonoFlexFont = localFont({
 export const metadata: Metadata = {
   title: "IA Hackathon Peru 2025 | 29-30 Noviembre",
   description: "Únete al evento de inteligencia artificial más importante del Perú. Innovación, tecnología y futuro. 29-30 de noviembre 2025.",
+  openGraph: {
+    title: "IA Hackathon Peru 2025 | 29-30 Noviembre",
+    description: "Únete al evento de inteligencia artificial más importante del Perú. Innovación, tecnología y futuro. 29-30 de noviembre 2025.",
+    url: "https://peru.ai-hackathon.co",
+    siteName: "IA Hackathon Peru",
+    images: [
+      {
+        url: "/og-image.jpg", 
+        width: 1200,
+        height: 630,
+        alt: "IA Hackathon Peru 2025",
+      },
+    ],
+    locale: "es_PE",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "IA Hackathon Peru 2025 | 29-30 Noviembre",
+    description: "Únete al evento de inteligencia artificial más importante del Perú. Innovación, tecnología y futuro. 29-30 de noviembre 2025.",
+    images: ["/og-image.jpg"], // Same image for Twitter
+  },
 };
 
 export default function RootLayout({
