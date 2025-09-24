@@ -6,6 +6,7 @@ const navItems = [
   { id: 'hero', label: 'Inicio' },
   { id: 'details', label: 'Detalles' },
   { id: 'faq', label: 'FAQ' },
+  { id: 'repo', label: 'Repositorio' },
   { id: 'judges', label: 'Jurado' },
   { id: 'sponsors', label: 'Patrocinadores' },
 ];
