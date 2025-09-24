@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 type CountdownState = {
   days: string;
@@ -192,25 +193,32 @@ export default function DetailsSection() {
             ¿Listo para ser parte de la innovación en IA?
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a 
-              href="https://chat.whatsapp.com/H6RV2cFfL47CCXVzVmHedR?mode=ems_share_t"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-8 py-3 bg-brand-red text-white font-semibold rounded-lg hover:bg-brand-red-dark transition-all duration-300 hover:scale-105"
+            <Button 
+              asChild
+              size="lg"
+              className="bg-brand-red text-white font-semibold hover:bg-brand-red/90 transition-colors duration-300"
             >
-              Únete al WhatsApp
-            </a>
-            <button 
+              <a 
+                href="https://chat.whatsapp.com/H6RV2cFfL47CCXVzVmHedR?mode=ems_share_t"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Únete al WhatsApp
+              </a>
+            </Button>
+            <Button 
+              variant="outline"
+              size="lg"
               onClick={() => {
                 const faqSection = document.getElementById('faq');
                 if (faqSection) {
                   faqSection.scrollIntoView({ behavior: 'smooth' });
                 }
               }}
-              className="px-8 py-3 border-2 border-brand-red text-brand-red font-semibold rounded-lg hover:bg-brand-red/5 transition-all duration-300 hover:scale-105"
+              className="border-2 border-brand-red text-brand-red font-semibold hover:bg-brand-red/5 transition-colors duration-300"
             >
               Más Información
-            </button>
+            </Button>
           </div>
         </div>
       </div>

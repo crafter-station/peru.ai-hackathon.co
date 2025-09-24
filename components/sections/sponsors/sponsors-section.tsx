@@ -58,7 +58,7 @@ export default function SponsorsSection() {
             <Card className="border-2 hover:border-brand-red/50 transition-all duration-300 hover:shadow-lg">
               <CardContent className="p-8">
                 <div className="text-center">
-                  <div className="bg-black rounded-lg p-6 mb-4 hover:scale-105 transition-transform duration-300">
+                  <div className="bg-black rounded-lg p-6 mb-4 transition-opacity duration-300 hover:opacity-80">
                     <Image 
                       src="https://11labs-nonprd-15f22c1d.s3.eu-west-3.amazonaws.com/0b9cd3e1-9fad-4a5b-b3a0-c96b0a1f1d2b/elevenlabs-logo-white.png"
                       alt="ElevenLabs" 
@@ -106,7 +106,7 @@ export default function SponsorsSection() {
             href="https://chat.whatsapp.com/H6RV2cFfL47CCXVzVmHedR?mode=ems_share_t"
             target="_blank"
             rel="noopener noreferrer"
-            className="px-8 py-3 bg-brand-red text-white font-semibold rounded-lg hover:bg-brand-red-dark transition-all duration-300 hover:scale-105"
+            className="px-8 py-3 bg-brand-red text-white font-semibold rounded-lg hover:bg-brand-red/90 transition-colors duration-300"
           >
             Información de Patrocinio
           </a>

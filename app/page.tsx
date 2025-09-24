@@ -1,6 +1,5 @@
 import HeroSection from "@/components/sections/hero/hero-section";
 import DetailsSection from "@/components/sections/details/details-section";
-import RepoSection from "@/components/sections/repo/repo-section";
 import FAQSection from "@/components/sections/faq/faq-section";
 import JudgesSection from "@/components/sections/judges/judges-section";
 import SponsorsSection from "@/components/sections/sponsors/sponsors-section";
@@ -15,7 +14,6 @@ export default function Page() {
         <HeroSection />
       </div>
       <DetailsSection />
-      <RepoSection />
       <FAQSection />
       <JudgesSection />
       <SponsorsSection />

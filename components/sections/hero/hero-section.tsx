@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import Image from "next/image";
 import useSound from "use-sound";
+import { Button } from "@/components/ui/button";
 import { Background3DScene } from "./background-3d-scene";
 import { LoadingOverlay } from "./loading-overlay";
 
@@ -99,7 +100,7 @@ export default function HeroSection() {
            }} />
 
       {/* Top section with Peru flag */}
-      <div className="absolute top-6 left-6 z-20">
+      {/* <div className="absolute top-6 left-6 z-20">
         <div className={`
           transition-all duration-1000 transform
           ${isVisible ? 'opacity-40 translate-x-0' : 'opacity-0 -translate-x-4'}
@@ -109,10 +110,10 @@ export default function HeroSection() {
             alt="Perú" 
             width={40}
             height={24}
-            className="w-8 h-5 md:w-10 md:h-6 drop-shadow-sm hover:opacity-60 hover:scale-105 transition-all duration-300"
+            className="w-8 h-5 md:w-10 md:h-6 drop-shadow-sm hover:opacity-60 transition-opacity duration-300"
           />
         </div>
-      </div>
+      </div> */}
 
       {/* Main content */}
       <div className="relative z-30 text-center px-4 md:px-8 max-w-6xl mx-auto pointer-events-none">
@@ -128,7 +129,7 @@ export default function HeroSection() {
               alt="IA HACKATHON" 
               width={800}
               height={200}
-              className="w-full max-w-2xl h-auto drop-shadow-2xl hover:scale-105 transition-transform duration-300"
+              className="w-full max-w-2xl h-auto drop-shadow-2xl transition-opacity duration-300"
               style={{ filter: 'drop-shadow(0 0 20px rgba(255, 255, 255, 0.3))' }}
               priority
             />
@@ -147,7 +148,7 @@ export default function HeroSection() {
                 href="https://hackathon.lat/" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="transition-transform duration-300 hover:scale-105"
+                className="transition-opacity duration-300 hover:opacity-80"
                 style={{ pointerEvents: 'auto' }}
               >
                 <Image
@@ -170,7 +171,7 @@ export default function HeroSection() {
                 href="https://makers.ngo/" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="transition-transform duration-300 hover:scale-105"
+                className="transition-opacity duration-300 hover:opacity-80"
                 style={{ pointerEvents: 'auto' }}
               >
                 <Image
@@ -208,17 +209,23 @@ export default function HeroSection() {
           transition-all duration-1000 transform
           ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}
         `} style={{ transitionDelay: '1.6s' }}>
-          <a
-            href="https://chat.whatsapp.com/H6RV2cFfL47CCXVzVmHedR?mode=ems_share_t"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Button
+            asChild
+            size="lg"
             onClick={() => play()}
-            className="px-8 py-4 min-h-[44px] min-w-[44px] bg-brand-red text-white font-bold text-lg rounded-lg hover:bg-brand-red-dark transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+            className="px-8 py-4 min-h-[44px] min-w-[44px] bg-brand-red text-white font-bold text-lg hover:bg-brand-red/90 transition-colors duration-300 shadow-lg"
             style={{ pointerEvents: 'auto' }}
           >
-            Únete al WhatsApp
-          </a>
-          <button
+            <a
+              href="https://chat.whatsapp.com/H6RV2cFfL47CCXVzVmHedR?mode=ems_share_t"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Únete al WhatsApp
+            </a>
+          </Button>
+          <Button
+            size="lg"
             onClick={() => {
               play();
               const detailsSection = document.getElementById('details');
@@ -226,11 +233,11 @@ export default function HeroSection() {
                 detailsSection.scrollIntoView({ behavior: 'smooth' });
               }
             }}
-            className="px-8 py-4 min-h-[44px] min-w-[44px] bg-white text-brand-red font-bold text-lg rounded-lg border-2 border-brand-red hover:bg-red-50 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
-            style={{ pointerEvents: 'auto' }}
+            className="px-8 py-4 min-h-[44px] min-w-[44px] !bg-white !text-brand-red font-bold text-lg border-2 !border-brand-red hover:!bg-red-50 transition-colors duration-300 shadow-lg"
+            style={{ pointerEvents: 'auto', backgroundColor: '#ffffff', color: 'var(--brand-red)', borderColor: 'var(--brand-red)' }}
           >
             Ver Detalles
-          </button>
+          </Button>
         </div>
 
       </div>
