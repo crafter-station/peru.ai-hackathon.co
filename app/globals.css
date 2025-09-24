@@ -180,4 +180,50 @@
   .dark .dither-bg {
     background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
   }
+
+  /* Custom slider styling */
+  .slider {
+    background: #4a5568;
+    border-radius: 5px;
+    outline: none;
+    transition: all 0.2s ease;
+  }
+  
+  .slider::-webkit-slider-thumb {
+    appearance: none;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: var(--brand-red);
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s ease;
+  }
+  
+  .slider::-webkit-slider-thumb:hover {
+    background: #d62e3b;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(185, 31, 46, 0.4);
+  }
+  
+  .slider::-moz-range-thumb {
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: var(--brand-red);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s ease;
+  }
+  
+  .slider::-moz-range-thumb:hover {
+    background: #d62e3b;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(185, 31, 46, 0.4);
+  }
+  
+  .slider:focus {
+    box-shadow: 0 0 0 2px rgba(185, 31, 46, 0.3);
+  }
 }
