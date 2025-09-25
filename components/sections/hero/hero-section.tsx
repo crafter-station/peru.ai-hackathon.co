@@ -60,8 +60,11 @@ export default function HeroSection() {
     }
   }, [scene3DLoaded]);
 
-  // Handle scroll detection to disable 3D controls during scrolling
+  // Handle scroll detection to disable 3D controls during scrolling (desktop only)
   useEffect(() => {
+    // Skip scroll detection on mobile - let touch events handle 3D interaction
+    if (isMobile) return;
+
     const handleScrollEvent = () => {
       // Disable controls when scrolling
       setEnableControls(false);
@@ -77,23 +80,19 @@ export default function HeroSection() {
       }, 300);
     };
 
-    // Add comprehensive event listeners for all scroll types including iOS touch
+    // Add scroll listeners for desktop only
     window.addEventListener("scroll", handleScrollEvent, { passive: true });
     window.addEventListener("wheel", handleScrollEvent, { passive: true });
-    window.addEventListener("touchstart", handleScrollEvent, { passive: true });
-    window.addEventListener("touchmove", handleScrollEvent, { passive: true });
 
     // Cleanup
     return () => {
       window.removeEventListener("scroll", handleScrollEvent);
       window.removeEventListener("wheel", handleScrollEvent);
-      window.removeEventListener("touchstart", handleScrollEvent);
-      window.removeEventListener("touchmove", handleScrollEvent);
       if (scrollTimeoutRef.current) {
         clearTimeout(scrollTimeoutRef.current);
       }
     };
-  }, []);
+  }, [isMobile]);
 
   return (
     <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
@@ -101,7 +100,7 @@ export default function HeroSection() {
       <div
         className="absolute inset-0 z-10 transition-all duration-200"
         style={{
-          pointerEvents: enableControls && !isMobile ? "auto" : "none",
+          pointerEvents: isMobile ? "auto" : enableControls ? "auto" : "none",
           touchAction: isMobile ? "pan-y" : "none",
         }}
       >
@@ -111,7 +110,7 @@ export default function HeroSection() {
         >
           <Background3DScene
             onLoad={handle3DLoad}
-            enableControls={enableControls && !isMobile}
+            enableControls={isMobile ? true : enableControls}
           />
         </Canvas>
       </div>
