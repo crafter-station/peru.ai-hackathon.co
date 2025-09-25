@@ -17,6 +17,13 @@ export const Background3DScene = ({ onLoad, enableControls }: { onLoad?: () => v
     setIsMobileDevice(isMobile());
   }, []);
 
+  // Set default tilt to 60 degrees
+  useEffect(() => {
+    if (orbitControlsRef.current) {
+      orbitControlsRef.current.setPolarAngle(Math.PI / 2.5); // ~60 degrees this is for show better machu picchu on the first load
+    }
+  }, []);
+
   // Use frame hook to detect when scene is ready
   useFrame(() => {
     frameCount.current += 1;
