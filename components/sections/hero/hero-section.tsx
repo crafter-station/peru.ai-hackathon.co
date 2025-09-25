@@ -289,11 +289,11 @@ export default function HeroSection() {
           <Button
             size="lg"
             onClick={scrollToNextSection}
-            className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white font-bold text-lg border border-white/20 rounded-none hover:bg-white/20 hover:border-white/30 transition-all duration-300"
+            className="px-8 py-4 text-white font-bold text-lg rounded-none hover:bg-white/20 transition-all duration-300"
             style={{ pointerEvents: "auto" }}
           >
             <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-6 h-6 bg-white/10 rounded-sm">
+              <div className="flex items-center justify-center w-6 h-6 rounded-sm">
                 <svg
                   width="16"
                   height="16"
