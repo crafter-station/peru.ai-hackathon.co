@@ -20,7 +20,7 @@ export default function HeroSection() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [backdropOpacity, setBackdropOpacity] = useState(0.8);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  
+
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   // Button click sound
@@ -88,19 +88,18 @@ export default function HeroSection() {
       {/* 3D Background with Machu Picchu environment */}
       <div
         className="absolute inset-0 z-10 transition-all duration-200"
-        style={{ 
-          pointerEvents: (enableControls && !isMobile) ? "auto" : "none",
-          touchAction: isMobile ? "pan-y" : "none"
+        style={{
+          pointerEvents: enableControls && !isMobile ? "auto" : "none",
+          touchAction: isMobile ? "pan-y" : "none",
         }}
       >
-        <Canvas 
+        <Canvas
           camera={{ position: [0, 0, 5], fov: 75 }}
           style={{ touchAction: isMobile ? "pan-y" : "none" }}
         >
           <Background3DScene
             onLoad={handle3DLoad}
             enableControls={enableControls && !isMobile}
-            isMobile={isMobile}
           />
         </Canvas>
       </div>
