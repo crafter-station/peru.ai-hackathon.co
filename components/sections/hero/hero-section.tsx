@@ -32,11 +32,11 @@ export default function HeroSection() {
       // Wait a moment after 3D loads, then hide loading and show content
       const loadingTimer = setTimeout(() => {
         setIsLoading(false);
-      }, 500);
+      }, 100);
 
       const visibilityTimer = setTimeout(() => {
         setIsVisible(true);
-      }, 800);
+      }, 100);
 
       return () => {
         clearTimeout(loadingTimer);
@@ -124,20 +124,17 @@ export default function HeroSection() {
       </div> */}
 
       {/* Main content */}
-      <div className="relative z-30 text-center px-4 md:px-8 max-w-6xl mx-auto pointer-events-none">
+      <div className="relative z-50 text-center px-4 md:px-8 max-w-6xl mx-auto pointer-events-none">
         {/* Interactive elements will use inline style for pointer-events: auto */}
-        {/* Main logo: IA HACKATHON Brand */}
-        <div className={`
-          mb-8 md:mb-12 transition-all duration-1000 transform
-          ${isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'}
-        `} style={{ transitionDelay: '500ms' }}>
+        {/* Main logo: IA HACKATHON Brand - Always visible in exact same position */}
+        <div className="mb-8 md:mb-12 opacity-100">
           <div className="flex justify-center items-center">
             <Image 
               src="/IA_HACK_BRAND.svg" 
               alt="IA HACKATHON" 
               width={800}
               height={200}
-              className="w-full max-w-2xl h-auto transition-opacity duration-300"
+              className="w-full max-w-2xl h-auto"
               priority
             />
           </div>
@@ -147,7 +144,7 @@ export default function HeroSection() {
         <div className={`
           mb-8 md:mb-12 transition-all duration-1000 transform
           ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
-        `} style={{ transitionDelay: '800ms' }}>
+        `} style={{ transitionDelay: '300ms' }}>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 md:gap-8">
             {/* The Hackathon Company */}
             <div className="flex items-center">
@@ -201,7 +198,7 @@ export default function HeroSection() {
         <div className={`
           max-w-2xl mx-auto mb-12 transition-all duration-1000 transform
           ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}
-        `} style={{ transitionDelay: '1.2s' }}>
+        `} style={{ transitionDelay: '600ms' }}>
           <p className="text-xl md:text-2xl text-white leading-relaxed mb-6 drop-shadow-lg" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)' }}>
             Únete al evento de inteligencia artificial más importante del Perú
           </p>
@@ -215,7 +212,7 @@ export default function HeroSection() {
           flex flex-col sm:flex-row gap-4 justify-center items-center
           transition-all duration-1000 transform
           ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}
-        `} style={{ transitionDelay: '1.6s' }}>
+        `} style={{ transitionDelay: '1000ms' }}>
           <Button
             asChild
             size="lg"

@@ -21,7 +21,7 @@ export const Background3DScene = ({ onLoad, enableControls }: { onLoad?: () => v
   useFrame(() => {
     frameCount.current += 1;
     // After a few frames, consider the scene loaded
-    if (frameCount.current === 10 && onLoad) {
+    if (frameCount.current === 5 && onLoad) {
       onLoad();
     }
   });
@@ -52,7 +52,7 @@ export const Background3DScene = ({ onLoad, enableControls }: { onLoad?: () => v
       <Environment
         
         // files="https://26evcbcedv5nczlx.public.blob.vercel-storage.com/machu-picchu-1X.jpg"
-        files="https://26evcbcedv5nczlx.public.blob.vercel-storage.com/machu-picchu-darker-low-1x-B.jpg"
+        files="https://26evcbcedv5nczlx.public.blob.vercel-storage.com/machu-picchu-darker-low-1x-B.jpeg" // compressed image 
         
         background
       />

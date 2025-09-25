@@ -43,20 +43,31 @@ function calculateTimeLeft(target: number): CountdownState {
 
 export default function DetailsSection() {
   const eventTimestamp = useRef<number>(new Date("2025-11-29T09:00:00-05:00").getTime());
-  const [timeLeft, setTimeLeft] = useState<CountdownState>(() => calculateTimeLeft(eventTimestamp.current));
+  const [timeLeft, setTimeLeft] = useState<CountdownState>({
+    days: "00",
+    hours: "00",
+    minutes: "00",
+    seconds: "00",
+    isPast: false,
+  });
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
+    
+    const updateCountdown = () => calculateTimeLeft(eventTimestamp.current);
+    
+    setTimeLeft(updateCountdown());
+
     const timerId = window.setInterval(() => {
       setTimeLeft((current) => {
-        const next = calculateTimeLeft(eventTimestamp.current);
+        const next = updateCountdown();
         if (!current.isPast && next.isPast) {
           clearInterval(timerId);
         }
         return next;
       });
     }, 1000);
-
-    setTimeLeft(calculateTimeLeft(eventTimestamp.current));
 
     return () => {
       clearInterval(timerId);
@@ -76,7 +87,7 @@ export default function DetailsSection() {
           </p>
         </div>
 
-        {!timeLeft.isPast && (
+        {isClient && !timeLeft.isPast && (
           <div className="flex justify-center mb-14">
             <div className="inline-flex flex-col sm:flex-row items-center gap-4 px-6 py-4 rounded-2xl bg-brand-red/5 backdrop-blur-sm border border-brand-red/20 shadow-lg">
               <span className="text-xs uppercase tracking-[0.3em] text-brand-red/80">
