@@ -7,6 +7,7 @@ import useSound from "use-sound";
 import { Button } from "@/components/ui/button";
 import { Background3DScene } from "./background-3d-scene";
 import { LoadingOverlay } from "./loading-overlay";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 /**
  * Hero section with Peruvian-themed IA HACKATHON display
@@ -19,6 +20,8 @@ export default function HeroSection() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [backdropOpacity, setBackdropOpacity] = useState(0.8);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   // Button click sound
   const [play] = useSound("/sounds/bite.mp3", { volume: 0.5 });
@@ -62,14 +65,18 @@ export default function HeroSection() {
       }, 300);
     };
 
-    // Add both scroll and wheel listeners for comprehensive scroll detection
+    // Add comprehensive event listeners for all scroll types including iOS touch
     window.addEventListener("scroll", handleScrollEvent, { passive: true });
     window.addEventListener("wheel", handleScrollEvent, { passive: true });
+    window.addEventListener("touchstart", handleScrollEvent, { passive: true });
+    window.addEventListener("touchmove", handleScrollEvent, { passive: true });
 
     // Cleanup
     return () => {
       window.removeEventListener("scroll", handleScrollEvent);
       window.removeEventListener("wheel", handleScrollEvent);
+      window.removeEventListener("touchstart", handleScrollEvent);
+      window.removeEventListener("touchmove", handleScrollEvent);
       if (scrollTimeoutRef.current) {
         clearTimeout(scrollTimeoutRef.current);
       }
@@ -81,12 +88,18 @@ export default function HeroSection() {
       {/* 3D Background with Machu Picchu environment */}
       <div
         className="absolute inset-0 z-10 transition-all duration-200"
-        style={{ pointerEvents: enableControls ? "auto" : "none" }}
+        style={{
+          pointerEvents: enableControls && !isMobile ? "auto" : "none",
+          touchAction: isMobile ? "pan-y" : "none",
+        }}
       >
-        <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
+        <Canvas
+          camera={{ position: [0, 0, 5], fov: 75 }}
+          style={{ touchAction: isMobile ? "pan-y" : "none" }}
+        >
           <Background3DScene
             onLoad={handle3DLoad}
-            enableControls={enableControls}
+            enableControls={enableControls && !isMobile}
           />
         </Canvas>
       </div>
