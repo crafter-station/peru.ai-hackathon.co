@@ -26,6 +26,18 @@ export default function HeroSection() {
   // Button click sound
   const [play] = useSound("/sounds/bite.mp3", { volume: 0.5 });
 
+  // Scroll to next section
+  const scrollToNextSection = () => {
+    play();
+    const nextSection = document.querySelector('footer');
+    if (nextSection) {
+      nextSection.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
+
   const handle3DLoad = () => {
     setScene3DLoaded(true);
   };
@@ -273,6 +285,35 @@ export default function HeroSection() {
                 Únete al WhatsApp
               </span>
             </a>
+          </Button>
+
+          <Button
+            size="lg"
+            onClick={scrollToNextSection}
+            className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white font-bold text-lg border border-white/20 rounded-none hover:bg-white/20 hover:border-white/30 transition-all duration-300"
+            style={{ pointerEvents: "auto" }}
+          >
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center w-6 h-6 bg-white/10 rounded-sm">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="w-4 h-4"
+                >
+                  <path d="m7 13 5 5 5-5" />
+                  <path d="m7 6 5 5 5-5" />
+                </svg>
+              </div>
+              <span className="tracking-wide uppercase text-sm font-black">
+                Ver más
+              </span>
+            </div>
           </Button>
         </div>
       </div>
