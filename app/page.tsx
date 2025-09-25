@@ -11,6 +11,7 @@ export default function Page() {
     <>
       <FloatingNav />
       <HeroSection />
+      {/* hello hello */}
       {/* <DetailsSection />
       <FAQSection />
       <JudgesSection />
