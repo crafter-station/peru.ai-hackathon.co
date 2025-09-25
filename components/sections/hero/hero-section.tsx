@@ -250,7 +250,7 @@ export default function HeroSection() {
         {/* CTA Buttons */}
         <div
           className={`
-          flex flex-col sm:flex-row gap-4 justify-center items-center
+          flex flex-col gap-4 justify-center items-center
           transition-all duration-300 transform
           ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}
         `}
