@@ -6,7 +6,7 @@
 
 <img src="public/assets/peru.ia-hack.gif" alt="IA Hackathon Peru Demo" width="600"/>
 
-The official website for IA Hackathon Peru 
+The official website for IA Hackathon Peru 🇵🇪
 
 
 ## Getting Started
