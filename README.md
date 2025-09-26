@@ -25,11 +25,11 @@ Open [http://localhost:3000](http://localhost:3000) to view the application.
 
 ## Partners
 
-<img src="public/THC-BRAND-WHITE.svg" alt="THC" width="100"/> <img src="public/In_partnership_with_ MAKERS.svg" alt="Makers" width="80"/>
+<img src="public/THC-BRAND-WHITE.svg" alt="THC" width="120"/> <img src="public/In_partnership_with_ MAKERS.svg" alt="Makers" width="140"/>
 
+## Credits
+
+- **Inspired by:** [Chris Tate](https://x.com/ctatedev) (v0)
+- **Designed by:** [Moraleja](https://www.linkedin.com/in/alejamorales/)
 
 Made with ❤️ in Latin America
-
-## Inspiration
-
-Inspired by [Chris Tate](https://x.com/ctatedev)
