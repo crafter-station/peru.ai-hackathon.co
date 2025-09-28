@@ -84,7 +84,8 @@ export default function FooterSection() {
         <div className="border-t pt-8 mb-8">
           <div className="text-center mb-4">
             <p className="text-sm text-muted-foreground mb-4">Apoyados por:</p>
-            <div className="flex items-end justify-center gap-6">
+            {/* Desktop: horizontal layout, Mobile: vertical layout */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
               <a
                 href="https://www.linkedin.com/company/ai-playgrounds-tech/posts/?feedView=all"
                 target="_blank"
@@ -115,17 +116,17 @@ export default function FooterSection() {
                 />
               </a>
               <a
-                href="https://chat.whatsapp.com/FhjWVcSa7tJ5jBuAzSpuXj"
+                href="https://chat.whatsapp.com/GdmSNdGpqDW33fiYI0XPef"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-block hover:opacity-80 transition-opacity duration-200 mt-1 p-2 -ml-5"
+                className="inline-block hover:opacity-80 transition-opacity duration-200"
               >
                 <Image
                   src="/KEBO-Brand-WhitePurple.svg"
                   alt="KEBO"
                   width={120}
                   height={48}
-                  className="h-8  w-auto"
+                  className="h-8 w-auto"
                 />
               </a>
             </div>
@@ -134,29 +135,31 @@ export default function FooterSection() {
 
         {/* Copyright */}
         <div className="border-t pt-8 text-center mb-8">
-          <p className="text-sm text-muted-foreground mb-3">
-            De los mismos creadores de:{" "}
-            <a
-              href="https://www.ai-hackathon.co/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-brand-red hover:underline"
-            >
-              IA Hackathon Colombia
-            </a>{" "}
-            y{" "}
-            <a
-              href="https://www.colombiatechfest.ai-hackathon.co/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-brand-red hover:underline"
-            >
-              IA Hackathon en Colombia Tech Week
-            </a>
-          </p>
-          <p className="text-sm text-muted-foreground">
-            © 2025 IA Hackathon Peru. Todos los derechos reservados.
-          </p>
+          <div className="px-4">
+            <p className="text-xs sm:text-sm text-muted-foreground mb-3 leading-relaxed">
+              De los mismos creadores de:{" "}
+              <a
+                href="https://www.ai-hackathon.co/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-brand-red hover:underline break-words"
+              >
+                IA Hackathon Colombia
+              </a>{" "}
+              y{" "}
+              <a
+                href="https://www.colombiatechfest.ai-hackathon.co/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-brand-red hover:underline break-words"
+              >
+                IA Hackathon en Colombia Tech Week
+              </a>
+            </p>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              © 2025 IA Hackathon Peru. Todos los derechos reservados.
+            </p>
+          </div>
 
           {/* Contribute Link */}
           <div className="mt-4">
