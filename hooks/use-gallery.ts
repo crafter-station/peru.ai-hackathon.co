@@ -3,7 +3,7 @@ import type { GalleryImage } from "@/lib/schema";
 
 interface GalleryResponse {
   images: GalleryImage[];
-  nextCursor: string | null;
+  nextOffset: number | null;
   hasMore: boolean;
 }
 
@@ -29,11 +29,11 @@ export const useGallery = (userId?: string) => {
     error,
   } = useInfiniteQuery<GalleryResponse>({
     queryKey: ["gallery", userId],
-    queryFn: async ({ pageParam = null }) => {
-      const params = new URLSearchParams({ limit: "20" });
-      if (pageParam) {
-        params.set("cursor", pageParam as string);
-      }
+    queryFn: async ({ pageParam = 0 }) => {
+      const params = new URLSearchParams({ 
+        limit: "20",
+        offset: (pageParam as number).toString()
+      });
       if (userId) {
         params.set("userId", userId);
       }
@@ -44,8 +44,8 @@ export const useGallery = (userId?: string) => {
       }
       return response.json();
     },
-    initialPageParam: null,
-    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => lastPage.nextOffset,
   });
 
   const saveImageMutation = useMutation<GalleryImage, Error, SaveImageParams, { previousData?: any }>({
