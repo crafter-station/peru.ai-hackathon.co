@@ -84,7 +84,7 @@ export default function FooterSection() {
         <div className="border-t pt-8 mb-8">
           <div className="text-center mb-4">
             <p className="text-sm text-muted-foreground mb-4">Apoyados por:</p>
-            <div className="flex items-center justify-center gap-6 flex-wrap">
+            <div className="flex items-end justify-center gap-3 sm:gap-6 flex-wrap">
               <a
                 href="https://www.linkedin.com/company/ai-playgrounds-tech/posts/?feedView=all"
                 target="_blank"
@@ -97,7 +97,7 @@ export default function FooterSection() {
                   width={120}
                   height={48}
                   quality={95}
-                  className="h-6 sm:h-8 w-auto"
+                  className="h-7 sm:h-8 w-auto"
                 />
               </a>
               <a
@@ -111,21 +111,21 @@ export default function FooterSection() {
                   alt="Crafter"
                   width={120}
                   height={48}
-                  className="h-6 sm:h-8 w-auto"
+                  className="h-7 sm:h-8 w-auto"
                 />
               </a>
               <a
                 href="https://chat.whatsapp.com/GdmSNdGpqDW33fiYI0XPef"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-block hover:opacity-80 transition-opacity duration-200 mt-1 p-2 sm:-ml-5"
+                className="inline-block hover:opacity-80 transition-opacity duration-200 mt-1 p-2 -ml-2 sm:-ml-5"
               >
                 <Image
                   src="/KEBO-Brand-WhitePurple.svg"
                   alt="KEBO"
                   width={120}
                   height={48}
-                  className="h-6 sm:h-8 w-auto"
+                  className="h-7 sm:h-8 w-auto"
                 />
               </a>
             </div>

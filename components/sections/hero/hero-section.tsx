@@ -100,7 +100,7 @@ export default function HeroSection() {
       <div
         className="absolute inset-0 z-10 transition-all duration-200"
         style={{
-          pointerEvents: isMobile ? "none" : enableControls ? "auto" : "none",
+          pointerEvents: isMobile ? "auto" : enableControls ? "auto" : "none",
           touchAction: isMobile ? "pan-y" : "none",
         }}
       >
@@ -110,7 +110,7 @@ export default function HeroSection() {
         >
           <Background3DScene
             onLoad={handle3DLoad}
-            enableControls={isMobile ? false : enableControls}
+            enableControls={isMobile ? true : enableControls}
           />
         </Canvas>
       </div>
