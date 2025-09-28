@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { CometCard } from "@/components/ui/comet-card";
 import { Download, Share2 } from "lucide-react";
@@ -30,10 +31,11 @@ export const ImageDisplay = ({
           <div className="flex w-full cursor-pointer flex-col items-stretch bg-[#1F2121] p-2 sm:p-3 md:p-4">
             <div className="mx-2 flex-1">
               <div className="relative mt-2 aspect-[3/4] w-full">
-                <img
+                <Image
                   src={generatedImage.url}
                   alt="Generated Alpaca"
-                  className={`absolute inset-0 h-full w-full bg-[#000000] object-cover transition-all duration-500 ${
+                  fill
+                  className={`bg-[#000000] object-cover transition-all duration-500 ${
                     imageLoaded ? "opacity-100" : "opacity-0"
                   }`}
                   style={{

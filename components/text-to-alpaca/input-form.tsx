@@ -89,7 +89,7 @@ export const InputForm = ({
               {isLoading ? (
                 <>Generando...</>
               ) : generationsUsed >= maxGenerations ? (
-                <>Ups! Ya no puedes generar más alpacas :'(</>
+                <>Ups! Ya no puedes generar más alpacas :&apos;(</>
               ) : (
                 <>
                   <Sparkles className="w-4 h-4 mr-2" />
@@ -107,7 +107,7 @@ export const InputForm = ({
 
             {generationsUsed >= maxGenerations && (
               <div className="mt-2 p-3 bg-red-900/20 border border-red-600/30 text-red-300 text-xs sm:text-sm text-center">
-                Ya no puedes generar más alpacas :'(
+                Ya no puedes generar más alpacas :&apos;(
               </div>
             )}
           </div>
