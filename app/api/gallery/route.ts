@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { galleryImages, imageLikes } from "@/lib/schema";
-import { desc, eq, count, sql, lt } from "drizzle-orm";
+import { desc, eq, count, sql } from "drizzle-orm";
 import { put } from "@vercel/blob";
 
 export async function GET(request: NextRequest) {
@@ -12,7 +12,6 @@ export async function GET(request: NextRequest) {
 
     const searchParams = request.nextUrl.searchParams;
     const limit = parseInt(searchParams.get("limit") || "20");
-    const cursor = searchParams.get("cursor");
     const userId = searchParams.get("userId");
     const getCount = searchParams.get("count") === "true";
 
