@@ -69,7 +69,7 @@ export default function FAQSection() {
         </div>
 
         {/* FAQ Accordion */}
-        <div className="bg-card rounded-lg shadow-sm border">
+        <div className="bg-card shadow-sm border">
           <Accordion type="single" collapsible className="p-6">
             {faqs.map((faq, index) => (
               <AccordionItem
