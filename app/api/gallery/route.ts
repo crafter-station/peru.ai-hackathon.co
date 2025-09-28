@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { galleryImages, imageLikes } from "@/lib/schema";
-import { desc, eq, count, sql } from "drizzle-orm";
+import { desc, eq, count, sql, lt } from "drizzle-orm";
 import { put } from "@vercel/blob";
 
 export async function GET(request: NextRequest) {
@@ -41,8 +41,9 @@ export async function GET(request: NextRequest) {
       .limit(limit + 1); // Get one extra to check if there are more
 
     if (cursor) {
-      // For cursor-based pagination with aggregation, we need a different approach
-      // For now, let's skip cursor pagination when using aggregation - this can be improved later
+      // Parse cursor date and add proper filtering
+      const cursorDate = new Date(cursor);
+      query.where(lt(galleryImages.createdAt, cursorDate));
     }
 
     const results = await query;

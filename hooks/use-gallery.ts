@@ -113,10 +113,14 @@ export const useGallery = (userId?: string) => {
     },
   });
 
+  // Flatten and deduplicate images by ID to prevent duplicate keys
   const images = data?.pages?.flatMap((page) => page.images) || [];
+  const deduplicatedImages = images.filter((image, index, array) => 
+    array.findIndex(img => img.id === image.id) === index
+  );
 
   return {
-    images,
+    images: deduplicatedImages,
     isLoading,
     error,
     hasNextPage,
