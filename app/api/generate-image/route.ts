@@ -26,6 +26,8 @@ export async function POST(request: NextRequest) {
 	•	Do not add overlays, filters, effects, or modifications that could compromise the visibility, proportions, or integrity of the original design.
 
 Your task is to only add or modify elements as explicitly described in the following instructions, while ensuring that the original alpaca, branding, and visual identity remain completely intact and unchanged. The final result must seamlessly integrate any new elements into the existing style without disrupting brand consistency.
+Now based on the following prompt, generate the image:
+Prompt:
     `
     const enhancedPrompt = basePreservationPrompt + prompt
 
