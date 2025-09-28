@@ -13,9 +13,8 @@ export async function POST(
     }
     
     const { imageId } = await params;
-    const imageIdNum = parseInt(imageId);
     
-    if (isNaN(imageIdNum)) {
+    if (!imageId || typeof imageId !== 'string') {
       return NextResponse.json({ error: "Invalid image ID" }, { status: 400 });
     }
 
@@ -29,7 +28,7 @@ export async function POST(
     const imageExists = await db
       .select()
       .from(galleryImages)
-      .where(eq(galleryImages.id, imageIdNum))
+      .where(eq(galleryImages.id, imageId))
       .limit(1);
 
     if (imageExists.length === 0) {
@@ -42,7 +41,7 @@ export async function POST(
       .from(imageLikes)
       .where(
         and(
-          eq(imageLikes.imageId, imageIdNum),
+          eq(imageLikes.imageId, imageId),
           eq(imageLikes.userId, userId)
         )
       )
@@ -54,7 +53,7 @@ export async function POST(
 
     // Add the like
     await db.insert(imageLikes).values({
-      imageId: imageIdNum,
+      imageId: imageId,
       userId,
     });
 
@@ -62,7 +61,7 @@ export async function POST(
     const likeCountResult = await db
       .select({ count: count() })
       .from(imageLikes)
-      .where(eq(imageLikes.imageId, imageIdNum));
+      .where(eq(imageLikes.imageId, imageId));
 
     const likeCount = likeCountResult[0]?.count || 0;
 
@@ -88,9 +87,8 @@ export async function DELETE(
     }
     
     const { imageId } = await params;
-    const imageIdNum = parseInt(imageId);
     
-    if (isNaN(imageIdNum)) {
+    if (!imageId || typeof imageId !== 'string') {
       return NextResponse.json({ error: "Invalid image ID" }, { status: 400 });
     }
 
@@ -105,7 +103,7 @@ export async function DELETE(
       .delete(imageLikes)
       .where(
         and(
-          eq(imageLikes.imageId, imageIdNum),
+          eq(imageLikes.imageId, imageId),
           eq(imageLikes.userId, userId)
         )
       );
@@ -114,7 +112,7 @@ export async function DELETE(
     const likeCountResult = await db
       .select({ count: count() })
       .from(imageLikes)
-      .where(eq(imageLikes.imageId, imageIdNum));
+      .where(eq(imageLikes.imageId, imageId));
 
     const likeCount = likeCountResult[0]?.count || 0;
 
