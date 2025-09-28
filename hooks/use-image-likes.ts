@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface LikeImageParams {
-  imageId: number;
+  imageId: string;
   userId: string;
 }
 
@@ -136,7 +136,7 @@ export const useImageLikes = (userId?: string, skipRefetch = false) => {
     },
   });
 
-  const toggleLike = (imageId: number, isCurrentlyLiked: boolean) => {
+  const toggleLike = (imageId: string, isCurrentlyLiked: boolean) => {
     if (!userId) return;
 
     if (isCurrentlyLiked) {
