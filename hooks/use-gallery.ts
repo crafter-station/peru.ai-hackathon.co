@@ -74,7 +74,7 @@ export const useGallery = (userId?: string) => {
         if (!old) return old;
 
         const optimisticImage: GalleryImage = {
-          id: Date.now(), // Temporary ID
+          id: `temp_${Date.now()}`, // Temporary ID
           userId: newImage.userId || "user_anonymous",
           imageUrl: newImage.imageUrl,
           blobUrl: null,
@@ -123,6 +123,7 @@ export const useGallery = (userId?: string) => {
     isFetchingNextPage,
     fetchNextPage,
     saveImage: saveImageMutation.mutate,
+    saveImageAsync: saveImageMutation.mutateAsync,
     isSaving: saveImageMutation.isPending,
     saveError: saveImageMutation.error,
   };

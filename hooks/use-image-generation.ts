@@ -7,6 +7,7 @@ interface GeneratedImage {
   prompt: string;
   description: string;
   enhancedPrompt?: string;
+  savedImageId?: string;
 }
 
 export const useImageGeneration = () => {
@@ -15,7 +16,7 @@ export const useImageGeneration = () => {
   const [progress, setProgress] = useState(0);
   const [imageLoaded, setImageLoaded] = useState(false);
   const anonymousUser = useAnonymousUser();
-  const { saveImage } = useGallery(anonymousUser?.userId || undefined);
+  const { saveImageAsync } = useGallery(anonymousUser?.userId || undefined);
 
   const preloadImage = (url: string): Promise<void> => {
     return new Promise((resolve, reject) => {
@@ -76,11 +77,10 @@ export const useImageGeneration = () => {
       await preloadImage(data.url);
       setImageLoaded(true);
 
-      setGeneratedImage(data);
-      
-      // Save to gallery automatically
+      // Save to gallery automatically and get the saved image ID
+      let savedImageId: string | undefined;
       try {
-        saveImage({
+        const savedImage = await saveImageAsync({
           imageUrl: data.url,
           prompt: data.prompt,
           description: data.description,
@@ -89,10 +89,16 @@ export const useImageGeneration = () => {
           height: 512,
           userId: anonymousUser.userId || undefined,
         });
+        savedImageId = savedImage?.id;
       } catch (galleryError) {
         console.warn("Failed to save to gallery:", galleryError);
         // Don't throw error here, as generation was successful
       }
+
+      setGeneratedImage({
+        ...data,
+        savedImageId,
+      });
       
       setIsLoading(false);
       setProgress(0);
@@ -130,20 +136,27 @@ export const useImageGeneration = () => {
   const shareImage = async () => {
     if (generatedImage) {
       try {
+        const shareUrl = generatedImage.savedImageId 
+          ? `${window.location.origin}/i/${generatedImage.savedImageId}`
+          : generatedImage.url; // Fallback to direct URL if no saved image ID
+        
         if (navigator.share) {
           await navigator.share({
             title: "¡Mira mi alpaca generada con IA!",
-            text: `Creé esta alpaca con IA: "${generatedImage.prompt}"`,
-            url: generatedImage.url,
+            text: `Creé esta alpaca con IA: "${generatedImage.prompt}" en IA Hackathon Perú`,
+            url: shareUrl,
           });
         } else {
-          await navigator.clipboard.writeText(
-            `¡Mira mi alpaca generada con IA! "${generatedImage.prompt}" - ${generatedImage.url}`
-          );
+          const message = generatedImage.savedImageId
+            ? `¡Mira mi alpaca generada con IA! "${generatedImage.prompt}" - ${shareUrl} #IAHackathonPeru`
+            : `¡Mira mi alpaca generada con IA! "${generatedImage.prompt}" - ${shareUrl}`;
+          
+          await navigator.clipboard.writeText(message);
           alert("¡Enlace copiado al portapapeles!");
         }
       } catch (error) {
         console.error("Error sharing image:", error);
+        // Fallback to direct image URL
         window.open(generatedImage.url, "_blank");
       }
     }

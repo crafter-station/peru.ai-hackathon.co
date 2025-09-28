@@ -122,23 +122,25 @@ export function ImageModal({
   const handleShare = async () => {
     if (!currentImage) return;
 
+    const shareUrl = `${window.location.origin}/i/${currentImage.id}`;
+
     try {
       if (navigator.share) {
         await navigator.share({
           title: "¡Mira esta alpaca generada con IA!",
-          text: `Creé esta increíble alpaca: "${currentImage.prompt}"`,
-          url: currentImage.blobUrl || currentImage.imageUrl,
+          text: `Creé esta increíble alpaca: "${currentImage.prompt}" en IA Hackathon Perú`,
+          url: shareUrl,
         });
       } else {
         await navigator.clipboard.writeText(
-          `¡Mira esta alpaca generada con IA! "${currentImage.prompt}" - ${currentImage.blobUrl || currentImage.imageUrl}`
+          `¡Mira esta alpaca generada con IA! "${currentImage.prompt}" - ${shareUrl} #IAHackathonPeru`
         );
         // You could add a toast notification here
         console.log("¡Enlace copiado al portapapeles!");
       }
     } catch (error) {
       console.error("Error sharing image:", error);
-      window.open(currentImage.blobUrl || currentImage.imageUrl, "_blank");
+      window.open(shareUrl, "_blank");
     }
   };
 
