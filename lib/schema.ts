@@ -1,4 +1,5 @@
-import { pgTable, serial, text, timestamp, integer, unique } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, integer, unique } from "drizzle-orm/pg-core";
+import { nanoid } from "nanoid";
 
 const defaultUserId = "user_anonymous";
 
@@ -12,7 +13,7 @@ export const anonymousUsers = pgTable("anonymous_users", {
 });
 
 export const galleryImages = pgTable("gallery_images", {
-  id: serial("id").primaryKey(),
+  id: text("id").primaryKey().$defaultFn(() => nanoid()),
   userId: text("user_id").notNull().default(defaultUserId),
   imageUrl: text("image_url").notNull(),
   blobUrl: text("blob_url"),
@@ -26,8 +27,8 @@ export const galleryImages = pgTable("gallery_images", {
 });
 
 export const imageLikes = pgTable("image_likes", {
-  id: serial("id").primaryKey(),
-  imageId: integer("image_id").notNull().references(() => galleryImages.id, { onDelete: "cascade" }),
+  id: text("id").primaryKey().$defaultFn(() => nanoid()),
+  imageId: text("image_id").notNull().references(() => galleryImages.id, { onDelete: "cascade" }),
   userId: text("user_id").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => ({

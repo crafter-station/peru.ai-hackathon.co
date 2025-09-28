@@ -20,11 +20,16 @@ export async function POST(request: NextRequest) {
       let user = await db.select().from(anonymousUsers).where(eq(anonymousUsers.id, existingAnon)).limit(1);
       
       if (user.length === 0) {
-        // Cookie exists but user not in DB, create them
-        await db.insert(anonymousUsers).values({
-          id: existingAnon,
-          fingerprint: null,
-        });
+        // Cookie exists but user not in DB, create them (handle race conditions)
+        try {
+          await db.insert(anonymousUsers).values({
+            id: existingAnon,
+            fingerprint: null,
+          });
+        } catch {
+          // Ignore duplicate key errors - user already exists
+          console.log('User already exists, ignoring duplicate:', existingAnon);
+        }
         user = await db.select().from(anonymousUsers).where(eq(anonymousUsers.id, existingAnon)).limit(1);
       }
       
@@ -48,11 +53,16 @@ export async function POST(request: NextRequest) {
     let user = await db.select().from(anonymousUsers).where(eq(anonymousUsers.id, fingerprintId)).limit(1);
     
     if (user.length === 0) {
-      // Create new fingerprint user
-      await db.insert(anonymousUsers).values({
-        id: fingerprintId,
-        fingerprint: `${ip}|${userAgent}|${acceptLanguage}|${acceptEncoding}`.substring(0, 500),
-      });
+      // Create new fingerprint user (handle race conditions)
+      try {
+        await db.insert(anonymousUsers).values({
+          id: fingerprintId,
+          fingerprint: `${ip}|${userAgent}|${acceptLanguage}|${acceptEncoding}`.substring(0, 500),
+        });
+      } catch {
+        // Ignore duplicate key errors - user already exists
+        console.log('Fingerprint user already exists, ignoring duplicate:', fingerprintId);
+      }
       user = await db.select().from(anonymousUsers).where(eq(anonymousUsers.id, fingerprintId)).limit(1);
     }
 
