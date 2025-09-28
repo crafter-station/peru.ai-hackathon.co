@@ -92,6 +92,7 @@ const adelleMonoFlexFont = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://peru.ai-hackathon.co"),
   title: "IA Hackathon Peru 2025 | 29-30 Noviembre",
   description: "Únete al evento de inteligencia artificial más importante del Perú. Innovación, tecnología y futuro. 29-30 de noviembre 2025.",
   openGraph: {
