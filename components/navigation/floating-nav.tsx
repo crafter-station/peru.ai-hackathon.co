@@ -4,11 +4,12 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 
 const navItems = [
-  { id: 'hero', label: 'Inicio' },
-  { id: 'details', label: 'Detalles' },
-  { id: 'faq', label: 'FAQ' },
-  { id: 'judges', label: 'Jurado' },
-  { id: 'sponsors', label: 'Patrocinadores' },
+  { id: 'hero', label: 'Inicio', type: 'section' },
+  { id: 'details', label: 'Detalles', type: 'section' },
+  { id: 'faq', label: 'FAQ', type: 'section' },
+  { id: 'judges', label: 'Jurado', type: 'section' },
+  { id: 'sponsors', label: 'Patrocinadores', type: 'section' },
+  { id: '/tta', label: 'Crear Alpaca', type: 'link' },
 ];
 
 export default function FloatingNav() {
@@ -27,7 +28,9 @@ export default function FloatingNav() {
       }
 
       // Update active section
-      const sections = navItems.map(item => document.getElementById(item.id));
+      const sections = navItems
+        .filter(item => item.type === 'section')
+        .map(item => document.getElementById(item.id));
       const currentSection = sections.find(section => {
         if (!section) return false;
         const rect = section.getBoundingClientRect();
@@ -45,10 +48,14 @@ export default function FloatingNav() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const scrollToSection = (sectionId: string) => {
-    const section = document.getElementById(sectionId);
-    if (section) {
-      section.scrollIntoView({ behavior: 'smooth' });
+  const handleNavClick = (item: typeof navItems[0]) => {
+    if (item.type === 'link') {
+      window.location.href = item.id;
+    } else {
+      const section = document.getElementById(item.id);
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   };
 
@@ -73,7 +80,7 @@ export default function FloatingNav() {
             <Button
               key={item.id}
               ref={(el) => { buttonRefs.current[item.id] = el; }}
-              onClick={() => scrollToSection(item.id)}
+              onClick={() => handleNavClick(item)}
               aria-current={activeSection === item.id ? 'page' : undefined}
               variant={activeSection === item.id ? "default" : "ghost"}
               size="sm"
