@@ -14,6 +14,18 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "20");
     const cursor = searchParams.get("cursor");
     const userId = searchParams.get("userId");
+    const getCount = searchParams.get("count") === "true";
+
+    // If requesting count only
+    if (getCount) {
+      const [{ count: totalCount }] = await db
+        .select({ count: count(galleryImages.id) })
+        .from(galleryImages);
+      return NextResponse.json({ totalCount });
+    }
+
+    // Parse offset for pagination
+    const offset = parseInt(searchParams.get("offset") || "0");
 
     // Base query with like counts
     const query = db
@@ -38,22 +50,17 @@ export async function GET(request: NextRequest) {
       .leftJoin(imageLikes, eq(galleryImages.id, imageLikes.imageId))
       .groupBy(galleryImages.id)
       .orderBy(desc(count(imageLikes.id)), desc(galleryImages.createdAt)) // Order by likes first, then creation date
+      .offset(offset)
       .limit(limit + 1); // Get one extra to check if there are more
-
-    if (cursor) {
-      // Parse cursor date and add proper filtering
-      const cursorDate = new Date(cursor);
-      query.where(lt(galleryImages.createdAt, cursorDate));
-    }
 
     const results = await query;
     const hasMore = results.length > limit;
     const images = hasMore ? results.slice(0, -1) : results;
-    const nextCursor = hasMore ? results[results.length - 1].createdAt.toISOString() : null;
+    const nextOffset = hasMore ? offset + limit : null;
 
     return NextResponse.json({
       images,
-      nextCursor,
+      nextOffset,
       hasMore,
     });
   } catch (error) {
