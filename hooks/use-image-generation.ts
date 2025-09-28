@@ -1,9 +1,12 @@
 import { useState } from "react";
+import { useGallery } from "./use-gallery";
+import { useAnonymousUser } from "./use-anonymous-user";
 
 interface GeneratedImage {
   url: string;
   prompt: string;
   description: string;
+  enhancedPrompt?: string;
 }
 
 export const useImageGeneration = () => {
@@ -11,6 +14,8 @@ export const useImageGeneration = () => {
   const [generatedImage, setGeneratedImage] = useState<GeneratedImage | null>(null);
   const [progress, setProgress] = useState(0);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const anonymousUser = useAnonymousUser();
+  const { saveImage } = useGallery(anonymousUser?.userId || undefined);
 
   const preloadImage = (url: string): Promise<void> => {
     return new Promise((resolve, reject) => {
@@ -72,6 +77,23 @@ export const useImageGeneration = () => {
       setImageLoaded(true);
 
       setGeneratedImage(data);
+      
+      // Save to gallery automatically
+      try {
+        saveImage({
+          imageUrl: data.url,
+          prompt: data.prompt,
+          description: data.description,
+          enhancedPrompt: data.enhancedPrompt,
+          width: 512, // Default dimensions
+          height: 512,
+          userId: anonymousUser.userId || undefined,
+        });
+      } catch (galleryError) {
+        console.warn("Failed to save to gallery:", galleryError);
+        // Don't throw error here, as generation was successful
+      }
+      
       setIsLoading(false);
       setProgress(0);
       
@@ -135,5 +157,6 @@ export const useImageGeneration = () => {
     generateImage,
     downloadImage,
     shareImage,
+    anonymousUser,
   };
 };

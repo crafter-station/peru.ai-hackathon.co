@@ -4,29 +4,27 @@ import { useState } from "react";
 import { NextPage } from "next";
 import Image from "next/image";
 import { useImageGeneration } from "@/hooks/use-image-generation";
-import { useRateLimit } from "@/hooks/use-rate-limit";
 import { ImageDisplay } from "@/components/text-to-alpaca/image-display";
 import { LoadingSection } from "@/components/text-to-alpaca/loading-section";
 import { InputForm } from "@/components/text-to-alpaca/input-form";
+import { GalleryGrid } from "@/components/gallery/gallery-grid";
 
 const TextToAlpaca: NextPage = () => {
   const [prompt, setPrompt] = useState("");
   
-  const MAX_GENERATIONS = 2;
-  
   // Custom hooks for cleaner state management
   const imageGeneration = useImageGeneration();
-  const rateLimit = useRateLimit(MAX_GENERATIONS);
+  const { anonymousUser } = imageGeneration;
 
   const handleGenerate = async () => {
-    if (!rateLimit.checkRateLimit()) return;
+    if (!anonymousUser.checkRateLimit()) return;
     
-    await imageGeneration.generateImage(prompt, () => {
-      rateLimit.incrementGenerations();
+    await imageGeneration.generateImage(prompt, async () => {
+      await anonymousUser.incrementGenerations();
     });
   };
 
-  const canGenerate = prompt.trim().length > 0 && rateLimit.canGenerate;
+  const canGenerate = prompt.trim().length > 0 && anonymousUser.canGenerate;
 
   return (
     <div className="min-h-screen flex flex-col bg-black overflow-hidden relative">
@@ -91,13 +89,28 @@ const TextToAlpaca: NextPage = () => {
           prompt={prompt}
           onPromptChange={setPrompt}
           onGenerate={handleGenerate}
-          isLoading={imageGeneration.isLoading}
+          isLoading={imageGeneration.isLoading || anonymousUser.isLoading}
           canGenerate={canGenerate}
-          remainingGenerations={rateLimit.remainingGenerations}
-          generationsUsed={rateLimit.generationsUsed}
-          maxGenerations={MAX_GENERATIONS}
+          remainingGenerations={anonymousUser.remainingGenerations}
+          generationsUsed={anonymousUser.generationsUsed}
+          maxGenerations={anonymousUser.maxGenerations}
           hasGeneratedImage={!!imageGeneration.generatedImage}
         />
+      </div>
+
+      {/* Gallery Section */}
+      <div className="relative z-10 bg-background/95 backdrop-blur-sm">
+        <div className="container mx-auto px-4 py-12">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold mb-4 text-foreground">
+              AlpacaVerse Gallery
+            </h2>
+            <p className="text-muted-foreground">
+              Admira las creaciones de la comunidad 🦙
+            </p>
+          </div>
+          <GalleryGrid />
+        </div>
       </div>
     </div>
   );
