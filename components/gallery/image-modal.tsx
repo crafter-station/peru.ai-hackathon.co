@@ -212,7 +212,7 @@ export function ImageModal({
               }`}
               style={{
                 maxWidth: '100%',
-                maxHeight: 'calc(100vh - 200px)', // Reserve space for info section
+                maxHeight: 'calc(100vh - 300px)', // Reserve space for info section
               }}
               onLoad={() => setImageLoaded(true)}
               unoptimized
@@ -222,9 +222,9 @@ export function ImageModal({
         </div>
 
         {/* Image Info and Actions - Fixed height at bottom */}
-        <div className="flex-shrink-0 pt-6 text-center text-white">
+        <div className=" z-10 flex-shrink-0 pt-6 text-center text-white">
           <div className="max-w-4xl mx-auto">
-            <h3 className="text-lg md:text-xl font-semibold mb-4 px-2">
+            <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4 px-2 line-clamp-5">
               &ldquo;{currentImage.prompt}&rdquo;
             </h3>
             
