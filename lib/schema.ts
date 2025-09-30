@@ -8,6 +8,7 @@ export const anonymousUsers = pgTable("anonymous_users", {
   fingerprint: text("fingerprint"),
   generationsUsed: integer("generations_used").default(0).notNull(),
   maxGenerations: integer("max_generations").default(2).notNull(),
+  lastGenerationAt: timestamp("last_generation_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -36,6 +37,15 @@ export const imageLikes = pgTable("image_likes", {
   uniqueUserImage: unique().on(table.userId, table.imageId),
 }));
 
+export const ipRateLimits = pgTable("ip_rate_limits", {
+  ipAddress: text("ip_address").primaryKey(),
+  generationsUsed: integer("generations_used").default(0).notNull(),
+  maxGenerations: integer("max_generations").default(10).notNull(),
+  resetAt: timestamp("reset_at").notNull(),
+  lastGenerationAt: timestamp("last_generation_at"),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 export type AnonymousUser = typeof anonymousUsers.$inferSelect;
 export type NewAnonymousUser = typeof anonymousUsers.$inferInsert;
 export type GalleryImage = typeof galleryImages.$inferSelect & {
@@ -45,3 +55,5 @@ export type GalleryImage = typeof galleryImages.$inferSelect & {
 export type NewGalleryImage = typeof galleryImages.$inferInsert;
 export type ImageLike = typeof imageLikes.$inferSelect;
 export type NewImageLike = typeof imageLikes.$inferInsert;
+export type IpRateLimit = typeof ipRateLimits.$inferSelect;
+export type NewIpRateLimit = typeof ipRateLimits.$inferInsert;

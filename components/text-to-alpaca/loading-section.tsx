@@ -2,6 +2,7 @@
 
 interface LoadingSectionProps {
   progress: number;
+  isCheckingContent?: boolean;
 }
 
 export const LoadingSection = ({ progress }: LoadingSectionProps) => {
@@ -35,7 +36,7 @@ export const LoadingSection = ({ progress }: LoadingSectionProps) => {
 
         <div className="mt-4 text-center">
           <p className="text-base sm:text-lg font-medium text-white animate-pulse">
-            Creando tu alpaca...
+            Creando tu alpaca... 🦙
           </p>
         </div>
       </div>

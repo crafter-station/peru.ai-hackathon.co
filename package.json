@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ai-sdk/groq": "^2.0.22",
+    "@ai-sdk/openai": "^2.0.41",
     "@fal-ai/client": "^1.6.2",
     "@neondatabase/serverless": "^1.0.1",
     "@radix-ui/react-accordion": "^1.2.12",
@@ -20,10 +22,12 @@
     "@tanstack/react-query-devtools": "^5.90.2",
     "@vercel/analytics": "^1.5.0",
     "@vercel/blob": "^2.0.0",
+    "ai": "^5.0.59",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "drizzle-kit": "^0.31.5",
     "drizzle-orm": "^0.44.5",
+    "groq-sdk": "^0.33.0",
     "lucide-react": "^0.544.0",
     "motion": "^12.23.22",
     "nanoid": "^5.1.6",
@@ -34,7 +38,8 @@
     "react-photo-album": "^3.1.0",
     "tailwind-merge": "^3.3.1",
     "three": "^0.180.0",
-    "use-sound": "^5.0.0"
+    "use-sound": "^5.0.0",
+    "zod": "^4.1.11"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
