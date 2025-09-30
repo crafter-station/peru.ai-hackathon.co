@@ -33,8 +33,12 @@ export async function POST(request: NextRequest) {
         user = await db.select().from(anonymousUsers).where(eq(anonymousUsers.id, existingAnon)).limit(1);
       }
       
+      // For existing users, find their fingerprint ID for rate limiting
+      const fingerprintUserId = user[0].fingerprint || existingAnon;
+      
       return NextResponse.json({ 
-        userId: existingAnon, 
+        userId: fingerprintUserId,    // Use fingerprint ID for rate limiting
+        sessionId: existingAnon,      // Keep session ID for session management
         generationsUsed: user[0].generationsUsed,
         maxGenerations: user[0].maxGenerations,
         canGenerate: user[0].generationsUsed < user[0].maxGenerations
@@ -71,7 +75,8 @@ export async function POST(request: NextRequest) {
     
     // Set cookie for 1 year
     const response = NextResponse.json({ 
-      userId: newAnonId, 
+      userId: fingerprintId,        // Use fingerprint ID for rate limiting
+      sessionId: newAnonId,         // Session ID for session management  
       generationsUsed: user[0].generationsUsed,
       maxGenerations: user[0].maxGenerations,
       canGenerate: user[0].generationsUsed < user[0].maxGenerations

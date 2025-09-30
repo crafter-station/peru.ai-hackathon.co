@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { anonymousUsers, ipRateLimits } from "@/lib/schema";
-import { eq, sql, and, lt } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 export interface RateLimitResult {
   success: boolean;
@@ -162,6 +162,10 @@ export async function incrementRateLimit(
  * Get or create IP rate limit record
  */
 async function getOrCreateIpLimit(ipAddress: string, config: RateLimitConfig) {
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
   let ipLimit = await db.select().from(ipRateLimits).where(eq(ipRateLimits.ipAddress, ipAddress)).limit(1);
   
   if (ipLimit.length === 0) {
