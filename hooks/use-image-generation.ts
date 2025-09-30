@@ -12,9 +12,11 @@ interface GeneratedImage {
 
 export const useImageGeneration = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isCheckingContent, setIsCheckingContent] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<GeneratedImage | null>(null);
   const [progress, setProgress] = useState(0);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [unsafeMessage, setUnsafeMessage] = useState<string | null>(null);
   const anonymousUser = useAnonymousUser();
   const { saveImageAsync } = useGallery(anonymousUser?.userId || undefined);
 
@@ -30,10 +32,12 @@ export const useImageGeneration = () => {
   const generateImage = async (prompt: string, onSuccess?: () => void) => {
     if (!prompt.trim()) return;
 
+    setIsCheckingContent(true);
     setIsLoading(true);
     setGeneratedImage(null);
     setImageLoaded(false);
     setProgress(0);
+    setUnsafeMessage(null); // Clear any previous unsafe message
 
     const progressInterval = setInterval(() => {
       setProgress((prev) => {
@@ -63,11 +67,28 @@ export const useImageGeneration = () => {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Error al generar imagen: ${response.status} - ${errorText}`);
+        const errorData = await response.json();
+        
+        // Handle guardrail rejection with fun Spanish message
+        if (errorData.error === 'unsafe_content') {
+          clearInterval(progressInterval);
+          setProgress(0);
+          setIsCheckingContent(false);
+          setIsLoading(false);
+          
+          // Set the fun Spanish message in state for UI display
+          setUnsafeMessage(errorData.message);
+          return;
+        }
+        
+        // Handle other errors
+        throw new Error(`Error al generar imagen: ${response.status} - ${errorData.error || 'Error desconocido'}`);
       }
 
       const data = await response.json();
+      
+      // Content check passed, now generating image
+      setIsCheckingContent(false);
       clearInterval(progressInterval);
 
       setProgress(99);
@@ -107,10 +128,15 @@ export const useImageGeneration = () => {
     } catch (error) {
       clearInterval(progressInterval);
       setProgress(0);
+      setIsCheckingContent(false);
       console.error("Error generating image:", error);
       alert(`Error: ${error instanceof Error ? error.message : "Error desconocido"}`);
       setIsLoading(false);
     }
+  };
+
+  const clearUnsafeMessage = () => {
+    setUnsafeMessage(null);
   };
 
   const downloadImage = async () => {
@@ -164,12 +190,15 @@ export const useImageGeneration = () => {
 
   return {
     isLoading,
+    isCheckingContent,
     generatedImage,
     progress,
     imageLoaded,
+    unsafeMessage,
     generateImage,
     downloadImage,
     shareImage,
+    clearUnsafeMessage,
     anonymousUser,
   };
 };

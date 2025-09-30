@@ -8,6 +8,53 @@ fal.config({
   credentials: process.env.FAL_API_KEY,
 })
 
+// Fun Spanish messages for unsafe prompts
+const UNSAFE_MESSAGES = [
+  "¡Uhmm bastante ingenioso, pero usamos guardrails, no te puedo ayudar con eso! 🦙",
+  "¡Uy! Ese prompt se ve un poco sospechoso. Mejor probemos con algo más alpaca-friendly 🌟", 
+  "¡Qué creativo! Pero mejor mantengámonos en el territorio alpaca 🦙✨",
+  "¡Ups! Ese contenido no pasa nuestros filtros. ¿Qué tal algo más tierno con alpacas? 🦙💕",
+  "¡Interesante propuesta! Pero prefiero crear alpacas adorables y family-friendly 🌈🦙"
+]
+
+// Function to get a random unsafe message
+function getRandomUnsafeMessage(): string {
+  return UNSAFE_MESSAGES[Math.floor(Math.random() * UNSAFE_MESSAGES.length)]
+}
+
+// Function to check prompt safety using guardrail API
+async function checkPromptSafety(prompt: string, request: NextRequest): Promise<{
+  status: 'safe' | 'unsafe'
+  score: number
+  reason?: string
+  category?: string
+}> {
+  try {
+    // Make internal API call to guardrail endpoint
+    const guardrailUrl = new URL('/api/guardrail', request.url)
+    
+    const response = await fetch(guardrailUrl.toString(), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ prompt })
+    })
+    
+    if (!response.ok) {
+      console.warn('Guardrail API call failed, proceeding with caution')
+      return { status: 'safe', score: 70 }
+    }
+    
+    return await response.json()
+    
+  } catch (error) {
+    console.error('Error calling guardrail API:', error)
+    // Fail safely - allow generation but with lower confidence
+    return { status: 'safe', score: 70 }
+  }
+}
+
 // Generate images by editing the base alpaca image using FAL AI
 export async function POST(request: NextRequest) {
   try {
@@ -19,6 +66,24 @@ export async function POST(request: NextRequest) {
     if (!prompt) {
       return NextResponse.json({ error: "Prompt is required" }, { status: 400 })
     }
+
+    // Check prompt safety using guardrail API
+    console.log('Checking prompt safety for:', prompt.substring(0, 50) + '...')
+    const safetyCheck = await checkPromptSafety(prompt, request)
+    
+    // If prompt is unsafe, return fun Spanish message
+    if (safetyCheck.status === 'unsafe') {
+      const funMessage = getRandomUnsafeMessage()
+      return NextResponse.json({
+        error: "unsafe_content",
+        message: funMessage,
+        details: safetyCheck.reason || "Contenido no apropiado detectado",
+        score: safetyCheck.score,
+        category: safetyCheck.category
+      }, { status: 400 })
+    }
+
+    console.log('Prompt passed safety check with score:', safetyCheck.score)
 
     // Create enhanced prompt that preserves original image elements
     const basePreservationPrompt = `IMPORTANT: You must preserve every element of the original design exactly as it appears in the source image. This includes, but is not limited to: the alpaca character design, the IA HACKATHON logo, all brand marks, typography, text, color palette, layout, and overall artistic style.
