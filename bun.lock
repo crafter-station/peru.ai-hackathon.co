@@ -4,6 +4,7 @@
     "": {
       "name": "ia-hackathon-peru",
       "dependencies": {
+        "@ai-sdk/groq": "^2.0.22",
         "@ai-sdk/openai": "^2.0.41",
         "@fal-ai/client": "^1.6.2",
         "@neondatabase/serverless": "^1.0.1",
@@ -51,6 +52,8 @@
   },
   "packages": {
     "@ai-sdk/gateway": ["@ai-sdk/gateway@1.0.32", "", { "dependencies": { "@ai-sdk/provider": "2.0.0", "@ai-sdk/provider-utils": "3.0.10" }, "peerDependencies": { "zod": "^3.25.76 || ^4.1.8" } }, "sha512-TQRIM63EI/ccJBc7RxeB8nq/CnGNnyl7eu5stWdLwL41stkV5skVeZJe0QRvFbaOrwCkgUVE0yrUqJi4tgDC1A=="],
+
+    "@ai-sdk/groq": ["@ai-sdk/groq@2.0.22", "", { "dependencies": { "@ai-sdk/provider": "2.0.0", "@ai-sdk/provider-utils": "3.0.10" }, "peerDependencies": { "zod": "^3.25.76 || ^4.1.8" } }, "sha512-/AswqcXnMuZnpLzRxddB/WBEi0hM6IpqafrGGQE/jGQPIuIKPb8HyNatX67vJgHcD2s12YIKuFccaBPDYlUIVg=="],
 
     "@ai-sdk/openai": ["@ai-sdk/openai@2.0.41", "", { "dependencies": { "@ai-sdk/provider": "2.0.0", "@ai-sdk/provider-utils": "3.0.10" }, "peerDependencies": { "zod": "^3.25.76 || ^4.1.8" } }, "sha512-auOE2LFzH8T33cvWNDxnseuPNRNC+j2IGcyaoyLft0f5QnuJqpNj2RQNsXCoufz37W8XoL/9wbW/p9cm+yg3pA=="],
 
