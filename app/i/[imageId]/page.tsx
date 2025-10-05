@@ -34,7 +34,8 @@ export default function SharedImagePage() {
   useEffect(() => {
     const fetchImage = async () => {
       try {
-        const response = await fetch(`/api/gallery/${imageId}`);
+        const userId = getUserId();
+        const response = await fetch(`/api/gallery/${imageId}?userId=${userId}`);
         if (!response.ok) {
           throw new Error("Image not found");
         }
