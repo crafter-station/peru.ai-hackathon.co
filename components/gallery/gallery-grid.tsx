@@ -24,7 +24,7 @@ interface AlbumPhoto {
 export function GalleryGrid() {
   const anonymousUser = useAnonymousUser();
   const userId = anonymousUser?.userId || undefined;
-  
+
   const {
     images,
     isLoading,
@@ -33,16 +33,16 @@ export function GalleryGrid() {
     isFetchingNextPage,
     fetchNextPage,
   } = useGallery(userId);
-  
+
   const { toggleLike } = useImageLikes(userId, true);
-  
+
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   // Get image URLs for dimension measurement
   const imageUrls = images.map(image => image.blobUrl || image.imageUrl);
-  
+
   // Measure image dimensions dynamically
   const { dimensionsByUrl, isLoading: isDimensionsLoading } = useImageDimensions(imageUrls);
 
@@ -52,7 +52,7 @@ export function GalleryGrid() {
     const measured = dimensionsByUrl[src];
     const width = measured?.width ?? image.width ?? 800;
     const height = measured?.height ?? image.height ?? 600;
-    
+
     return {
       src,
       width,
@@ -129,7 +129,7 @@ export function GalleryGrid() {
           <p className="text-sm">¡Sé el primero en crear una alpaca con IA!</p>
         </div>
         <Button asChild>
-          <a href="/text-to-alpaca">Crear mi alpaca</a>
+          <a href="/tta">Crear mi alpaca</a>
         </Button>
       </div>
     );
@@ -165,7 +165,7 @@ export function GalleryGrid() {
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 </div>
               )}
-              
+
               {/* Combined Like Button with Counter - Top Left */}
               <div className="absolute top-2 left-2 z-10">
                 <Button
@@ -180,12 +180,12 @@ export function GalleryGrid() {
                   }}
                   disabled={!userId}
                 >
-                  <Heart 
+                  <Heart
                     className={`h-4 w-4 transition-colors duration-200 ${
-                      currentImage?.isLikedByUser 
-                        ? 'fill-red-500 text-red-500' 
+                      currentImage?.isLikedByUser
+                        ? 'fill-red-500 text-red-500'
                         : 'text-white'
-                    }`} 
+                    }`}
                   />
                   {(currentImage?.likeCount || 0) > 0 && (
                     <span className="text-xs font-medium text-white">
@@ -194,7 +194,7 @@ export function GalleryGrid() {
                   )}
                 </Button>
               </div>
-              
+
               {/* Hover Overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end p-3">
                 <div className="transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
