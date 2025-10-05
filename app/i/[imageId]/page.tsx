@@ -223,7 +223,7 @@ export default function SharedImagePage() {
               <Heart
                 className={`w-4 h-4 sm:w-5 sm:h-5 mr-2 ${isLiked ? "fill-current" : ""}`}
               />
-              <span>{isLiked ? "Liked" : "Me gusta"} {likeCount > 0 && `(${likeCount})`}</span>
+              <span>{isLiked ? "Te gusta" : "Me gusta"} {likeCount > 0 && `(${likeCount})`}</span>
             </Button>
             <Button
               onClick={handleDownload}
