@@ -6,8 +6,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { CometCard } from "@/components/ui/comet-card";
-import { Download, Share2, ArrowLeft, Sparkles } from "lucide-react";
+import { Download, Share2, ArrowLeft, Sparkles, Heart } from "lucide-react";
 import type { GalleryImage } from "@/lib/schema";
+
+// Generate a persistent user ID for likes
+const getUserId = () => {
+  if (typeof window === "undefined") return "";
+  let userId = localStorage.getItem("alpaca_user_id");
+  if (!userId) {
+    userId = `user_${Math.random().toString(36).substring(2, 15)}`;
+    localStorage.setItem("alpaca_user_id", userId);
+  }
+  return userId;
+};
 
 export default function SharedImagePage() {
   const params = useParams();
@@ -15,6 +26,9 @@ export default function SharedImagePage() {
   const [image, setImage] = useState<GalleryImage | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
+  const [isLiking, setIsLiking] = useState(false);
 
   const imageId = params.imageId as string;
 
@@ -27,6 +41,8 @@ export default function SharedImagePage() {
         }
         const imageData = await response.json();
         setImage(imageData);
+        setLikeCount(imageData.likeCount || 0);
+        setIsLiked(imageData.isLikedByUser || false);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Error loading image");
       } finally {
@@ -38,6 +54,32 @@ export default function SharedImagePage() {
       fetchImage();
     }
   }, [imageId]);
+
+  const handleLike = async () => {
+    if (isLiking) return;
+
+    setIsLiking(true);
+    const userId = getUserId();
+
+    try {
+      const method = isLiked ? "DELETE" : "POST";
+      const response = await fetch(`/api/gallery/${imageId}/like`, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setIsLiked(data.liked);
+        setLikeCount(data.likeCount);
+      }
+    } catch (error) {
+      console.error("Error liking image:", error);
+    } finally {
+      setIsLiking(false);
+    }
+  };
 
   const handleDownload = async () => {
     if (!image) return;
@@ -62,9 +104,9 @@ export default function SharedImagePage() {
 
   const handleShare = async () => {
     if (!image) return;
-    
+
     const shareUrl = `${window.location.origin}/i/${image.id}`;
-    
+
     try {
       if (navigator.share) {
         await navigator.share({
@@ -109,28 +151,29 @@ export default function SharedImagePage() {
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Navigation */}
-      <div className="absolute top-4 left-4 z-10">
-        <Button
-          variant="ghost"
-          onClick={() => router.back()}
-          className="text-white hover:bg-white/20"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Regresar
-        </Button>
+      <div className="fixed top-4 left-4 z-10">
+        <Link href="/tta">
+          <Button
+            variant="ghost"
+            className="text-white hover:bg-white/20 h-9 px-3 sm:h-10 sm:px-4"
+          >
+            <ArrowLeft className="w-4 h-4 sm:mr-2" />
+            <span className="hidden sm:inline">Galería</span>
+          </Button>
+        </Link>
       </div>
 
-      <div className="absolute top-4 right-4 z-10">
-        <Link href="/tta">
-          <Button className="bg-white text-black hover:bg-gray-200">
-            <Sparkles className="w-4 h-4 mr-2" />
-            Crea la Tuya
+      <div className="fixed top-4 right-4 z-10">
+        <Link href="/text-to-alpaca">
+          <Button className="bg-white text-black hover:bg-gray-200 h-9 px-3 sm:h-10 sm:px-4 text-xs sm:text-sm">
+            <Sparkles className="w-4 h-4 sm:mr-2" />
+            <span className="hidden sm:inline">Crea la Tuya</span>
           </Button>
         </Link>
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-col items-center justify-center min-h-screen p-4 pt-20">
+      <div className="flex flex-col items-center justify-center min-h-screen p-4 sm:p-6 pt-20">
         <div className="max-w-lg w-full text-center">
 
 
@@ -161,45 +204,63 @@ export default function SharedImagePage() {
 
           {/* Prompt Display */}
           <div className="mb-6 p-3 md:p-4 bg-black/50 border border-gray-600 text-left">
-            <p className="text-sm md:text-base text-gray-300">
+            <p className="text-xs sm:text-sm md:text-base text-gray-300">
               <span className="font-semibold text-white">Prompt:</span> {image.prompt}
             </p>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-8">
+          <div className="grid grid-cols-2 sm:flex gap-3 sm:gap-4 justify-center mb-8">
+            <Button
+              onClick={handleLike}
+              disabled={isLiking}
+              className={`h-12 px-4 sm:px-6 text-sm sm:text-base font-semibold transition-all ${
+                isLiked
+                  ? "bg-red-600 text-white hover:bg-red-700"
+                  : "bg-white/10 text-white border-2 border-white/30 hover:bg-white/20"
+              }`}
+            >
+              <Heart
+                className={`w-4 h-4 sm:w-5 sm:h-5 mr-2 ${isLiked ? "fill-current" : ""}`}
+              />
+              <span>{isLiked ? "Liked" : "Me gusta"}</span>
+              {likeCount > 0 && (
+                <span className="ml-1 sm:ml-2 text-xs sm:text-sm">({likeCount})</span>
+              )}
+            </Button>
             <Button
               onClick={handleDownload}
-              className="h-12 px-6 text-base font-semibold bg-white text-black hover:bg-gray-200"
+              className="h-12 px-4 sm:px-6 text-sm sm:text-base font-semibold bg-white text-black hover:bg-gray-200"
             >
-              <Download className="w-5 h-5 mr-2" />
-              Descargar
+              <Download className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+              <span className="inline">Descargar</span>
             </Button>
             <Button
               onClick={handleShare}
               variant="outline"
-              className="h-12 px-6 text-base font-semibold bg-transparent border-gray-600 text-white hover:bg-gray-700"
+              className="h-12 px-4 sm:px-6 text-sm sm:text-base font-semibold bg-transparent border-gray-600 text-white hover:bg-gray-700 col-span-2 sm:col-span-1"
             >
-              <Share2 className="w-5 h-5 mr-2" />
+              <Share2 className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
               Compartir
             </Button>
           </div>
 
           {/* Call to Action */}
           <div className="text-center">
-            <Link href="/tta">
-              <Button 
+            <Link href="/text-to-alpaca">
+              <Button
                 size="lg"
-                className="bg-white text-black hover:bg-gray-200 font-semibold px-8 py-3"
+                className="bg-white text-black hover:bg-gray-200 font-semibold px-6 sm:px-8 py-3 text-sm sm:text-base"
               >
-                <Sparkles className="w-5 h-5 mr-2" />
-                Crea Tu Propia Alpaca con IA
+                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                <span className="hidden sm:inline">Crea Tu Propia Alpaca con IA</span>
+                <span className="sm:hidden">Crea tu Alpaca</span>
               </Button>
             </Link>
-            
+
           </div>
 
-          
+
         </div>
       </div>
     </div>
