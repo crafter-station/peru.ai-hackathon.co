@@ -163,7 +163,7 @@ export default function SharedImagePage() {
       </div>
 
       <div className="fixed top-4 right-4 z-10">
-        <Link href="/text-to-alpaca">
+        <Link href="/tta">
           <Button className="bg-white text-black hover:bg-gray-200 h-9 px-3 sm:h-10 sm:px-4 text-xs sm:text-sm">
             <Sparkles className="w-4 h-4 sm:mr-2" />
             <span className="hidden sm:inline">Crea la Tuya</span>
@@ -246,7 +246,7 @@ export default function SharedImagePage() {
 
           {/* Call to Action */}
           <div className="text-center">
-            <Link href="/text-to-alpaca">
+            <Link href="/tta">
               <Button
                 size="lg"
                 className="bg-white text-black hover:bg-gray-200 font-semibold px-6 sm:px-8 py-3 text-sm sm:text-base"

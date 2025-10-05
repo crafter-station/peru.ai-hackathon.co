@@ -15,7 +15,7 @@ export function GalleryHeader() {
           Galería de Alpacas IA
         </h1>
       </div>
-      
+
       <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
         Descubre la increíble colección de alpacas generadas por inteligencia artificial.
         Cada una es única y creada con creatividad y tecnología.
@@ -31,7 +31,7 @@ export function GalleryHeader() {
 
       <div className="flex items-center justify-center">
         <Button asChild size="lg" className="gap-2">
-          <a href="/text-to-alpaca">
+          <a href="/tta">
             <PlusCircle className="h-5 w-5" />
             Crear mi alpaca
           </a>
