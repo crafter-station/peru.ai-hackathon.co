@@ -1,4 +1,5 @@
 import HeroSection from "@/components/sections/hero/hero-section";
+import CountdownSection from "@/components/sections/countdown/countdown-section";
 // import DetailsSection from "@/components/sections/details/details-section";
 // import FAQSection from "@/components/sections/faq/faq-section";
 // import JudgesSection from "@/components/sections/judges/judges-section";
@@ -11,6 +12,7 @@ export default function Page() {
     <>
       <FloatingNav />
       <HeroSection />
+      <CountdownSection />
       {/* hello hello */}
       {/* <DetailsSection />
       <FAQSection />
