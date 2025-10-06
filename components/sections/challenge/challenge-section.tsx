@@ -32,8 +32,7 @@ export default function ChallengeSection() {
               eres libre de explorar los problemas e ideas que más te apasionen.
             </p>
             <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-              Queremos ver productos increíbles empujados por un equipos
-              completamente apasionados y obsesionados.
+              Queremos ver productos increíbles impulsados por equipos completamente apasionados y obsesionados.
             </p>
           </div>
 
