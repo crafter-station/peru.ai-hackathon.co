@@ -30,11 +30,11 @@ export default function HeroSection() {
   // Scroll to next section
   const scrollToNextSection = () => {
     play();
-    const nextSection = document.querySelector('footer');
+    const nextSection = document.querySelector("footer");
     if (nextSection) {
       nextSection.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
+        behavior: "smooth",
+        block: "start",
       });
     }
   };
@@ -251,7 +251,7 @@ export default function HeroSection() {
         {/* CTA Buttons */}
         <div
           className={`
-          flex flex-col gap-4 justify-center items-center
+          flex flex-col gap-4 justify-center items-center w-full max-w-xs mx-auto
           transition-all duration-300 transform
           ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}
         `}
@@ -261,14 +261,44 @@ export default function HeroSection() {
             asChild
             size="lg"
             onClick={() => play()}
-            className="px-8 py-4 bg-brand-red text-white font-bold text-lg border-0 rounded-none hover:bg-brand-red/90"
+            className="w-full px-8 py-4 bg-brand-red text-white font-bold text-lg border-0 rounded-none hover:bg-brand-red/90"
+            style={{ pointerEvents: "auto" }}
+          >
+            <a
+              href="https://luma.com/slqfykte"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-3"
+            >
+              <div className="flex items-center justify-center w-6 h-6 bg-white/10 rounded-sm">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="w-4 h-4"
+                >
+                  <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+                </svg>
+              </div>
+              <span className="tracking-wide uppercase text-sm font-black">
+                INSCRÍBETE AQUÍ
+              </span>
+            </a>
+          </Button>
+
+          <Button
+            asChild
+            size="lg"
+            onClick={() => play()}
+            className="w-full px-8 py-4 bg-white/10 text-white font-bold text-lg border-2 border-white/30 rounded-none hover:bg-white/20 hover:border-white/50 transition-all duration-300"
             style={{ pointerEvents: "auto" }}
           >
             <a
               href="https://chat.whatsapp.com/H6RV2cFfL47CCXVzVmHedR?mode=ems_share_t"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3"
+              className="flex items-center justify-center gap-3"
             >
               <div className="flex items-center justify-center w-6 h-6 bg-white/10 rounded-sm">
                 <svg
@@ -291,15 +321,30 @@ export default function HeroSection() {
             asChild
             size="lg"
             onClick={() => play()}
-            className="px-8 py-4 bg-white/10 text-white font-bold text-lg border-2 border-white/30 rounded-none hover:bg-white/20 hover:border-white/50 transition-all duration-300"
+            className="w-full px-8 py-4 bg-white/10 text-white font-bold text-lg border-2 border-white/30 rounded-none hover:bg-white/20 hover:border-white/50 transition-all duration-300"
             style={{ pointerEvents: "auto" }}
           >
             <Link
               href="/tta"
-              className="flex items-center"
+              className="flex items-center justify-center gap-3"
             >
               <div className="flex items-center justify-center w-6 h-6">
-                <svg xmlns="http://www.w3.org/2000/svg" width="800px" height="800px" viewBox="0 0 1024 1024" version="1.1"><path d="M927.8 210c0 37.3-30.4 67.7-67.7 67.7H833c-12.9 13.3-29.2 22.9-47 27.8v214.7c0 48-22 90.9-56.4 119.3v245c0 10.6-8.6 19.2-19.2 19.2h-59.5v37.8c0 10.6-8.6 19.2-19.2 19.2h-78.8c-10.6 0-19.2-8.6-19.2-19.2v-234H391.4c-1.1 1.6-2.4 3-4 4.3-14 10.9-29.5 19.5-46.2 25.5v147.2c0 10.6-8.6 19.2-19.2 19.2h-59.5v37.8c0 10.6-8.6 19.2-19.2 19.2h-78.8c-10.6 0-19.2-8.6-19.2-19.2V596.7c-2.1 0.3-4.2 0.5-6.3 0.5-6.3 0-12.3-1.3-17.9-4-15.5-7.5-25-24.5-26.1-46.7-0.9-18.7 4-40.2 13.8-60.5 15.6-32.1 39.8-54.3 63.5-59.5 28.5-42.3 76.8-70.2 131.6-70.2h261c20.5 0 37.1-16.6 37.1-37.1V199.7c-12.9-14.6-20.5-33.1-21.4-52.9-1.1-22.8 6.6-44.7 21.7-61.7 9.7-11 22.1-19.3 35.9-24.2 3.3-1.2 7-1.6 10.8-0.8 10.4 2.3 16.9 12.6 14.6 22.9-1.5 6.7-1.5 13.5-0.2 20 4-7.3 9.1-14 15.3-20 10.3-10 22.9-17.4 36.7-21.3l0.9-0.3c0.1 0 0.1 0 0.2-0.1 3.3-0.9 7-0.9 10.5 0.1 10.2 3 16 13.7 13 23.9-4 13.5-1.9 27.7 5.4 39.3h97.2c46.9 0.1 85.2 38.4 85.2 85.4z" fill="#663333"/><path d="M889.3 210c0 16.1-13.1 29.2-29.2 29.2H824c-6.3 0.1-11.8 3.2-15.3 7.9-10.9 13.2-26.7 21.7-43.7 23.3-4.9 0.4-9.2 2.7-12.4 6.2-3.1 3.4-5.1 8-5.1 13v230.7c0 63.9-51.9 115.9-115.8 116h-0.1c-10.6 0-19.2 8.6-19.2 19.2l-0.1 218.2h-40.2V688.3c0-10.6-8.6-19.2-19.2-19.2H371.6c4.2-19.3 5.3-39.7 2.5-60.2-1.4-10.5-11.1-17.9-21.6-16.5-10.5 1.4-17.9 11.1-16.5 21.6 9.1 66.7-32.9 130.1-97.7 147.6-8.2 2.2-14.2 9.7-14.2 18.5v93.3h-40.3V515c0-66.3 53.9-120.2 120.1-120.2h261c41.7 0 75.6-33.9 75.6-75.6V192c0-5.6-2.4-10.6-6.2-14.1-17.4-16.1-20.1-42.7-7.3-61.9 4.3 16.1 13.2 31 26.2 42.4 3.7 3.2 8.2 4.8 12.7 4.8l176.7-0.1c25.7 0 46.7 21 46.7 46.9z" fill="#FFCC66"/><path d="M735.7 185.9c10.6 0 19.2 8.6 19.2 19.2s-8.6 19.2-19.2 19.2-19.2-8.6-19.2-19.2 8.6-19.2 19.2-19.2z" fill="#663333"/><path d="M650.9 851.2h40.2v14.2h-40.2z" fill="#B88D5B"/><path d="M691.1 662.7v153.9h-40.2V673.4c14.1-1.8 27.6-5.4 40.2-10.7z" fill="#FFCC66"/><path d="M303.8 446.7c10.6 0 19.2 8.6 19.2 19.2s-8.6 19.2-19.2 19.2c-16.4 0-29.8 13.4-29.8 29.8 0 10.6-8.6 19.2-19.2 19.2s-19.2-8.6-19.2-19.2c0-37.6 30.6-68.2 68.2-68.2z" fill="#663333"/><path d="M262.5 851.2h40.2v14.2h-40.2z" fill="#B88D5B"/><path d="M302.7 773.2v43.4h-40.2v-22.2c14.5-5.4 28-12.6 40.2-21.2zM703.2 124.7h-7.8c1.5-3.2 3.3-6.3 5.5-9.1 0.6 3.1 1.4 6.1 2.3 9.1z" fill="#FFCC66"/><path d="M695.4 124.7h7.8c-0.9-3-1.7-6-2.3-9.1-2.1 2.8-4 5.9-5.5 9.1z" fill="#FFCC66"/><path d="M147.7 487.6c-1.6 8.9-2.4 73.6-2.4 73.6-3.8 1.5-7.1 1.8-9.2 0.8-3.6-1.7-6.1-8.5-6.6-17.2-0.6-12.8 3.2-28.7 10.4-43.7 2.4-4.9 5-9.4 7.8-13.5zM183.7 908.1H224v14.1h-40.3zM572.1 908.1h40.3v14.1h-40.3z" fill="#B88D5B"/></svg>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 1024 1024"
+                  className="w-4 h-4"
+                >
+                  <path
+                    d="M927.8 210c0 37.3-30.4 67.7-67.7 67.7H833c-12.9 13.3-29.2 22.9-47 27.8v214.7c0 48-22 90.9-56.4 119.3v245c0 10.6-8.6 19.2-19.2 19.2h-59.5v37.8c0 10.6-8.6 19.2-19.2 19.2h-78.8c-10.6 0-19.2-8.6-19.2-19.2v-234H391.4c-1.1 1.6-2.4 3-4 4.3-14 10.9-29.5 19.5-46.2 25.5v147.2c0 10.6-8.6 19.2-19.2 19.2h-59.5v37.8c0 10.6-8.6 19.2-19.2 19.2h-78.8c-10.6 0-19.2-8.6-19.2-19.2V596.7c-2.1 0.3-4.2 0.5-6.3 0.5-6.3 0-12.3-1.3-17.9-4-15.5-7.5-25-24.5-26.1-46.7-0.9-18.7 4-40.2 13.8-60.5 15.6-32.1 39.8-54.3 63.5-59.5 28.5-42.3 76.8-70.2 131.6-70.2h261c20.5 0 37.1-16.6 37.1-37.1V199.7c-12.9-14.6-20.5-33.1-21.4-52.9-1.1-22.8 6.6-44.7 21.7-61.7 9.7-11 22.1-19.3 35.9-24.2 3.3-1.2 7-1.6 10.8-0.8 10.4 2.3 16.9 12.6 14.6 22.9-1.5 6.7-1.5 13.5-0.2 20 4-7.3 9.1-14 15.3-20 10.3-10 22.9-17.4 36.7-21.3l0.9-0.3c0.1 0 0.1 0 0.2-0.1 3.3-0.9 7-0.9 10.5 0.1 10.2 3 16 13.7 13 23.9-4 13.5-1.9 27.7 5.4 39.3h97.2c46.9 0.1 85.2 38.4 85.2 85.4z"
+                    fill="#663333"
+                  />
+                  <path
+                    d="M889.3 210c0 16.1-13.1 29.2-29.2 29.2H824c-6.3 0.1-11.8 3.2-15.3 7.9-10.9 13.2-26.7 21.7-43.7 23.3-4.9 0.4-9.2 2.7-12.4 6.2-3.1 3.4-5.1 8-5.1 13v230.7c0 63.9-51.9 115.9-115.8 116h-0.1c-10.6 0-19.2 8.6-19.2 19.2l-0.1 218.2h-40.2V688.3c0-10.6-8.6-19.2-19.2-19.2H371.6c4.2-19.3 5.3-39.7 2.5-60.2-1.4-10.5-11.1-17.9-21.6-16.5-10.5 1.4-17.9 11.1-16.5 21.6 9.1 66.7-32.9 130.1-97.7 147.6-8.2 2.2-14.2 9.7-14.2 18.5v93.3h-40.3V515c0-66.3 53.9-120.2 120.1-120.2h261c41.7 0 75.6-33.9 75.6-75.6V192c0-5.6-2.4-10.6-6.2-14.1-17.4-16.1-20.1-42.7-7.3-61.9 4.3 16.1 13.2 31 26.2 42.4 3.7 3.2 8.2 4.8 12.7 4.8l176.7-0.1c25.7 0 46.7 21 46.7 46.9z"
+                    fill="currentColor"
+                  />
+                </svg>
               </div>
               <span className="tracking-wide uppercase text-sm font-black">
                 Genera tu Alpaca
@@ -314,7 +359,7 @@ export default function HeroSection() {
             style={{ pointerEvents: "auto" }}
           >
             <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-6 h-6 transition-transform duration-300 group-hover:translate-y-1">
+              <div className="flex items-center justify-center w-6 h-6">
                 <svg
                   width="16"
                   height="16"
