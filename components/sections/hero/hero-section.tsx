@@ -142,7 +142,7 @@ export default function HeroSection() {
 
         {/* Countdown */}
         <div className="max-w-md mx-auto mb-8">
-          <p className="text-white text-sm md:text-base font-medium mb-2">
+          <p className="text-white  text-sm md:text-base font-bold">
             29-30 de Noviembre
           </p>
           <div className="inline-flex items-center gap-2 mb-3">
