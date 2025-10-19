@@ -1,13 +1,12 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Canvas } from "@react-three/fiber";
 import Image from "next/image";
 import useSound from "use-sound";
 import { Button } from "@/components/ui/button";
 import { Background3DScene } from "./background-3d-scene";
 import { LoadingOverlay } from "./loading-overlay";
-import { useMediaQuery } from "@/hooks/use-media-query";
 import Link from "next/link";
 import {
   differenceInDays,
@@ -23,10 +22,8 @@ export default function HeroSection() {
   const [isLoading, setIsLoading] = useState(true);
   const [isVisible, setIsVisible] = useState(false);
   const [scene3DLoaded, setScene3DLoaded] = useState(false);
-  const [enableControls, setEnableControls] = useState(true);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [backdropOpacity, setBackdropOpacity] = useState(0.8);
-  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Countdown timer state
   const [timeLeft, setTimeLeft] = useState({
@@ -36,8 +33,6 @@ export default function HeroSection() {
     seconds: 0,
   });
   const hackathonDate = useMemo(() => new Date("2025-11-29T00:00:00"), []);
-
-  const isMobile = useMediaQuery("(max-width: 768px)");
 
   // Button click sound
   const [play] = useSound("/sounds/bite.mp3", { volume: 0.5 });
@@ -105,58 +100,12 @@ export default function HeroSection() {
     return () => clearInterval(timer);
   }, [hackathonDate]);
 
-  // Handle scroll detection to disable 3D controls during scrolling (desktop only)
-  useEffect(() => {
-    // Skip scroll detection on mobile - let touch events handle 3D interaction
-    if (isMobile) return;
-
-    const handleScrollEvent = () => {
-      // Disable controls when scrolling
-      setEnableControls(false);
-
-      // Clear existing timeout
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
-
-      // Re-enable controls after scrolling stops (300ms delay for responsiveness)
-      scrollTimeoutRef.current = setTimeout(() => {
-        setEnableControls(true);
-      }, 300);
-    };
-
-    // Add scroll listeners for desktop only
-    window.addEventListener("scroll", handleScrollEvent, { passive: true });
-    window.addEventListener("wheel", handleScrollEvent, { passive: true });
-
-    // Cleanup
-    return () => {
-      window.removeEventListener("scroll", handleScrollEvent);
-      window.removeEventListener("wheel", handleScrollEvent);
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
-    };
-  }, [isMobile]);
-
   return (
     <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
-      {/* 3D Background with Machu Picchu environment */}
-      <div
-        className="absolute inset-0 z-10 transition-all duration-200"
-        style={{
-          pointerEvents: isMobile ? "none" : enableControls ? "auto" : "none",
-          touchAction: "pan-y",
-        }}
-      >
-        <Canvas
-          camera={{ position: [0, 0, 5], fov: 75 }}
-          style={{ touchAction: "pan-y" }}
-        >
-          <Background3DScene
-            onLoad={handle3DLoad}
-            enableControls={isMobile ? false : enableControls}
-          />
+      {/* 3D Background with Machu Picchu environment - Non-interactive, auto-rotating */}
+      <div className="absolute inset-0 z-10 pointer-events-none">
+        <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
+          <Background3DScene onLoad={handle3DLoad} />
         </Canvas>
       </div>
 

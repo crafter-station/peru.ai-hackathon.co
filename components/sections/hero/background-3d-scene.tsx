@@ -1,32 +1,20 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { OrbitControls, Environment } from "@react-three/drei";
-import { isMobile } from "../../../lib/utils";
 
 /**
- * 3D Background Scene with rotating environment
+ * 3D Background Scene with auto-rotating environment - simplified and non-interactive
  */
-export const Background3DScene = ({
-  onLoad,
-  enableControls,
-}: {
-  onLoad?: () => void;
-  enableControls: boolean;
-}) => {
+export const Background3DScene = ({ onLoad }: { onLoad?: () => void }) => {
   const orbitControlsRef = useRef<React.ElementRef<typeof OrbitControls>>(null);
-  const [isMobileDevice, setIsMobileDevice] = useState(false);
   const frameCount = useRef(0);
-
-  useEffect(() => {
-    setIsMobileDevice(isMobile());
-  }, []);
 
   // Set default tilt to 60 degrees
   useEffect(() => {
     if (orbitControlsRef.current) {
-      orbitControlsRef.current.setPolarAngle(Math.PI / 2.5); // ~60 degrees this is for show better machu picchu on the first load
+      orbitControlsRef.current.setPolarAngle(Math.PI / 2.5); // ~60 degrees to show Machu Picchu better
     }
   }, []);
 
@@ -43,28 +31,20 @@ export const Background3DScene = ({
     <>
       <OrbitControls
         ref={orbitControlsRef}
-        enableZoom={enableControls}
-        enablePan={enableControls}
-        enableRotate={enableControls}
+        enableZoom={false}
+        enablePan={false}
+        enableRotate={false}
         autoRotate={true}
-        autoRotateSpeed={isMobileDevice ? 0.2 : 0.3}
-        minDistance={3}
-        maxDistance={15}
-        minPolarAngle={Math.PI / 6}
-        maxPolarAngle={Math.PI - Math.PI / 6}
-        dampingFactor={isMobileDevice ? 0.08 : 0.05}
+        autoRotateSpeed={0.25}
         enableDamping={true}
-        zoomSpeed={isMobileDevice ? 0.6 : 0.8}
-        panSpeed={isMobileDevice ? 0.6 : 0.8}
-        rotateSpeed={isMobileDevice ? 0.4 : 0.5}
+        dampingFactor={0.05}
       />
 
       <ambientLight intensity={0.3} />
       <directionalLight position={[5, 5, 5]} intensity={0.3} color="#ffffff" />
 
       <Environment
-        // files="https://26evcbcedv5nczlx.public.blob.vercel-storage.com/machu-picchu-1X.jpg"
-        files="https://26evcbcedv5nczlx.public.blob.vercel-storage.com/machu-picchu-darker-low-1x-B.jpeg" // compressed image
+        files="https://26evcbcedv5nczlx.public.blob.vercel-storage.com/machu-picchu-darker-low-1x-B.jpeg"
         background
       />
     </>
