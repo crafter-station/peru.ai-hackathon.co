@@ -145,17 +145,17 @@ export default function HeroSection() {
       <div
         className="absolute inset-0 z-10 transition-all duration-200"
         style={{
-          pointerEvents: isMobile ? "auto" : enableControls ? "auto" : "none",
-          touchAction: isMobile ? "pan-y" : "none",
+          pointerEvents: isMobile ? "none" : enableControls ? "auto" : "none",
+          touchAction: "pan-y",
         }}
       >
         <Canvas
           camera={{ position: [0, 0, 5], fov: 75 }}
-          style={{ touchAction: isMobile ? "pan-y" : "none" }}
+          style={{ touchAction: "pan-y" }}
         >
           <Background3DScene
             onLoad={handle3DLoad}
-            enableControls={isMobile ? true : enableControls}
+            enableControls={isMobile ? false : enableControls}
           />
         </Canvas>
       </div>
