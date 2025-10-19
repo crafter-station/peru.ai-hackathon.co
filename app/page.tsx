@@ -3,6 +3,7 @@ import HeroSection from "@/components/sections/hero/hero-section";
 import DetailsSection from "@/components/sections/details/details-section";
 import ChallengeSection from "@/components/sections/challenge/challenge-section";
 import EvaluationSection from "@/components/sections/evaluation/evaluation-section";
+import FAQSection from "@/components/sections/faq/faq-section";
 import FooterSection from "@/components/sections/footer/footer-section";
 
 export default function Page() {
@@ -13,6 +14,7 @@ export default function Page() {
       <DetailsSection />
       <ChallengeSection />
       <EvaluationSection />
+      <FAQSection />
       <FooterSection />
     </>
   );
