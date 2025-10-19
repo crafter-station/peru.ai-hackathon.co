@@ -33,19 +33,41 @@ export default function SponsorsSection() {
           </div>
         </div>
 
-        <div className="flex justify-center">
+        {/* Premium sponsor grid with perfect spacing */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 items-center justify-items-center max-w-4xl mx-auto">
+          {/* Sponsor 1 */}
           <a
-            href="https://elevenlabs.io"
+            href="https://www.yavendio.com/en/"
             target="_blank"
             rel="noopener noreferrer"
+            className="group relative px-8 py-4 rounded-xl border border-white/5 bg-gradient-to-br from-white/[0.02] to-transparent hover:border-white/10 hover:from-white/[0.04] transition-all duration-300 w-full flex items-center justify-center"
           >
+            <div className="absolute inset-0 bg-gradient-to-br from-brand-red/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
             <Image
-              src="/elevenlabs-logo-white.png"
-              alt="ElevenLabs"
-              width={240}
-              height={80}
+              src="/1.png"
+              alt="Yavendió"
+              width={400}
+              height={400}
               quality={100}
-              className="h-8 md:h-10 w-auto"
+              className="w-full h-24 md:h-32 object-cover object-center relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
+            />
+          </a>
+
+          {/* Sponsor 2 */}
+          <a
+            href="https://elevenlabs.io/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative px-8 py-4 rounded-xl border border-white/5 bg-gradient-to-br from-white/[0.02] to-transparent hover:border-white/10 hover:from-white/[0.04] transition-all duration-300 w-full flex items-center justify-center"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-brand-red/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
+            <Image
+              src="/2.png"
+              alt="ElevenLabs"
+              width={400}
+              height={400}
+              quality={100}
+              className="w-full h-24 md:h-32 object-cover object-center relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
             />
           </a>
         </div>
