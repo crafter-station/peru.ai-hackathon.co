@@ -1,12 +1,9 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { Canvas } from "@react-three/fiber";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import useSound from "use-sound";
 import { Button } from "@/components/ui/button";
-import { Background3DScene } from "./background-3d-scene";
-import { LoadingOverlay } from "./loading-overlay";
 import Link from "next/link";
 import {
   differenceInDays,
@@ -15,115 +12,65 @@ import {
   differenceInSeconds,
 } from "date-fns";
 
-/**
- * Hero section with Peruvian-themed IA HACKATHON display
- */
 export default function HeroSection() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isVisible, setIsVisible] = useState(false);
-  const [scene3DLoaded, setScene3DLoaded] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [backdropOpacity, setBackdropOpacity] = useState(0.8);
-
-  // Countdown timer state
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
     minutes: 0,
     seconds: 0,
   });
-  const hackathonDate = useMemo(() => new Date("2025-11-29T00:00:00"), []);
-
-  // Button click sound
   const [play] = useSound("/sounds/bite.mp3", { volume: 0.5 });
 
-  // Scroll to next section
   const scrollToNextSection = () => {
     play();
-    const nextSection = document.querySelector("footer");
-    if (nextSection) {
-      nextSection.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
-  };
-
-  const handle3DLoad = () => {
-    setScene3DLoaded(true);
+    document
+      .querySelector("footer")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   useEffect(() => {
-    if (scene3DLoaded) {
-      // Wait a moment after 3D loads, then hide loading and show content
-      const loadingTimer = setTimeout(() => {
-        setIsLoading(false);
-      }, 50);
+    const hackathonDate = new Date("2025-11-29T00:00:00");
 
-      const visibilityTimer = setTimeout(() => {
-        setIsVisible(true);
-      }, 50);
-
-      return () => {
-        clearTimeout(loadingTimer);
-        clearTimeout(visibilityTimer);
-      };
-    }
-  }, [scene3DLoaded]);
-
-  // Countdown timer effect
-  useEffect(() => {
-    const calculateTimeLeft = () => {
+    const updateTimer = () => {
       const now = new Date();
       const totalSeconds = differenceInSeconds(hackathonDate, now);
 
       if (totalSeconds <= 0) {
-        return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      } else {
+        setTimeLeft({
+          days: differenceInDays(hackathonDate, now),
+          hours: differenceInHours(hackathonDate, now) % 24,
+          minutes: differenceInMinutes(hackathonDate, now) % 60,
+          seconds: totalSeconds % 60,
+        });
       }
-
-      const days = differenceInDays(hackathonDate, now);
-      const hours = differenceInHours(hackathonDate, now) % 24;
-      const minutes = differenceInMinutes(hackathonDate, now) % 60;
-      const seconds = totalSeconds % 60;
-
-      return { days, hours, minutes, seconds };
     };
 
-    // Initial calculation
-    setTimeLeft(calculateTimeLeft());
-
-    // Update every second
-    const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft());
-    }, 1000);
-
+    updateTimer();
+    const timer = setInterval(updateTimer, 1000);
     return () => clearInterval(timer);
-  }, [hackathonDate]);
+  }, []);
 
   return (
-    <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
-      {/* 3D Background with Machu Picchu environment - Non-interactive, auto-rotating */}
-      <div className="absolute inset-0 z-10 pointer-events-none">
-        <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
-          <Background3DScene onLoad={handle3DLoad} />
-        </Canvas>
+    <section className="min-h-screen flex items-center justify-center relative overflow-hidden py-8 md:py-12">
+      {/* Background Image */}
+      <div className="absolute inset-0 z-10">
+        <Image
+          src="https://26evcbcedv5nczlx.public.blob.vercel-storage.com/machu-picchu-darker-low-1x-B.jpeg"
+          alt="Machu Picchu Background"
+          fill
+          className="object-cover"
+          priority
+          quality={90}
+        />
       </div>
 
-      {/* Loading overlay */}
-      <LoadingOverlay isLoading={isLoading} />
-
-      {/* Custom dark backdrop for 3D scene - adjustable opacity */}
+      {/* Overlays */}
+      <div className="absolute inset-0 bg-black/80 z-15" />
+      <div className="absolute inset-0 bg-gradient-to-br from-black/30 via-black/20 to-black/40 z-20" />
       <div
-        className="absolute inset-0 bg-black pointer-events-none z-15"
-        style={{ opacity: backdropOpacity }}
-      />
-
-      {/* Enhanced overlay for better contrast and visual depth - non-interactive */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black/30 via-black/20 to-black/40 pointer-events-none z-20" />
-
-      {/* Subtle brand gradient overlay with improved vibrancy - non-interactive */}
-      <div
-        className="absolute inset-0 bg-gradient-to-br from-red-900/15 via-transparent to-red-900/15 pointer-events-none z-20"
+        className="absolute inset-0 z-20"
         style={{
           background:
             "linear-gradient(135deg, #B91F2E15 0%, rgba(185, 31, 46, 0.08) 30%, transparent 50%, rgba(185, 31, 46, 0.08) 70%, #B91F2E15 100%)",
@@ -131,49 +78,23 @@ export default function HeroSection() {
         }}
       />
 
-      {/* Top section with Peru flag */}
-      {/* <div className="absolute top-6 left-6 z-20">
-        <div className={`
-          transition-all duration-1000 transform
-          ${isVisible ? 'opacity-40 translate-x-0' : 'opacity-0 -translate-x-4'}
-        `} style={{ transitionDelay: '300ms' }}>
+      {/* Content */}
+      <div className="relative z-50 text-center px-4 md:px-8 max-w-6xl mx-auto pointer-events-none my-8 md:my-0">
+        {/* Main Logo */}
+        <div className="mb-6 md:mb-12">
           <Image
-            src="/PE_FLAG.svg"
-            alt="Perú"
-            width={40}
-            height={24}
-            className="w-8 h-5 md:w-10 md:h-6 drop-shadow-sm hover:opacity-60 transition-opacity duration-300"
+            src="/IA_HACK_BRAND.svg"
+            alt="IA HACKATHON"
+            width={800}
+            height={200}
+            className="w-full max-w-xl h-auto mx-auto"
+            priority
           />
         </div>
-      </div> */}
 
-      {/* Main content */}
-      <div className="relative z-50 text-center px-4 md:px-8 max-w-6xl mx-auto pointer-events-none">
-        {/* Interactive elements will use inline style for pointer-events: auto */}
-        {/* Main logo: IA HACKATHON Brand - Always visible in exact same position */}
-        <div className="mb-8 md:mb-12 opacity-100">
-          <div className="flex justify-center items-center">
-            <Image
-              src="/IA_HACK_BRAND.svg"
-              alt="IA HACKATHON"
-              width={800}
-              height={200}
-              className="w-full max-w-xl h-auto"
-              priority
-            />
-          </div>
-        </div>
-
-        {/* Organizer and Partnership logos */}
-        <div
-          className={`
-          mb-8 md:mb-12 transition-all duration-300 transform
-          ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}
-        `}
-          style={{ transitionDelay: "100ms" }}
-        >
-          {/* The Hackathon Company */}
-          <div className="flex justify-center items-center mb-4">
+        {/* Organizer Logos */}
+        <div className="mb-8 md:mb-12">
+          <div className="flex justify-center mb-4">
             <a
               href="https://hackathon.lat/"
               target="_blank"
@@ -186,17 +107,11 @@ export default function HeroSection() {
                 alt="By The Hackathon Company"
                 width={120}
                 height={40}
-                className="h-8 md:h-10 w-auto transition-all duration-300 cursor-pointer"
-                style={{
-                  filter: "brightness(1.1) contrast(1.2)",
-                  opacity: "0.95",
-                }}
+                className="h-8 md:h-10 w-auto"
               />
             </a>
           </div>
-
-          {/* Partnership with MAKERS */}
-          <div className="flex justify-center items-center">
+          <div className="flex justify-center">
             <a
               href="https://makers.ngo/"
               target="_blank"
@@ -209,113 +124,67 @@ export default function HeroSection() {
                 alt="In partnership with MAKERS"
                 width={180}
                 height={32}
-                className="h-6 md:h-8 w-auto transition-all duration-300 cursor-pointer"
-                style={{
-                  filter: "brightness(1.1) contrast(1.2)",
-                  opacity: "0.95",
-                }}
+                className="h-6 md:h-8 w-auto"
               />
             </a>
           </div>
         </div>
 
         {/* Description */}
-        <div
-          className={`
-          max-w-xl mx-auto mb-8 transition-all duration-300 transform
-          ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}
-        `}
-          style={{ transitionDelay: "150ms" }}
-        >
-          <p
-            className="text-lg md:text-xl text-white leading-relaxed mb-2 drop-shadow-lg"
-            style={{ textShadow: "2px 2px 4px rgba(0, 0, 0, 0.8)" }}
-          >
+        <div className="max-w-xl mx-auto mb-8">
+          <p className="text-lg md:text-xl text-white leading-relaxed mb-2 drop-shadow-lg">
             Únete al evento de inteligencia artificial más importante del Perú
           </p>
-          <p
-            className="text-base md:text-lg text-gray-200 drop-shadow-lg"
-            style={{ textShadow: "1px 1px 3px rgba(0, 0, 0, 0.7)" }}
-          >
+          <p className="text-base md:text-lg text-gray-200 drop-shadow-lg">
             Innovación • Tecnología • Futuro
           </p>
         </div>
 
-        {/* Countdown Timer */}
-        <div
-          className={`
-          max-w-md mx-auto mb-8 transition-all duration-300 transform
-          ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}
-        `}
-          style={{ transitionDelay: "175ms" }}
-        >
-          <div className="text-center mb-3">
-            <p className="text-white text-sm md:text-base font-medium mb-2 drop-shadow-lg">
-              29-30 de Noviembre
-            </p>
-            <div className="inline-flex items-center gap-2">
-              <div className="h-px bg-brand-red/30 w-8"></div>
-              <span className="text-brand-red text-xs font-bold uppercase tracking-widest">
-                Comienza en
-              </span>
-              <div className="h-px bg-brand-red/30 w-8"></div>
-            </div>
+        {/* Countdown */}
+        <div className="max-w-md mx-auto mb-8">
+          <p className="text-white text-sm md:text-base font-medium mb-2">
+            29-30 de Noviembre
+          </p>
+          <div className="inline-flex items-center gap-2 mb-3">
+            <div className="h-px bg-brand-red/30 w-8"></div>
+            <span className="text-brand-red text-xs font-bold uppercase tracking-widest">
+              Comienza en
+            </span>
+            <div className="h-px bg-brand-red/30 w-8"></div>
           </div>
           <div className="flex justify-center gap-3 md:gap-4">
-            {/* Days */}
             <div className="text-center">
-              <div className="text-2xl md:text-3xl font-black text-white mb-1 drop-shadow-lg">
+              <div className="text-2xl md:text-3xl font-black text-white mb-1">
                 {String(timeLeft.days).padStart(2, "0")}
               </div>
-              <p className="text-xs text-muted-foreground uppercase tracking-wide">
-                Días
-              </p>
+              <p className="text-xs text-muted-foreground uppercase">Días</p>
             </div>
             <div className="text-white text-2xl md:text-3xl font-black">:</div>
-
-            {/* Hours */}
             <div className="text-center">
-              <div className="text-2xl md:text-3xl font-black text-white mb-1 drop-shadow-lg">
+              <div className="text-2xl md:text-3xl font-black text-white mb-1">
                 {String(timeLeft.hours).padStart(2, "0")}
               </div>
-              <p className="text-xs text-muted-foreground uppercase tracking-wide">
-                Hrs
-              </p>
+              <p className="text-xs text-muted-foreground uppercase">Hrs</p>
             </div>
             <div className="text-white text-2xl md:text-3xl font-black">:</div>
-
-            {/* Minutes */}
             <div className="text-center">
-              <div className="text-2xl md:text-3xl font-black text-white mb-1 drop-shadow-lg">
+              <div className="text-2xl md:text-3xl font-black text-white mb-1">
                 {String(timeLeft.minutes).padStart(2, "0")}
               </div>
-              <p className="text-xs text-muted-foreground uppercase tracking-wide">
-                Min
-              </p>
+              <p className="text-xs text-muted-foreground uppercase">Min</p>
             </div>
             <div className="text-white text-2xl md:text-3xl font-black">:</div>
-
-            {/* Seconds */}
             <div className="text-center">
-              <div className="text-2xl md:text-3xl font-black text-white mb-1 drop-shadow-lg">
+              <div className="text-2xl md:text-3xl font-black text-white mb-1">
                 {String(timeLeft.seconds).padStart(2, "0")}
               </div>
-              <p className="text-xs text-muted-foreground uppercase tracking-wide">
-                Seg
-              </p>
+              <p className="text-xs text-muted-foreground uppercase">Seg</p>
             </div>
           </div>
         </div>
 
         {/* CTA Buttons */}
-        <div
-          className={`
-          flex flex-col gap-4 justify-center items-center w-full max-w-xs mx-auto
-          transition-all duration-300 transform
-          ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}
-        `}
-          style={{ transitionDelay: "200ms" }}
-        >
+        <div className="flex flex-col gap-4 justify-center items-center w-full max-w-xs mx-auto">
           <Button
             asChild
             size="lg"
@@ -350,7 +219,7 @@ export default function HeroSection() {
             asChild
             size="lg"
             onClick={() => play()}
-            className="w-full px-8 py-4 bg-white/10 text-white font-bold text-lg border-2 border-white/30 rounded-none hover:bg-white/20 hover:border-white/50 transition-all duration-300"
+            className="w-full px-8 py-4 bg-white/10 text-white font-bold text-lg border-2 border-white/30 rounded-none hover:bg-white/20 hover:border-white/50"
             style={{ pointerEvents: "auto" }}
           >
             <a
@@ -380,7 +249,7 @@ export default function HeroSection() {
             asChild
             size="lg"
             onClick={() => play()}
-            className="w-full px-8 py-4 bg-white/10 text-white font-bold text-lg border-2 border-white/30 rounded-none hover:bg-white/20 hover:border-white/50 transition-all duration-300"
+            className="w-full px-8 py-4 bg-white/10 text-white font-bold text-lg border-2 border-white/30 rounded-none hover:bg-white/20 hover:border-white/50"
             style={{ pointerEvents: "auto" }}
           >
             <Link
@@ -414,26 +283,22 @@ export default function HeroSection() {
           <Button
             size="lg"
             onClick={scrollToNextSection}
-            className="px-8 py-4 text-white font-bold text-lg bg-transparent border-0 rounded-none hover:bg-white/5 transition-all duration-300 group"
+            className="px-8 py-4 text-white font-bold text-lg bg-transparent border-0 rounded-none hover:bg-white/5"
             style={{ pointerEvents: "auto" }}
           >
             <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-6 h-6">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="w-4 h-4"
-                >
-                  <path d="m7 13 5 5 5-5" />
-                  <path d="m7 6 5 5 5-5" />
-                </svg>
-              </div>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className="w-4 h-4"
+              >
+                <path d="m7 13 5 5 5-5" />
+                <path d="m7 6 5 5 5-5" />
+              </svg>
               <span className="tracking-wide uppercase text-sm font-black">
                 Ver más
               </span>
@@ -441,26 +306,6 @@ export default function HeroSection() {
           </Button>
         </div>
       </div>
-
-      {/* Opacity Control Panel - Commented out, using 70% default */}
-      {/* <div className="absolute top-6 right-6 z-40 bg-black/60 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-        <div className="text-white text-sm font-medium mb-2">Backdrop Opacity</div>
-        <div className="flex items-center gap-3">
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.05"
-            value={backdropOpacity}
-            onChange={(e) => setBackdropOpacity(parseFloat(e.target.value))}
-            className="w-32 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
-            style={{ pointerEvents: 'auto' }}
-          />
-          <span className="text-white text-sm font-mono min-w-[3rem] text-right">
-            {Math.round(backdropOpacity * 100)}%
-          </span>
-        </div>
-      </div> */}
     </section>
   );
 }
