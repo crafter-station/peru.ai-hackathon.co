@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Canvas } from "@react-three/fiber";
 import Image from "next/image";
 import useSound from "use-sound";
@@ -9,6 +9,12 @@ import { Background3DScene } from "./background-3d-scene";
 import { LoadingOverlay } from "./loading-overlay";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import Link from "next/link";
+import {
+  differenceInDays,
+  differenceInHours,
+  differenceInMinutes,
+  differenceInSeconds,
+} from "date-fns";
 
 /**
  * Hero section with Peruvian-themed IA HACKATHON display
@@ -21,6 +27,15 @@ export default function HeroSection() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [backdropOpacity, setBackdropOpacity] = useState(0.8);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Countdown timer state
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
+  const hackathonDate = useMemo(() => new Date("2025-11-29T00:00:00"), []);
 
   const isMobile = useMediaQuery("(max-width: 768px)");
 
@@ -60,6 +75,35 @@ export default function HeroSection() {
       };
     }
   }, [scene3DLoaded]);
+
+  // Countdown timer effect
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const now = new Date();
+      const totalSeconds = differenceInSeconds(hackathonDate, now);
+
+      if (totalSeconds <= 0) {
+        return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+      }
+
+      const days = differenceInDays(hackathonDate, now);
+      const hours = differenceInHours(hackathonDate, now) % 24;
+      const minutes = differenceInMinutes(hackathonDate, now) % 60;
+      const seconds = totalSeconds % 60;
+
+      return { days, hours, minutes, seconds };
+    };
+
+    // Initial calculation
+    setTimeLeft(calculateTimeLeft());
+
+    // Update every second
+    const timer = setInterval(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [hackathonDate]);
 
   // Handle scroll detection to disable 3D controls during scrolling (desktop only)
   useEffect(() => {
@@ -246,6 +290,72 @@ export default function HeroSection() {
           >
             Innovación • Tecnología • Futuro
           </p>
+        </div>
+
+        {/* Countdown Timer */}
+        <div
+          className={`
+          max-w-md mx-auto mb-8 transition-all duration-300 transform
+          ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}
+        `}
+          style={{ transitionDelay: "175ms" }}
+        >
+          <div className="text-center mb-3">
+            <p className="text-white text-sm md:text-base font-medium mb-2 drop-shadow-lg">
+              29-30 de Noviembre
+            </p>
+            <div className="inline-flex items-center gap-2">
+              <div className="h-px bg-brand-red/30 w-8"></div>
+              <span className="text-brand-red text-xs font-bold uppercase tracking-widest">
+                Comienza en
+              </span>
+              <div className="h-px bg-brand-red/30 w-8"></div>
+            </div>
+          </div>
+          <div className="flex justify-center gap-3 md:gap-4">
+            {/* Days */}
+            <div className="text-center">
+              <div className="text-2xl md:text-3xl font-black text-white mb-1 drop-shadow-lg">
+                {String(timeLeft.days).padStart(2, "0")}
+              </div>
+              <p className="text-xs text-muted-foreground uppercase tracking-wide">
+                Días
+              </p>
+            </div>
+            <div className="text-white text-2xl md:text-3xl font-black">:</div>
+
+            {/* Hours */}
+            <div className="text-center">
+              <div className="text-2xl md:text-3xl font-black text-white mb-1 drop-shadow-lg">
+                {String(timeLeft.hours).padStart(2, "0")}
+              </div>
+              <p className="text-xs text-muted-foreground uppercase tracking-wide">
+                Hrs
+              </p>
+            </div>
+            <div className="text-white text-2xl md:text-3xl font-black">:</div>
+
+            {/* Minutes */}
+            <div className="text-center">
+              <div className="text-2xl md:text-3xl font-black text-white mb-1 drop-shadow-lg">
+                {String(timeLeft.minutes).padStart(2, "0")}
+              </div>
+              <p className="text-xs text-muted-foreground uppercase tracking-wide">
+                Min
+              </p>
+            </div>
+            <div className="text-white text-2xl md:text-3xl font-black">:</div>
+
+            {/* Seconds */}
+            <div className="text-center">
+              <div className="text-2xl md:text-3xl font-black text-white mb-1 drop-shadow-lg">
+                {String(timeLeft.seconds).padStart(2, "0")}
+              </div>
+              <p className="text-xs text-muted-foreground uppercase tracking-wide">
+                Seg
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* CTA Buttons */}
