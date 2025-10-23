@@ -128,6 +128,21 @@ export default function FooterSection() {
                   className="h-7 sm:h-8 w-auto"
                 />
               </a>
+              <a
+                href="https://www.linkedin.com/company/start-lima/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block hover:opacity-80 transition-opacity duration-200"
+              >
+                <Image
+                  src="/START-lima.png"
+                  alt="START Lima"
+                  width={150}
+                  height={60}
+                  quality={95}
+                  className="h-10 sm:h-11 w-auto"
+                />
+              </a>
             </div>
           </div>
         </div>
