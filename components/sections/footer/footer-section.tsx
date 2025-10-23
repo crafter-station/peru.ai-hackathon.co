@@ -92,8 +92,8 @@ export default function FooterSection() {
                 className="inline-block hover:opacity-80 transition-opacity duration-200"
               >
                 <Image
-                  src="/ip.png"
-                  alt="IA Playgrounds"
+                  src="/ai-playgrounds-logo.png"
+                  alt="AI Playgrounds"
                   width={120}
                   height={48}
                   quality={95}
