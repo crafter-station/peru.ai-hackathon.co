@@ -64,6 +64,12 @@ export const InputForm = ({
             <textarea
               value={prompt}
               onChange={(e) => onPromptChange(e.target.value)}
+                onKeyDown={() => {
+                const audio = new Audio("/sounds/bite.mp3");
+                audio.volume = 0.3; 
+                audio.play().catch(() => {}); 
+              }}
+
               placeholder="Describe la escena que quieres crear con la alpaca..."
               className="w-full h-20 sm:h-24 p-3 sm:p-4 bg-black/50 border border-gray-600 resize-none focus:outline-none focus:ring-2 focus:ring-white text-white text-sm sm:text-base"
               maxLength={500}
