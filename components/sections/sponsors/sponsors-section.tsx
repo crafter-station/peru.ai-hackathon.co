@@ -19,11 +19,9 @@ export default function SponsorsSection() {
           <div className="relative z-10">
             <div className="inline-flex items-center gap-3 mb-3">
               <div className="h-px bg-brand-red w-8 md:w-24"></div>
-              <div className="px-3 py-1 bg-gradient-to-r from-brand-red/10 to-brand-red/5 border border-brand-red/20 rounded">
-                <span className="text-brand-red text-xs font-bold uppercase tracking-widest">
-                  POWERED BY
-                </span>
-              </div>
+              <span className="text-brand-red text-xs font-bold uppercase tracking-widest">
+                POWERED BY
+              </span>
               <div className="h-px bg-brand-red w-8 md:w-24"></div>
             </div>
 
