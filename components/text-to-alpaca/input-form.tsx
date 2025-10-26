@@ -78,14 +78,14 @@ export const InputForm = ({
             </div>
 
             <Button
-              onClick={onGenerate}
-              disabled={!canGenerate || isLoading}
-              className={`w-full h-10 sm:h-12 text-sm sm:text-base font-semibold ${
-                generationsUsed >= maxGenerations 
-                  ? 'bg-gray-600 text-gray-300 cursor-not-allowed hover:bg-gray-600' 
-                  : 'bg-white text-black hover:bg-gray-200'
-              }`}
-            >
+                onClick={onGenerate}
+                disabled={!canGenerate || isLoading}
+                className={`w-full h-10 sm:h-12 text-sm sm:text-base font-semibold ${
+                  generationsUsed >= maxGenerations 
+                    ? 'bg-gray-600 text-gray-300 cursor-not-allowed hover:bg-gray-600' 
+                    : 'bg-white text-black hover:bg-gray-200 cursor-pointer'
+                }`}
+              >
               {isLoading ? (
                 <>Generando...</>
               ) : generationsUsed >= maxGenerations ? (
