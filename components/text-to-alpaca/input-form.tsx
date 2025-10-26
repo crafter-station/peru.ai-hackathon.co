@@ -64,6 +64,12 @@ export const InputForm = ({
             <textarea
               value={prompt}
               onChange={(e) => onPromptChange(e.target.value)}
+                onKeyDown={() => {
+                const audio = new Audio("/sounds/bite.mp3");
+                audio.volume = 0.3; 
+                audio.play().catch(() => {}); 
+              }}
+
               placeholder="Describe la escena que quieres crear con la alpaca..."
               className="w-full h-20 sm:h-24 p-3 sm:p-4 bg-black/50 border border-gray-600 resize-none focus:outline-none focus:ring-2 focus:ring-white text-white text-sm sm:text-base"
               maxLength={500}
@@ -78,14 +84,14 @@ export const InputForm = ({
             </div>
 
             <Button
-              onClick={onGenerate}
-              disabled={!canGenerate || isLoading}
-              className={`w-full h-10 sm:h-12 text-sm sm:text-base font-semibold ${
-                generationsUsed >= maxGenerations 
-                  ? 'bg-gray-600 text-gray-300 cursor-not-allowed hover:bg-gray-600' 
-                  : 'bg-white text-black hover:bg-gray-200'
-              }`}
-            >
+                onClick={onGenerate}
+                disabled={!canGenerate || isLoading}
+                className={`w-full h-10 sm:h-12 text-sm sm:text-base font-semibold ${
+                  generationsUsed >= maxGenerations 
+                    ? 'bg-gray-600 text-gray-300 cursor-not-allowed hover:bg-gray-600' 
+                    : 'bg-white text-black hover:bg-gray-200 cursor-pointer'
+                }`}
+              >
               {isLoading ? (
                 <>Generando...</>
               ) : generationsUsed >= maxGenerations ? (

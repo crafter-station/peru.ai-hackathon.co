@@ -25,7 +25,9 @@ Open [http://localhost:3000](http://localhost:3000) to view the application.
 
 ## Partners
 
-<img src="public/THC-BRAND-WHITE.svg" alt="THC" width="120"/> <img src="public/In_partnership_with_ MAKERS.svg" alt="Makers" width="140"/>
+<img src="public/THC-BRAND-WHITE.svg" alt="THC" width="120"/> 
+<img src="public/In_partnership_with_ MAKERS.svg" alt="Makers" width="140"/> 
+<img src="public/crafter-logotipo.svg" alt="Crafter Station" width="120"/>
 
 ## Credits
 
