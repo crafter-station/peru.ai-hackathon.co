@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import { Providers } from "@/components/providers";
+import { ChatBubble } from "@/components/chat/chat-bubble";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -161,6 +162,7 @@ export default function RootLayout({
       >
         <Providers>
           {children}
+          <ChatBubble />
           <Analytics />
         </Providers>
       </body>
