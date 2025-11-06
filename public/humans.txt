@@ -1,0 +1,57 @@
+
+
+# TEAM
+
+    Event: IA Hackathon Peru 2025
+    Location: Peru
+    Dates: November 29-30, 2025
+    Website: https://peru.ai-hackathon.co
+    Description: El evento de inteligencia artificial más importante del Perú. Innovación, tecnología y futuro.
+
+    Team Members:
+    -- Andres Corrales
+    -- Anthony Cueva
+    -- Clarisa Bujaico
+    -- Cristian Correa
+    -- Railly Hugo
+    -- Soledad Sullca
+    -- Tomas Calle
+    -- mrmorgan.ai
+    -- Shiara Crafter
+    -- Syndel Callisaya
+    -- Juan Montreuil
+    -- Liz
+
+# SPONSORS
+
+    Powered by:
+    -- Yavendió (https://www.yavendio.com/en/)
+    -- ElevenLabs (https://elevenlabs.io/)
+    -- forHuman (https://en.forhuman.studio/)
+    -- Cursor (https://cursor.sh)
+    -- Lovable (https://lovable.dev)
+    -- Kebo App (https://kebo.app/)
+
+# PARTNERS
+
+    In partnership with:
+    -- THC
+    -- Makers
+    -- Crafter Station (https://crafterstation.com/)
+
+# TECHNOLOGY
+
+    Stack: Next.js 15.2.4, TypeScript, Tailwind CSS
+    AI: FAL AI (nano-banana/edit model)
+    Analytics: Vercel Analytics
+    Hosting: Vercel
+
+# THANKS
+
+    Designed by: Moraleja (https://www.linkedin.com/in/alejamorales/)
+    Inspired by: Chris Tate (https://x.com/ctatedev)
+
+# LAST UPDATE
+
+    2025-11-XX
+
