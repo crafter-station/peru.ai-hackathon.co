@@ -115,7 +115,7 @@ export default function FooterSection() {
                 />
               </a>
               <a
-                href="https://chat.whatsapp.com/GdmSNdGpqDW33fiYI0XPef"
+                href="https://www.kebo.app/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block hover:opacity-80 transition-opacity duration-200 mt-1 p-2 -ml-2 sm:-ml-5"
