@@ -1,0 +1,76 @@
+# llms.txt for IA Hackathon Peru 2025
+# Following llmstxt.org standard
+
+# About
+
+Name: IA Hackathon Peru 2025
+URL: https://peru.ai-hackathon.co
+Language: Spanish (es-PE)
+Type: Event Website
+Description: El evento de inteligencia artificial más importante del Perú. Innovación, tecnología y futuro. 29-30 de noviembre 2025.
+
+# Event Details
+
+Event Name: IA Hackathon Peru 2025
+Start Date: 2025-11-29
+End Date: 2025-11-30
+Location: Peru
+Event Type: Hackathon
+Focus: Artificial Intelligence, Innovation, Technology
+
+# Content
+
+## Main Pages
+
+- Home (/): Landing page with event information, sponsors, details, challenge, evaluation criteria, and FAQ
+- Text-to-Alpaca Generator (/tta): Interactive AI tool for generating custom alpaca images using FAL AI
+- Image Gallery (/i/[imageId]): Individual image pages with sharing and liking functionality
+
+## Features
+
+- AI-powered image generation using FAL AI (nano-banana/edit model)
+- Image gallery with like functionality
+- Anonymous user authentication
+- Rate limiting for API calls
+- Content safety guardrails using Groq AI
+
+# Technology Stack
+
+Framework: Next.js 15.2.4
+Language: TypeScript
+Styling: Tailwind CSS v4
+UI Components: Radix UI with shadcn/ui
+AI Integration: FAL AI, Groq
+Analytics: Vercel Analytics
+Hosting: Vercel
+
+# Sponsors
+
+- Yavendió: https://www.yavendio.com/en/
+- ElevenLabs: https://elevenlabs.io/
+- forHuman: https://en.forhuman.studio/
+- Cursor: https://cursor.sh
+- Lovable: https://lovable.dev
+
+# Partners
+
+- THC
+- Makers
+- Crafter Station
+
+# API Endpoints
+
+All API routes are located under /api/ and should not be crawled by LLMs or search engines. These include:
+- /api/generate-image: Image generation endpoint
+- /api/guardrail: Content safety checking
+- /api/gallery: Gallery image management
+- /api/auth/anonymous: Anonymous user authentication
+
+# Contact
+
+Website: https://peru.ai-hackathon.co
+
+# Last Updated
+
+2025-11-XX
+

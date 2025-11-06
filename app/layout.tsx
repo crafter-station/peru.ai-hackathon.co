@@ -124,10 +124,37 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const eventSchema = {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    name: "IA Hackathon Peru 2025",
+    description: "Únete al evento de inteligencia artificial más importante del Perú. Innovación, tecnología y futuro.",
+    startDate: "2025-11-29T00:00:00-05:00",
+    endDate: "2025-11-30T23:59:59-05:00",
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    eventStatus: "https://schema.org/EventScheduled",
+    location: {
+      "@type": "Place",
+      name: "Peru",
+      addressCountry: "PE",
+    },
+    organizer: {
+      "@type": "Organization",
+      name: "IA Hackathon Peru",
+      url: "https://peru.ai-hackathon.co",
+    },
+    image: "https://peru.ai-hackathon.co/og-image.jpg",
+    url: "https://peru.ai-hackathon.co",
+  };
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="es-PE" suppressHydrationWarning>
       <head>
         <link rel="stylesheet" href="https://use.typekit.net/kre7aao.css" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(eventSchema) }}
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${adelleMonoFont.variable} ${adelleMonoFlexFont.variable} antialiased`}

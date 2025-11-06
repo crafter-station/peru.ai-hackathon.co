@@ -1,0 +1,14 @@
+# robots.txt for IA Hackathon Peru 2025
+# https://peru.ai-hackathon.co
+
+User-agent: *
+Allow: /
+Allow: /tta
+Allow: /i/
+
+# Block API routes from crawling
+Disallow: /api/
+
+# Sitemap (optional - can be added when available)
+# Sitemap: https://peru.ai-hackathon.co/sitemap.xml
+
