@@ -19,12 +19,22 @@ import {
   type PromptInputMessage,
 } from "@/components/ai-elements/prompt-input";
 import { Response } from "@/components/ai-elements/response";
+import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
 
 interface ChatMessage {
   id: string;
   role: "user" | "assistant";
   content: string;
 }
+
+const hackathonSuggestions = [
+  "¿Cuándo es el hackathon?",
+  "¿Cuáles son los premios?",
+  "¿Cómo me registro?",
+  "¿Qué tecnologías puedo usar?",
+  "¿Hay algún tema específico?",
+  "¿Cuánto tiempo dura el evento?",
+];
 
 export function ChatBubble() {
   const [isOpen, setIsOpen] = useState(false);
@@ -146,6 +156,19 @@ export function ChatBubble() {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    const fakeEvent = {
+      preventDefault: () => {},
+    } as FormEvent;
+    
+    handleSubmit(
+      {
+        text: suggestion,
+      } as PromptInputMessage,
+      fakeEvent
+    );
   };
 
   useEffect(() => {
@@ -289,6 +312,22 @@ export function ChatBubble() {
               </Conversation>
 
               <div className="p-3 border-t border-border/30 bg-background/40 backdrop-blur-sm shrink-0">
+                {messages.length === 0 && (
+                  <div className="mb-3">
+                    <Suggestions>
+                      {hackathonSuggestions.map((suggestion) => (
+                        <Suggestion
+                          key={suggestion}
+                          onClick={handleSuggestionClick}
+                          suggestion={suggestion}
+                          variant="outline"
+                          size="sm"
+                          className="text-xs border-border/30 hover:border-[#B91F2E]/40 hover:bg-[#B91F2E]/5"
+                        />
+                      ))}
+                    </Suggestions>
+                  </div>
+                )}
                 <PromptInput onSubmit={handleSubmit} className="w-full">
                   <PromptInputTextarea
                     ref={textareaRef}
@@ -330,7 +369,6 @@ export function ChatBubble() {
           </AnimatePresence>
 
           <motion.button
-            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             transition={{ duration: 0.15 }}
             onClick={() => setIsOpen(!isOpen)}
@@ -344,14 +382,15 @@ export function ChatBubble() {
               "cursor-pointer",
               "h-12 w-12 rounded-lg",
               "bg-background/90 backdrop-blur-xl",
-              "shadow-[0_2px_8px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.06)] hover:shadow-xl hover:shadow-[#B91F2E]/20",
+              "shadow-[0_2px_8px_rgba(185,31,46,0.18),0_1px_2px_rgba(185,31,46,0.12),0_0_0_1px_rgba(185,31,46,0.08)]",
+              "hover:shadow-[0_4px_16px_rgba(185,31,46,0.3),0_2px_4px_rgba(185,31,46,0.2),0_0_0_2px_rgba(185,31,46,0.15)]",
               "transition-all duration-200",
-              "border border-border/20 hover:border-[#B91F2E]/30",
+              "border border-[#B91F2E]/25 hover:border-[#B91F2E]/40",
               isOpen && "scale-0 opacity-0 pointer-events-none md:scale-100 md:opacity-100 md:pointer-events-auto"
             )}
             aria-label={isOpen ? "Cerrar chat" : "Abrir chat"}
           >
-            <MessageCircle className="h-5 w-5 text-[#B91F2E]" aria-hidden="true" />
+            <MessageCircle className="h-5 w-5 text-[#B91F2E] drop-shadow-[0_0_4px_rgba(185,31,46,0.4)]" aria-hidden="true" />
           </motion.button>
         </div>
       </div>
