@@ -122,6 +122,42 @@ export default function SponsorsSection() {
               className="w-full h-24 md:h-32 object-contain relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
             />
           </a>
+
+          {/* Sponsor 6 - Cayetano */}
+          <a
+            href="https://cayetano.edu.pe"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative px-8 py-4 rounded-xl border border-white/5 bg-gradient-to-br from-white/[0.02] to-transparent hover:border-white/10 hover:from-white/[0.04] transition-all duration-300 w-full flex items-center justify-center"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-brand-red/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
+            <Image
+              src="/logo_cayetano_BN_1.png"
+              alt="Cayetano"
+              width={400}
+              height={400}
+              quality={100}
+              className="w-full h-24 md:h-32 object-contain relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
+            />
+          </a>
+
+          {/* Sponsor 7 - Bioincuba */}
+          <a
+            href="https://bioincuba.cayetano.pe/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative px-8 py-4 rounded-xl border border-white/5 bg-gradient-to-br from-white/[0.02] to-transparent hover:border-white/10 hover:from-white/[0.04] transition-all duration-300 w-full flex items-center justify-center md:col-start-2"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-brand-red/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
+            <Image
+              src="/logo_bioincuba_BN_1.png"
+              alt="Bioincuba"
+              width={400}
+              height={400}
+              quality={100}
+              className="w-full h-24 md:h-32 object-contain relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
+            />
+          </a>
         </div>
       </div>
     </section>
