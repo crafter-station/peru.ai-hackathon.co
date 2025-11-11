@@ -31,6 +31,47 @@ export default function SponsorsSection() {
           </div>
         </div>
 
+        {/* Main Sponsors - Featured prominently */}
+        <div className="mb-10 md:mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-center justify-items-center max-w-3xl mx-auto">
+            {/* Sponsor - Cayetano */}
+            <a
+              href="https://cayetano.edu.pe"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group relative px-8 py-5 rounded-xl border border-brand-red/20 bg-gradient-to-br from-brand-red/5 via-white/[0.02] to-transparent hover:border-brand-red/40 hover:from-brand-red/8 hover:shadow-md hover:shadow-brand-red/10 transition-all duration-300 w-full flex items-center justify-center"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-brand-red/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
+              <Image
+                src="/logo_cayetano_BN_1.png"
+                alt="Cayetano"
+                width={400}
+                height={400}
+                quality={100}
+                className="w-full h-28 md:h-36 object-contain relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
+              />
+            </a>
+
+            {/* Sponsor - Bioincuba */}
+            <a
+              href="https://bioincuba.cayetano.pe/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group relative px-8 py-5 rounded-xl border border-brand-red/20 bg-gradient-to-br from-brand-red/5 via-white/[0.02] to-transparent hover:border-brand-red/40 hover:from-brand-red/8 hover:shadow-md hover:shadow-brand-red/10 transition-all duration-300 w-full flex items-center justify-center"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-brand-red/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
+              <Image
+                src="/logo_bioincuba_BN_1.png"
+                alt="Bioincuba"
+                width={400}
+                height={400}
+                quality={100}
+                className="w-full h-28 md:h-36 object-contain relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
+              />
+            </a>
+          </div>
+        </div>
+
         {/* Premium sponsor grid with perfect spacing */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 items-center justify-items-center max-w-5xl mx-auto">
           {/* Sponsor 1 - Yavendió */}
@@ -140,45 +181,6 @@ export default function SponsorsSection() {
               className="w-full h-24 md:h-32 object-contain relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
             />
           </a>
-
-          {/* Last row - Centered sponsors */}
-          <div className="md:col-span-3 flex flex-col md:flex-row items-center justify-center gap-8 md:gap-10 w-full">
-            {/* Sponsor 7 - Bioincuba */}
-            <a
-              href="https://bioincuba.cayetano.pe/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group relative px-8 py-4 rounded-xl border border-white/5 bg-gradient-to-br from-white/[0.02] to-transparent hover:border-white/10 hover:from-white/[0.04] transition-all duration-300 w-full max-w-sm flex items-center justify-center"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-brand-red/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
-              <Image
-                src="/logo_bioincuba_BN_1.png"
-                alt="Bioincuba"
-                width={400}
-                height={400}
-                quality={100}
-                className="w-full h-24 md:h-32 object-contain relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
-              />
-            </a>
-
-            {/* Sponsor 8 - Cayetano */}
-            <a
-              href="https://cayetano.edu.pe"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group relative px-8 py-4 rounded-xl border border-white/5 bg-gradient-to-br from-white/[0.02] to-transparent hover:border-white/10 hover:from-white/[0.04] transition-all duration-300 w-full max-w-sm flex items-center justify-center"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-brand-red/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
-              <Image
-                src="/logo_cayetano_BN_1.png"
-                alt="Cayetano"
-                width={400}
-                height={400}
-                quality={100}
-                className="w-full h-24 md:h-32 object-contain relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
-              />
-            </a>
-          </div>
         </div>
       </div>
     </section>
