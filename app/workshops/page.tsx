@@ -5,11 +5,25 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Workshops y Talleres | IA Hackathon Peru 2025",
-  description: "Participa en 7 workshops gratuitos del 18 al 28 de noviembre sobre IA, Figma, Lovable, Serverless, Clerk, MCP y más. Aprende de expertos antes del IA Hackathon Peru 2025.",
-  keywords: ["workshops", "talleres", "IA", "inteligencia artificial", "hackathon", "Peru", "Lovable", "Clerk", "Serverless", "Vercel", "desarrollo"],
+  description:
+    "Participa en 8 workshops gratuitos del 18 al 28 de noviembre sobre IA, Figma, Lovable, Serverless, Clerk, MCP y más. Aprende de expertos antes del IA Hackathon Peru 2025.",
+  keywords: [
+    "workshops",
+    "talleres",
+    "IA",
+    "inteligencia artificial",
+    "hackathon",
+    "Peru",
+    "Lovable",
+    "Clerk",
+    "Serverless",
+    "Vercel",
+    "desarrollo",
+  ],
   openGraph: {
     title: "Workshops y Talleres | IA Hackathon Peru 2025",
-    description: "Participa en 7 workshops gratuitos del 19 al 28 de noviembre sobre IA, Figma, Lovable, Serverless, Clerk y más. Eventos online preparatorios para el hackathon.",
+    description:
+      "Participa en 8 workshops gratuitos del 18 al 28 de noviembre sobre IA, Figma, Lovable, Serverless, Clerk y más. Eventos online preparatorios para el hackathon.",
     url: "https://peru.ai-hackathon.co/workshops",
     siteName: "IA Hackathon Peru",
     images: [
@@ -26,7 +40,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Workshops y Talleres | IA Hackathon Peru 2025",
-    description: "7 workshops gratuitos del 19-28 Nov: IA, Figma, Lovable, Serverless, Clerk, MCP. Online y gratuito.",
+    description:
+      "8 workshops gratuitos del 19-28 Nov: IA, Figma, Lovable, Serverless, Clerk, MCP. Online y gratuito.",
     images: ["/og-image.jpg"],
   },
   alternates: {
@@ -40,6 +55,11 @@ export default function WorkshopsPage() {
       name: "De la idea al prototipo funcional: IA, Figma y Vibe Coding en acción",
       startDate: "2025-11-18T19:00:00-05:00",
       url: "https://luma.com/embed/event/evt-JH2aVEI18JkBa6O",
+    },
+    {
+      name: "De Cero a Producción: Construye Apps Móviles más Rápido con IA, Expo y Supabase",
+      startDate: "2025-11-21T19:00:00-05:00",
+      url: "https://luma.com/embed/event/evt-fRK0BHtluFjMmGJ/simple",
     },
     {
       name: "Lovable",
@@ -69,7 +89,7 @@ export default function WorkshopsPage() {
     {
       name: "Creando un unicornio",
       startDate: "2025-11-28T18:00:00-05:00",
-      url: "https://luma.com/embed/event/evt-6fw39vpj",
+      url: "https://luma.com/embed/event/evt-aw4mxgcSkgAcUNp/simple",
     },
   ];
 
@@ -77,7 +97,8 @@ export default function WorkshopsPage() {
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: "IA Hackathon Peru 2025 - Workshops",
-    description: "Serie de workshops preparatorios para el IA Hackathon Peru 2025",
+    description:
+      "Serie de workshops preparatorios para el IA Hackathon Peru 2025",
     itemListElement: workshopEvents.map((workshop, index) => ({
       "@type": "ListItem",
       position: index + 1,
@@ -119,4 +140,3 @@ export default function WorkshopsPage() {
     </>
   );
 }
-

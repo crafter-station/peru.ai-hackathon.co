@@ -49,10 +49,11 @@ export default function WorkshopsHeroSection() {
             WORKSHOPS Y TALLERES
           </h1>
           <p className="text-lg md:text-xl text-white leading-relaxed mb-2 drop-shadow-lg max-w-2xl mx-auto">
-            Aprende de los expertos en sesiones prácticas que te prepararán para el hackathon
+            Aprende de los expertos en sesiones prácticas que te prepararán para
+            el hackathon
           </p>
           <p className="text-base md:text-lg text-gray-200 drop-shadow-lg">
-            Del 19 al 28 de Noviembre • Online y Gratuito
+            Del 18 al 28 de Noviembre • Online y Gratuito
           </p>
         </div>
 
@@ -87,4 +88,3 @@ export default function WorkshopsHeroSection() {
     </section>
   );
 }
-
