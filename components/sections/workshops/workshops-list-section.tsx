@@ -3,10 +3,17 @@
 export default function WorkshopsListSection() {
   const workshops = [
     {
-      title: "De la idea al prototipo funcional: IA, Figma y Vibe Coding en acción",
-      date: "19 de Noviembre • 19:00",
+      title:
+        "De la idea al prototipo funcional: IA, Figma y Vibe Coding en acción",
+      date: "18 de Noviembre • 19:00",
       eventId: "evt-JH2aVEI18JkBa6O",
       url: "https://luma.com/jgmm8k4t",
+    },
+    {
+      title: "Expo",
+      date: "21 de Noviembre • 19:00",
+      eventId: "evt-fRK0BHtluFjMmGJ",
+      url: "https://luma.com/a7z7af8a",
     },
     {
       title: "Lovable",
@@ -27,7 +34,8 @@ export default function WorkshopsListSection() {
       url: "https://luma.com/2dcxn97v",
     },
     {
-      title: "De la idea al impacto: cómo construir productos de IA que la gente realmente use",
+      title:
+        "De la idea al impacto: cómo construir productos de IA que la gente realmente use",
       date: "26 de Noviembre • 19:00",
       eventId: "evt-GLmGu1OMFy4C88k",
       url: "https://luma.com/8gixx4h6",
@@ -41,7 +49,7 @@ export default function WorkshopsListSection() {
     {
       title: "Creando un unicornio",
       date: "28 de Noviembre • 18:00",
-      eventId: "evt-6fw39vpj",
+      eventId: "evt-aw4mxgcSkgAcUNp",
       url: "https://luma.com/6fw39vpj",
     },
   ];
@@ -71,7 +79,13 @@ export default function WorkshopsListSection() {
 
               {/* Luma Embed with Clickable Card Overlay */}
               <div className="w-full relative overflow-hidden h-[800px] md:h-[460px]">
-                <div className="w-full h-full" style={{ transform: 'scale(1.1) translateY(40px)', transformOrigin: 'center center' }}>
+                <div
+                  className="w-full h-full"
+                  style={{
+                    transform: "scale(1.1) translateY(40px)",
+                    transformOrigin: "center center",
+                  }}
+                >
                   <iframe
                     className="w-full h-[800px] md:h-[460px]"
                     src={`https://lu.ma/embed/event/${workshop.eventId}/simple`}
@@ -85,15 +99,21 @@ export default function WorkshopsListSection() {
                   ></iframe>
                 </div>
                 <div
-                  onClick={() => window.open(workshop.url, '_blank', 'noopener,noreferrer')}
+                  onClick={() =>
+                    window.open(workshop.url, "_blank", "noopener,noreferrer")
+                  }
                   className="absolute inset-0 w-full h-full cursor-pointer z-10 bg-transparent hover:bg-black/5 transition-colors"
                   role="button"
                   tabIndex={0}
                   aria-label={`Abrir evento: ${workshop.title}`}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
+                    if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault();
-                      window.open(workshop.url, '_blank', 'noopener,noreferrer');
+                      window.open(
+                        workshop.url,
+                        "_blank",
+                        "noopener,noreferrer",
+                      );
                     }
                   }}
                 />
@@ -112,7 +132,8 @@ export default function WorkshopsListSection() {
             <div className="h-px bg-brand-red/30 w-12"></div>
           </div>
           <p className="text-muted-foreground text-base mb-6 max-w-xl mx-auto">
-            Después de completar los workshops, estarás listo para participar en el hackathon
+            Después de completar los workshops, estarás listo para participar en
+            el hackathon
           </p>
           <a
             href="https://luma.com/slqfykte"
@@ -138,4 +159,3 @@ export default function WorkshopsListSection() {
     </section>
   );
 }
-
