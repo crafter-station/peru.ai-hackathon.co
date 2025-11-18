@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import { Analytics } from "@vercel/analytics/react";
+import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { ChatBubble } from "@/components/chat/chat-bubble";
@@ -149,23 +150,25 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="es-PE" suppressHydrationWarning>
-      <head>
-        <link rel="stylesheet" href="https://use.typekit.net/kre7aao.css" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(eventSchema) }}
-        />
-      </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${adelleMonoFont.variable} ${adelleMonoFlexFont.variable} antialiased`}
-      >
-        <Providers>
-          {children}
-          <ChatBubble />
-          <Analytics />
-        </Providers>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="es-PE" suppressHydrationWarning>
+        <head>
+          <link rel="stylesheet" href="https://use.typekit.net/kre7aao.css" />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(eventSchema) }}
+          />
+        </head>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} ${adelleMonoFont.variable} ${adelleMonoFlexFont.variable} antialiased`}
+        >
+          <Providers>
+            {children}
+            <ChatBubble />
+            <Analytics />
+          </Providers>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

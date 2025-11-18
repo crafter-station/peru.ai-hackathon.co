@@ -1,0 +1,285 @@
+import { type NextRequest, NextResponse } from "next/server";
+import { fal } from "@fal-ai/client";
+import fs from "fs";
+import path from "path";
+import { db } from "@/lib/db";
+import { participants } from "@/lib/schema";
+import { eq } from "drizzle-orm";
+import { put } from "@vercel/blob";
+
+fal.config({
+  credentials: process.env.FAL_API_KEY,
+});
+
+const RATE_LIMIT_SECONDS = 10;
+
+export async function POST(request: NextRequest) {
+  try {
+    const { participantId } = await request.json();
+
+    if (!participantId) {
+      return NextResponse.json(
+        { error: "Participant ID required" },
+        { status: 400 },
+      );
+    }
+
+    if (!db) {
+      return NextResponse.json(
+        { error: "Database not configured" },
+        { status: 500 },
+      );
+    }
+
+    const participant = await db.query.participants.findFirst({
+      where: eq(participants.id, participantId),
+    });
+
+    if (!participant) {
+      return NextResponse.json(
+        { error: "Participant not found" },
+        { status: 404 },
+      );
+    }
+
+    if (!participant.participantNumber) {
+      return NextResponse.json(
+        { error: "Participant number not assigned" },
+        { status: 400 },
+      );
+    }
+
+    if (!participant.profilePhotoUrl) {
+      return NextResponse.json(
+        { error: "Profile photo required for badge generation" },
+        { status: 400 },
+      );
+    }
+
+    if (participant.lastBadgeGenerationAt) {
+      const lastGenerationTime = new Date(
+        participant.lastBadgeGenerationAt,
+      ).getTime();
+      const now = Date.now();
+      const timeSinceLastGeneration = (now - lastGenerationTime) / 1000;
+
+      if (timeSinceLastGeneration < RATE_LIMIT_SECONDS) {
+        const secondsRemaining = Math.ceil(
+          RATE_LIMIT_SECONDS - timeSinceLastGeneration,
+        );
+        return NextResponse.json(
+          {
+            error: `Debes esperar ${secondsRemaining} segundo${secondsRemaining !== 1 ? "s" : ""} antes de regenerar el badge`,
+          },
+          { status: 429 },
+        );
+      }
+    }
+
+    console.log(
+      "[badge-ai] Generating AI badge for participant",
+      participant.participantNumber,
+    );
+
+    const participantNumberFormatted = `#${String(participant.participantNumber).padStart(4, "0")}`;
+    const participantName =
+      participant.fullName?.toUpperCase() || "PARTICIPANT";
+
+    const photoResponse = await fetch(participant.profilePhotoUrl);
+    const photoBuffer = Buffer.from(await photoResponse.arrayBuffer());
+    const photoBase64 = `data:image/jpeg;base64,${photoBuffer.toString("base64")}`;
+
+    const pixelArtPrompt = `Create an anime-inspired 8-bit pixel art character based on this person's photo.
+
+STYLE - ANIME 8-BIT FUSION:
+- Retro JRPG character portrait (Final Fantasy, Chrono Trigger, Fire Emblem style)
+- Anime/manga aesthetic with expressive eyes and stylized features
+- Pixelated but with character depth and personality
+- Mix of cute chibi proportions with detailed pixel shading
+- NOT flat 2D - use pixel shading to create dimension and form
+- Think classic SNES RPG character portraits with personality
+
+PIXEL ART EXECUTION:
+- Large visible pixels with intentional pixel placement
+- Dithering and pixel patterns for texture and depth
+- Anime-style large expressive eyes (simplified but with life)
+- Detailed pixel work for hair strands and highlights
+- Strategic use of pixels to show volume and form
+- Retro game character portrait quality
+
+CHARACTER DESIGN:
+- Chest-up portrait view
+- Anime-influenced facial features (larger eyes, stylized nose/mouth)
+- Expressive and characterful pose
+- Hair with volume and pixel-shaded highlights
+- Clothing/outfit suggested with pixel details
+- Cute but with depth and dimension
+
+SHADING & DEPTH:
+- Grayscale only: 4 tones (black #000000, dark gray #555555, light gray #AAAAAA, white #FFFFFF)
+- Use dithering patterns to create mid-tones and texture
+- Pixel-based shading to show facial contours and depth
+- Highlights on hair, face, and clothing for dimension
+- Cell-shaded anime approach adapted to pixel art
+- NOT flat - use strategic pixel placement for 3D form
+
+TECHNICAL SPECS:
+- Black background (#000000) - pure solid black
+- Character centered, fully visible
+- Sharp pixel edges and clean silhouette
+- No text, watermarks, or labels
+
+OUTPUT GOAL:
+An anime-style 8-bit character portrait with personality, depth, and charm - like a beloved JRPG character sprite with expressive features and dimensional pixel shading.`;
+
+    console.log("[badge-ai] STEP 1: Generating pixel art portrait");
+
+    const pixelArtResult = await fal.subscribe("fal-ai/nano-banana/edit", {
+      input: {
+        prompt: pixelArtPrompt,
+        image_urls: [photoBase64],
+        num_images: 1,
+        output_format: "png",
+      },
+    });
+
+    if (
+      !pixelArtResult.data ||
+      !pixelArtResult.data.images ||
+      pixelArtResult.data.images.length === 0
+    ) {
+      throw new Error("No pixel art image generated by FAL AI");
+    }
+
+    const pixelArtImageUrl = pixelArtResult.data.images[0].url;
+    console.log("[badge-ai] Pixel art generated:", pixelArtImageUrl);
+
+    const pixelArtResponse = await fetch(pixelArtImageUrl);
+    const pixelArtBuffer = Buffer.from(await pixelArtResponse.arrayBuffer());
+    const pixelArtBase64 = `data:image/png;base64,${pixelArtBuffer.toString("base64")}`;
+
+    const imagePath = path.join(
+      process.cwd(),
+      "public",
+      "IA-HACK-PE-LLAMA.png",
+    );
+
+    if (!fs.existsSync(imagePath)) {
+      throw new Error("Base template image not found");
+    }
+
+    const imageBuffer = fs.readFileSync(imagePath);
+    const imageBase64 = `data:image/png;base64,${imageBuffer.toString("base64")}`;
+
+    const badgeCompositionPrompt = `Create a participant badge by integrating a pixel art character portrait into this template.
+
+CRITICAL - LLAMA REPLACEMENT:
+- The pixel art portrait REPLACES the alpaca/llama character completely
+- DO NOT show the alpaca/llama behind or underneath the pixel art
+- REMOVE or COVER the alpaca/llama entirely with the pixel art portrait
+- The pixel art is the new centerpiece character, not an overlay
+- Position the pixel art exactly where the alpaca/llama currently is
+
+PRESERVE EVERYTHING ELSE:
+- Keep all original template colors, gradients, patterns intact
+- Preserve ALL logos: IA HACKATHON logo, sponsor logos
+- Keep all brand elements, decorative elements, and layout
+- Maintain background colors and design elements
+- Only the alpaca/llama gets replaced
+
+PIXEL ART PLACEMENT:
+- Position in the CENTER where the alpaca/llama currently appears
+- Size appropriately (30-40% of image height)
+- SEAMLESSLY blend the black background of pixel art with template's black background
+- No visible edges, borders, or "pasted on top" appearance
+- The pixel art should look DRAWN INTO the badge, not layered over it
+- Integrate naturally as if it was always part of the original design
+
+TEXT PLACEMENT (below the pixel art):
+Stack these text elements vertically UNDER the pixel art portrait:
+
+1. "${participantNumberFormatted}" - white or light gray (#FFFFFF or #CCCCCC), large, bold
+2. "${participantName}" - white or light gray (#FFFFFF or #CCCCCC), bold, uppercase
+3. "PARTICIPANTE" - light gray (#AAAAAA or #CCCCCC), smaller size
+
+TEXT RULES:
+- ALL text must be grayscale (white, light gray, dark gray) - NO colors
+- Position text in empty space directly below the pixel art
+- DO NOT overlap logos, sponsor names, or brand elements
+- Create tight vertical stack with good spacing
+- Ensure readability with high contrast against background
+
+COMPOSITION REQUIREMENTS:
+- ONE unified badge design (not separate layers)
+- Pixel art portrait has REPLACED the llama (llama not visible)
+- Black backgrounds perfectly blended
+- Text clearly visible below portrait
+- All original branding preserved except the llama
+- Professional, cohesive, seamless result
+
+FINAL CHECK:
+- Can you see the alpaca/llama? NO - it should be completely replaced
+- Does the pixel art look pasted on? NO - it should look integrated
+- Are backgrounds blended? YES - seamless black background throughout`;
+
+    console.log("[badge-ai] STEP 2: Composing final badge with pixel art");
+
+    const result = await fal.subscribe("fal-ai/nano-banana/edit", {
+      input: {
+        prompt: badgeCompositionPrompt,
+        image_urls: [imageBase64, pixelArtBase64],
+        num_images: 1,
+        output_format: "jpeg",
+      },
+    });
+
+    if (
+      !result.data ||
+      !result.data.images ||
+      result.data.images.length === 0
+    ) {
+      throw new Error("No badge image generated by FAL AI");
+    }
+
+    const generatedImageUrl = result.data.images[0].url;
+    console.log("[badge-ai] Badge generated, uploading to Vercel Blob");
+
+    const badgeResponse = await fetch(generatedImageUrl);
+    const badgeBuffer = Buffer.from(await badgeResponse.arrayBuffer());
+
+    const timestamp = Date.now();
+    const blobResult = await put(
+      `badges/${participantId}-${timestamp}.jpg`,
+      badgeBuffer,
+      { access: "public", contentType: "image/jpeg" },
+    );
+
+    console.log("[badge-ai] Uploaded to Vercel Blob:", blobResult.url);
+
+    await db
+      .update(participants)
+      .set({
+        badgeBlobUrl: blobResult.url,
+        badgeGeneratedAt: new Date(),
+        lastBadgeGenerationAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .where(eq(participants.id, participantId));
+
+    console.log("[badge-ai] Badge generated successfully");
+
+    return NextResponse.json({
+      participantNumber: participant.participantNumber,
+      badgeUrl: blobResult.url,
+    });
+  } catch (error) {
+    console.error("[badge-ai] Error generating badge:", error);
+    return NextResponse.json(
+      {
+        error: "Failed to generate badge",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 },
+    );
+  }
+}
