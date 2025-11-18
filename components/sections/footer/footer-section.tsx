@@ -82,50 +82,138 @@ export default function FooterSection() {
 
         {/* Community Partners */}
         <div className="border-t pt-8 mb-8">
-  <div className="text-center mb-4">
-    <p className="text-sm text-muted-foreground mb-4">Apoyados por:</p>
+          <div className="text-center mb-6">
+            <p className="text-sm text-muted-foreground mb-6">Apoyados por:</p>
 
-    <div className="flex flex-col items-center gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3 items-center justify-items-center max-w-4xl mx-auto">
+              {/* Partner 1 - IEEE USIL */}
+              <a
+                href="https://edu.ieee.org/pe-usil/ieee-usil-nosotros/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative px-2 py-1.5 rounded-md bg-gradient-to-br from-white/[0.01] to-transparent hover:from-white/[0.02] transition-all duration-300 w-full flex items-center justify-center"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-brand-red/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md"></div>
+                <Image
+                  src="/ieee_usil.png"
+                  alt="IEEE USIL"
+                  width={150}
+                  height={60}
+                  quality={100}
+                  className="w-full h-8 md:h-10 object-contain relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
+                />
+              </a>
 
-      {/* CP Primera fila */}
-      
-      <div className="flex items-end justify-center gap-3 sm:gap-6 flex-wrap">
-        <a href="https://edu.ieee.org/pe-usil/ieee-usil-nosotros/" target="_blank" rel="noopener noreferrer" className="inline-block hover:opacity-80 transition-opacity duration-200">
-          <Image src="/ieee_usil.png" alt="Wie Usil" width={120} height={48} className="h-10 sm:h-12 w-auto" />
-        </a>
+              {/* Partner 2 - Hackeando Productos */}
+              <a
+                href="https://hackeandoproductos.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative px-2 py-1.5 rounded-md bg-gradient-to-br from-white/[0.01] to-transparent hover:from-white/[0.02] transition-all duration-300 w-full flex items-center justify-center"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-brand-red/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md"></div>
+                <Image
+                  src="/HackeandoProductos.svg"
+                  alt="Hackeando Productos"
+                  width={150}
+                  height={75}
+                  quality={100}
+                  className="w-full h-8 md:h-10 object-contain relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
+                />
+              </a>
 
-        <a href="https://hackeandoproductos.com/" target="_blank" rel="noopener noreferrer" className="inline-block hover:opacity-80 transition-opacity duration-200">
-          <Image src="/HackeandoProductos.svg" alt="Hackeando Productos" width={120} height={100} className="h-10 sm:h-12 w-auto" />
-        </a>
+              {/* Partner 3 - Utec Ventures */}
+              <a
+                href="https://utecventures.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative px-2 py-1.5 rounded-md bg-gradient-to-br from-white/[0.01] to-transparent hover:from-white/[0.02] transition-all duration-300 w-full flex items-center justify-center"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-brand-red/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md"></div>
+                <Image
+                  src="/utecventures.png"
+                  alt="Utec Ventures"
+                  width={150}
+                  height={60}
+                  quality={100}
+                  className="w-full h-8 md:h-10 object-contain relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
+                />
+              </a>
 
-        <a href="https://utecventures.com/" target="_blank" rel="noopener noreferrer" className="inline-block hover:opacity-80 transition-opacity duration-200">
-          <Image src="/utecventures.png" alt="Utec Ventures" width={120} height={48} className="h-10 sm:h-12 w-auto" />
-        </a>
-      </div>
+              {/* Partner 4 - AI Playgrounds */}
+              <a
+                href="https://www.linkedin.com/company/ai-playgrounds-tech/posts/?feedView=all"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative px-2 py-1.5 rounded-md bg-gradient-to-br from-white/[0.01] to-transparent hover:from-white/[0.02] transition-all duration-300 w-full flex items-center justify-center"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-brand-red/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md"></div>
+                <Image
+                  src="/ai-playgrounds-logo.png"
+                  alt="AI Playgrounds"
+                  width={150}
+                  height={60}
+                  quality={95}
+                  className="w-full h-7 md:h-9 object-contain relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
+                />
+              </a>
 
+              {/* Partner 5 - Crafter */}
+              <a
+                href="https://crafterstation.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative px-2 py-1.5 rounded-md bg-gradient-to-br from-white/[0.01] to-transparent hover:from-white/[0.02] transition-all duration-300 w-full flex items-center justify-center"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-brand-red/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md"></div>
+                <Image
+                  src="/crafter-logotipo.svg"
+                  alt="Crafter"
+                  width={150}
+                  height={60}
+                  quality={100}
+                  className="w-full h-7 md:h-9 object-contain relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
+                />
+              </a>
 
-      {/* CP Segunda fila */}
-      <div className="flex items-end justify-center gap-3 sm:gap-6 flex-wrap">
-        <a href="https://www.linkedin.com/company/ai-playgrounds-tech/posts/?feedView=all" target="_blank" rel="noopener noreferrer" className="inline-block hover:opacity-80 transition-opacity duration-200">
-          <Image src="/ai-playgrounds-logo.png" alt="AI Playgrounds" width={100} height={48} quality={95} className="h-7 sm:h-8 w-auto" />
-        </a>
+              {/* Partner 6 - KEBO */}
+              <a
+                href="https://kebo.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative px-2 py-1.5 rounded-md bg-gradient-to-br from-white/[0.01] to-transparent hover:from-white/[0.02] transition-all duration-300 w-full flex items-center justify-center"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-brand-red/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md"></div>
+                <Image
+                  src="/KEBO-Brand-WhitePurple.svg"
+                  alt="KEBO"
+                  width={150}
+                  height={60}
+                  quality={100}
+                  className="w-full h-7 md:h-9 object-contain relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
+                />
+              </a>
 
-        <a href="https://crafterstation.com/" target="_blank" rel="noopener noreferrer" className="inline-block hover:opacity-80 transition-opacity duration-200">
-          <Image src="/crafter-logotipo.svg" alt="Crafter" width={100} height={48} className="h-7 sm:h-8 w-auto" />
-        </a>
-
-        <a href="https://kebo.app/" target="_blank" rel="noopener noreferrer" className="inline-block hover:opacity-80 transition-opacity duration-200 mt-1 p-2 -ml-2 sm:-ml-5">
-          <Image src="/KEBO-Brand-WhitePurple.svg" alt="KEBO" width={100} height={48} className="h-7 sm:h-8 w-auto" />
-        </a>
-
-        <a href="https://www.linkedin.com/company/start-lima/" target="_blank" rel="noopener noreferrer" className="inline-block hover:opacity-80 transition-opacity duration-200">
-          <Image src="/START-lima.png" alt="START Lima" width={150} height={60} quality={95} className="h-10 sm:h-11 w-auto" />
-        </a>
-      </div>
-
-    </div>
-  </div>
-</div>
+              {/* Partner 7 - START Lima */}
+              <a
+                href="https://www.linkedin.com/company/start-lima/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative px-2 py-1.5 rounded-md bg-gradient-to-br from-white/[0.01] to-transparent hover:from-white/[0.02] transition-all duration-300 w-full flex items-center justify-center md:col-start-2"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-brand-red/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md"></div>
+                <Image
+                  src="/START-lima.png"
+                  alt="START Lima"
+                  width={150}
+                  height={60}
+                  quality={95}
+                  className="w-full h-8 md:h-10 object-contain relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
+                />
+              </a>
+            </div>
+          </div>
+        </div>
 
 
         {/* Copyright */}
