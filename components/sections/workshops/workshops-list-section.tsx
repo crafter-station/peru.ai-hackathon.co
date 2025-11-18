@@ -6,36 +6,43 @@ export default function WorkshopsListSection() {
       title: "De la idea al prototipo funcional: IA, Figma y Vibe Coding en acción",
       date: "19 de Noviembre • 19:00",
       eventId: "evt-JH2aVEI18JkBa6O",
+      url: "https://luma.com/jgmm8k4t",
     },
     {
       title: "Lovable",
       date: "24 de Noviembre • 10:00",
       eventId: "evt-bKIYraV1WFuAtat",
+      url: "https://luma.com/ajzg8pzg",
     },
     {
       title: "Serverless para el despliegue de tus prototipos",
       date: "24 de Noviembre • 19:00",
       eventId: "evt-4P2LUnbPJgMgJBc",
+      url: "https://luma.com/oqb5jxtk",
     },
     {
       title: "Add auth to your app in seconds with Clerk",
       date: "25 de Noviembre • 19:00",
       eventId: "evt-D2X1QLuzb8zz3LG",
+      url: "https://luma.com/2dcxn97v",
     },
     {
       title: "De la idea al impacto: cómo construir productos de IA que la gente realmente use",
       date: "26 de Noviembre • 19:00",
       eventId: "evt-GLmGu1OMFy4C88k",
+      url: "https://luma.com/8gixx4h6",
     },
     {
       title: "Build MCP's in minutes with Vercel AI SDK and Lupa",
       date: "27 de Noviembre • 19:00",
       eventId: "evt-RNCH2399KcMOt4r",
+      url: "https://luma.com/w638p0cx",
     },
     {
       title: "Creando un unicornio",
       date: "28 de Noviembre • 18:00",
       eventId: "evt-6fw39vpj",
+      url: "https://luma.com/6fw39vpj",
     },
   ];
 
@@ -55,9 +62,6 @@ export default function WorkshopsListSection() {
                     </span>
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-lg md:text-xl font-bold mb-1 tracking-tight">
-                      {workshop.title}
-                    </h3>
                     <p className="text-muted-foreground text-sm">
                       {workshop.date}
                     </p>
@@ -65,21 +69,34 @@ export default function WorkshopsListSection() {
                 </div>
               </div>
 
-              {/* Luma Embed */}
-              <div className="w-full">
-                <iframe
-                  className="w-full h-[800px] md:h-[460px]"
-                  src={`https://lu.ma/embed/event/${workshop.eventId}/simple`}
-                  frameBorder="0"
-                  allow="fullscreen; payment"
-                  aria-hidden="false"
+              {/* Luma Embed with Clickable Card Overlay */}
+              <div className="w-full relative overflow-hidden h-[800px] md:h-[460px]">
+                <div className="w-full h-full" style={{ transform: 'scale(1.1) translateY(40px)', transformOrigin: 'center center' }}>
+                  <iframe
+                    className="w-full h-[800px] md:h-[460px]"
+                    src={`https://lu.ma/embed/event/${workshop.eventId}/simple`}
+                    frameBorder="0"
+                    allow="fullscreen; payment"
+                    aria-hidden="true"
+                    tabIndex={-1}
+                    style={{
+                      backgroundColor: "rgb(0, 0, 0)",
+                    }}
+                  ></iframe>
+                </div>
+                <div
+                  onClick={() => window.open(workshop.url, '_blank', 'noopener,noreferrer')}
+                  className="absolute inset-0 w-full h-full cursor-pointer z-10 bg-transparent hover:bg-black/5 transition-colors"
+                  role="button"
                   tabIndex={0}
-                  style={{
-                    border: "1px solid rgba(191, 203, 218, 0.2)",
-                    borderRadius: "16px",
-                    backgroundColor: "rgb(0, 0, 0)",
+                  aria-label={`Abrir evento: ${workshop.title}`}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      window.open(workshop.url, '_blank', 'noopener,noreferrer');
+                    }
                   }}
-                ></iframe>
+                />
               </div>
             </div>
           ))}
