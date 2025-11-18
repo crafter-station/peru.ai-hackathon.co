@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Workshops y Talleres | IA Hackathon Peru 2025",
-  description: "Participa en 7 workshops gratuitos del 19 al 28 de noviembre sobre IA, Figma, Lovable, Serverless, Clerk, MCP y más. Aprende de expertos antes del IA Hackathon Peru 2025.",
+  description: "Participa en 7 workshops gratuitos del 18 al 28 de noviembre sobre IA, Figma, Lovable, Serverless, Clerk, MCP y más. Aprende de expertos antes del IA Hackathon Peru 2025.",
   keywords: ["workshops", "talleres", "IA", "inteligencia artificial", "hackathon", "Peru", "Lovable", "Clerk", "Serverless", "Vercel", "desarrollo"],
   openGraph: {
     title: "Workshops y Talleres | IA Hackathon Peru 2025",
@@ -38,7 +38,7 @@ export default function WorkshopsPage() {
   const workshopEvents = [
     {
       name: "De la idea al prototipo funcional: IA, Figma y Vibe Coding en acción",
-      startDate: "2025-11-19T19:00:00-05:00",
+      startDate: "2025-11-18T19:00:00-05:00",
       url: "https://luma.com/embed/event/evt-JH2aVEI18JkBa6O",
     },
     {
