@@ -42,6 +42,11 @@ export default function WorkshopsPage() {
       url: "https://luma.com/embed/event/evt-JH2aVEI18JkBa6O",
     },
     {
+      name: "De Cero a Producción: Construye Apps Móviles más Rápido con IA, Expo y Supabase",
+      startDate: "2025-11-21T19:00:00-05:00",
+      url: "https://luma.com/embed/event/evt-fRK0BHtluFjMmGJ",
+    },
+    {
       name: "Lovable",
       startDate: "2025-11-24T10:00:00-05:00",
       url: "https://luma.com/embed/event/evt-bKIYraV1WFuAtat",
