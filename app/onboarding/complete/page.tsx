@@ -1,19 +1,50 @@
 "use client";
 
 import { useParticipant } from "@/hooks/use-participant";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { PixelButton } from "@/components/ui/pixel-button";
+import {
+  RetroCard,
+  RetroCardContent,
+  RetroCardHeader,
+  RetroCardTitle,
+} from "@/components/ui/retro-card";
+import { PixelConfetti } from "@/components/ui/pixel-confetti";
+import { GlitchText } from "@/components/ui/terminal-text";
 import Link from "next/link";
-import { CheckCircle2, Download, Sparkles, Copy, Linkedin, Twitter } from "lucide-react";
+import { Download, Sparkles, Copy } from "lucide-react";
 import Image from "next/image";
 import { useBadgeGeneration } from "@/hooks/use-badge-generation";
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { useRetroSounds } from "@/hooks/use-click-sound";
 
 export default function CompletePage() {
   const { participant } = useParticipant();
   const { generateBadge, isGenerating, error } = useBadgeGeneration();
   const [countdown, setCountdown] = useState(0);
+  const [showConfetti, setShowConfetti] = useState(true);
+  const { playSuccess, playClick } = useRetroSounds();
+
+  useEffect(() => {
+    if (showConfetti) {
+      playSuccess();
+      const timer = setTimeout(() => setShowConfetti(false), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [showConfetti, playSuccess]);
+
+  useEffect(() => {
+    if (
+      participant?.id &&
+      participant.registrationStatus === "completed" &&
+      !participant.badgeBlobUrl &&
+      !isGenerating
+    ) {
+      generateBadge(participant.id).catch((err) => {
+        console.error("Auto badge generation failed:", err);
+      });
+    }
+  }, [participant?.id, participant?.registrationStatus, participant?.badgeBlobUrl, isGenerating, generateBadge]);
 
   useEffect(() => {
     if (!participant?.lastBadgeGenerationAt) return;
@@ -39,7 +70,7 @@ export default function CompletePage() {
 
     try {
       await generateBadge(participant.id);
-      window.location.reload();
+      playSuccess();
     } catch (err) {
       console.error("Badge generation error:", err);
       alert(error || "Error generando badge. Por favor, intenta de nuevo.");
@@ -50,137 +81,88 @@ export default function CompletePage() {
 
   if (!participant || participant.registrationStatus !== "completed") {
     return (
-      <Card className="max-w-2xl mx-auto">
-        <CardContent className="py-12 text-center">
-          <p className="text-muted-foreground">
-            Aún no has completado tu registro.
+      <RetroCard className="max-w-2xl mx-auto">
+        <RetroCardContent className="py-12 text-center">
+          <p className="font-adelle-mono text-sm uppercase text-muted-foreground">
+            REGISTRATION_NOT_COMPLETE
           </p>
-          <Button asChild className="mt-4">
-            <Link href="/onboarding">Volver al registro</Link>
-          </Button>
-        </CardContent>
-      </Card>
+          <PixelButton asChild className="mt-4">
+            <Link href="/onboarding">RETURN_TO_REGISTRATION</Link>
+          </PixelButton>
+        </RetroCardContent>
+      </RetroCard>
     );
   }
 
-
-
-  return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <Card>
-        <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
-            <CheckCircle2 className="size-16 text-green-500" />
-          </div>
-          <div className="flex justify-center gap-2 mb-2">
-            <Badge variant="secondary" className="text-2xl px-4 py-2">
-              #{String(participant.participantNumber || 0).padStart(4, "0")}
-            </Badge>
-          </div>
-          <CardTitle className="text-3xl">
-            ¡Registro Completado!
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="text-center">
-            <p className="text-lg">
-              Tu registro para el IA Hackathon Peru 2025 ha sido completado
-              exitosamente.
-            </p>
-          </div>
-
-
-
-          <div className="bg-muted p-6 rounded-lg space-y-2">
-            <h3 className="font-bold text-lg">Detalles del Evento</h3>
-            <div className="space-y-1 text-sm">
-              <p>
-                <span className="font-medium">Fecha:</span> 29-30 de Noviembre
-                2025
-              </p>
-              <p>
-                <span className="font-medium">Lugar:</span> Universidad Peruana
-                Cayetano Heredia - La Molina
-              </p>
-              <p>
-                <span className="font-medium">Hora:</span> 9:00 AM
-              </p>
-            </div>
-          </div>
-
-          <div className="bg-muted p-6 rounded-lg space-y-4">
-            <h3 className="font-bold text-lg">¡Comparte la noticia!</h3>
-            
-            <div className="bg-background p-4 rounded-md border text-sm whitespace-pre-line">
-              🚀 ¡He sido satisfactoriamente registrado como participante en la IA Hackathon Peru 2025!
+  const shareText = `🚀 ¡He sido satisfactoriamente registrado como participante en la IA Hackathon Peru 2025!
 
 Me emociona ser parte de este evento donde crearemos soluciones innovadoras con inteligencia artificial.
 
 📅 29-30 de Noviembre
 📍 Universidad Peruana Cayetano Heredia
 
-#IAHackathonPeru #AI #Hackathon #Peru #Innovation
-            </div>
-            
-            <div className="flex flex-wrap gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  navigator.clipboard.writeText(
-                    "🚀 ¡He sido satisfactoriamente registrado como participante en la IA Hackathon Peru 2025!\n\nMe emociona ser parte de este evento donde crearemos soluciones innovadoras con inteligencia artificial.\n\n📅 29-30 de Noviembre\n📍 Universidad Peruana Cayetano Heredia\n\n#IAHackathonPeru #AI #Hackathon #Peru #Innovation"
-                  );
-                }}
-              >
-                <Copy className="size-4 mr-2" />
-                Copiar
-              </Button>
-              
-              <Button
-                variant="outline"
-                size="sm"
-                asChild
-              >
-                <a
-                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent("https://iahackathon.pe")}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Linkedin className="size-4 mr-2" />
-                  LinkedIn
-                </a>
-              </Button>
-              
-              <Button
-                variant="outline"
-                size="sm"
-                asChild
-              >
-                <a
-                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent("🚀 ¡He sido satisfactoriamente registrado como participante en la IA Hackathon Peru 2025!\n\nMe emociona ser parte de este evento donde crearemos soluciones innovadoras con inteligencia artificial.\n\n📅 29-30 de Noviembre\n📍 Universidad Peruana Cayetano Heredia\n\n#IAHackathonPeru #AI #Hackathon #Peru #Innovation")}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Twitter className="size-4 mr-2" />
-                  X (Twitter)
-                </a>
-              </Button>
-            </div>
-            
-            <p className="text-xs text-muted-foreground">
-              Para Instagram: copia el texto y pégalo en tu historia o publicación
-            </p>
-          </div>
+#IAHackathonPeru #AI #Hackathon #Peru #Innovation`;
 
-          <Button asChild variant="outline" className="w-full">
-            <Link href="/">Volver al inicio</Link>
-          </Button>
+  return (
+    <div className="max-w-4xl mx-auto space-y-6">
+      <PixelConfetti isActive={showConfetti} particleCount={60} />
+
+      <RetroCard>
+        <RetroCardHeader className="text-center">
+          <motion.div
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ type: "spring", duration: 0.8 }}
+            className="text-4xl mb-4"
+          >
+            🏆
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="space-y-2"
+          >
+            <div className="inline-block border-2 border-terminal-green bg-black px-4 py-2">
+              <span className="font-adelle-mono text-2xl text-terminal-green font-bold">
+                #{String(participant.participantNumber || 0).padStart(4, "0")}
+              </span>
+            </div>
+            
+            <RetroCardTitle className="justify-center text-lg">
+              <GlitchText>ACHIEVEMENT_UNLOCKED!</GlitchText>
+            </RetroCardTitle>
+          </motion.div>
+        </RetroCardHeader>
+
+        <RetroCardContent className="space-y-6">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="text-center"
+          >
+            <p className="font-adelle-mono text-sm uppercase">
+              REGISTRATION_COMPLETE
+            </p>
+            <p className="font-adelle-mono text-xs text-muted-foreground mt-1">
+              IA_HACKATHON_PERU_2025
+            </p>
+          </motion.div>
 
           {participant.badgeBlobUrl ? (
-            <div className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="space-y-4"
+            >
               <div className="text-center">
-                <h3 className="font-bold text-2xl mb-6">Tu Badge de Participante</h3>
-                <div className="relative w-full max-w-3xl mx-auto rounded-lg overflow-hidden border-2 border-primary/20 shadow-xl">
+                <h3 className="font-adelle-mono font-bold text-lg uppercase mb-4">
+                  YOUR_BADGE
+                </h3>
+                <div className="relative w-full max-w-3xl mx-auto border-4 border-foreground">
                   <Image
                     src={participant.badgeBlobUrl}
                     alt="Participant Badge"
@@ -188,12 +170,14 @@ Me emociona ser parte de este evento donde crearemos soluciones innovadoras con 
                     height={900}
                     className="w-full h-auto"
                   />
+                  <div className="absolute inset-0 scanlines pointer-events-none" />
                 </div>
               </div>
 
-              <div className="flex flex-col gap-4">
-                <Button
+              <div className="flex flex-col gap-3">
+                <PixelButton
                   onClick={() => {
+                    playClick();
                     const link = document.createElement("a");
                     link.href = participant.badgeBlobUrl!;
                     link.download = `ia-hack-badge-${participant.participantNumber}.jpg`;
@@ -202,65 +186,223 @@ Me emociona ser parte de este evento donde crearemos soluciones innovadoras con 
                   size="lg"
                   className="w-full"
                 >
-                  <Download className="size-4 mr-2" />
-                  Descargar Badge
-                </Button>
+                  <Download className="size-4" />
+                  DOWNLOAD_BADGE
+                </PixelButton>
 
-                <Button
+                <PixelButton
                   onClick={handleGenerateBadge}
-                  variant="outline"
+                  variant="secondary"
                   disabled={!canGenerate}
                   className="w-full"
                 >
                   {isGenerating ? (
                     <>
-                      <div className="animate-spin size-4 border-2 border-current border-t-transparent rounded-full mr-2" />
-                      Generando Badge...
+                      <span className="loading-dots">GENERATING</span>
                     </>
                   ) : countdown > 0 ? (
-                    `Espera ${countdown}s para regenerar`
+                    `WAIT_${countdown}s`
                   ) : (
                     <>
-                      <Sparkles className="size-4 mr-2" />
-                      Regenerar Badge
+                      <Sparkles className="size-4" />
+                      REGENERATE_BADGE
                     </>
                   )}
-                </Button>
+                </PixelButton>
 
-                <p className="text-sm text-muted-foreground text-center">
-                  Comparte tu badge en redes sociales con #IAHackathonPeru
+                <p className="text-[10px] font-adelle-mono text-muted-foreground text-center uppercase">
+                  SHARE_WITH #IAHACKATHONPERU
                 </p>
               </div>
-            </div>
+            </motion.div>
           ) : (
-            <div className="text-center py-12 space-y-4">
-              <p className="text-muted-foreground">
-                Tu badge aún no ha sido generado.
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              className="text-center py-8 space-y-4"
+            >
+              <p className="font-adelle-mono text-sm text-muted-foreground uppercase">
+                BADGE_NOT_GENERATED
               </p>
-              <Button 
+              <PixelButton 
                 onClick={handleGenerateBadge} 
                 size="lg"
                 disabled={!canGenerate}
+                variant="terminal"
               >
                 {isGenerating ? (
-                  <>
-                    <div className="animate-spin size-4 border-2 border-current border-t-transparent rounded-full mr-2" />
-                    Generando Badge...
-                  </>
+                  <span className="loading-dots">GENERATING</span>
                 ) : (
                   <>
-                    <Sparkles className="size-4 mr-2" />
-                    Generar Mi Badge
+                    <Sparkles className="size-4" />
+                    GENERATE_BADGE.exe
                   </>
                 )}
-              </Button>
+              </PixelButton>
               {error && (
-                <p className="text-sm text-destructive">{error}</p>
+                <p className="text-xs font-adelle-mono text-destructive uppercase">{error}</p>
               )}
-            </div>
+            </motion.div>
           )}
-        </CardContent>
-      </Card>
+
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+            className="border-2 border-foreground/50 p-4 space-y-2 font-adelle-mono"
+          >
+            <h3 className="font-bold text-sm uppercase">EVENT_DETAILS</h3>
+            <div className="space-y-1 text-xs uppercase">
+              <p>
+                <span className="text-muted-foreground">DATE:</span> 29-30_NOV_2025
+              </p>
+              <p>
+                <span className="text-muted-foreground">LOCATION:</span> UPCH_LA_MOLINA
+              </p>
+              <p>
+                <span className="text-muted-foreground">CHECK_IN:</span> 08:00_AM
+              </p>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.75 }}
+            className="border-2 border-foreground/50 p-4 space-y-2 font-adelle-mono"
+          >
+            <h3 className="font-bold text-sm uppercase">WHAT_TO_BRING</h3>
+            <ul className="space-y-1 text-xs uppercase">
+              <li className="flex items-center gap-2">
+                <span className="text-terminal-green">✓</span> LAPTOP_+_CHARGER
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="text-terminal-green">✓</span> DNI_OR_ID
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="text-terminal-green">✓</span> WATER_BOTTLE
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="text-terminal-green">✓</span> NOTEBOOK_+_PEN
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="text-terminal-green">✓</span> COMFORTABLE_CLOTHES
+              </li>
+            </ul>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+            className="border-2 border-terminal-green/50 bg-terminal-green/5 p-4 space-y-2 font-adelle-mono"
+          >
+            <h3 className="font-bold text-sm uppercase text-terminal-green">IMPORTANT_REMINDERS</h3>
+            <ul className="space-y-1 text-xs uppercase">
+              <li>
+                <span className="text-muted-foreground">•</span> ARRIVE_EARLY_FOR_CHECK_IN
+              </li>
+              <li>
+                <span className="text-muted-foreground">•</span> BRING_THIS_BADGE_(PRINTED_OR_PHONE)
+              </li>
+              <li>
+                <span className="text-muted-foreground">•</span> FOOD_AND_DRINKS_PROVIDED
+              </li>
+              <li>
+                <span className="text-muted-foreground">•</span> TEAMS_FORMED_ON_SITE
+              </li>
+            </ul>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.85 }}
+            className="border-2 border-foreground/50 p-4 space-y-3"
+          >
+            <h3 className="font-adelle-mono font-bold text-sm uppercase">SHARE_NEWS</h3>
+            
+            <div className="bg-black p-3 border border-terminal-green/50 font-adelle-mono text-xs text-terminal-green whitespace-pre-line">
+              {shareText}
+            </div>
+            
+            <div className="flex flex-wrap gap-2">
+              <PixelButton
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  playClick();
+                  navigator.clipboard.writeText(shareText);
+                }}
+              >
+                <Copy className="size-3" />
+                COPY
+              </PixelButton>
+              
+              <PixelButton
+                variant="secondary"
+                size="sm"
+                asChild
+              >
+                <a
+                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent("https://iahackathon.pe")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  LINKEDIN
+                </a>
+              </PixelButton>
+              
+              <PixelButton
+                variant="secondary"
+                size="sm"
+                asChild
+              >
+                <a
+                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  X_TWITTER
+                </a>
+              </PixelButton>
+              
+              <PixelButton
+                variant="secondary"
+                size="sm"
+                asChild
+              >
+                <a
+                  href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  WHATSAPP
+                </a>
+              </PixelButton>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9 }}
+            className="text-center py-4"
+          >
+            <p className="font-adelle-mono text-lg uppercase font-bold text-terminal-green mb-2">
+              SEE_YOU_THERE!
+            </p>
+            <p className="font-adelle-mono text-xs text-muted-foreground uppercase">
+              GET_READY_TO_BUILD_SOMETHING_AMAZING
+            </p>
+          </motion.div>
+
+          <PixelButton asChild variant="ghost" className="w-full">
+            <Link href="/">&lt;&lt; RETURN_HOME</Link>
+          </PixelButton>
+        </RetroCardContent>
+      </RetroCard>
     </div>
   );
 }

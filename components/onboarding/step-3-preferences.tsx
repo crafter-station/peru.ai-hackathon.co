@@ -7,22 +7,29 @@ import { useParticipant } from "@/hooks/use-participant";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { PixelButton } from "@/components/ui/pixel-button";
+import {
+  RetroCard,
+  RetroCardContent,
+  RetroCardHeader,
+  RetroCardTitle,
+  RetroCardDescription,
+} from "@/components/ui/retro-card";
+import { RetroTextarea } from "@/components/ui/retro-textarea";
+import { RetroRadioGroup, RetroRadioGroupItem } from "@/components/ui/retro-radio-group";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
+import { motion } from "framer-motion";
+import { useRetroSounds } from "@/hooks/use-click-sound";
 
 export function Step3Preferences() {
   const { participant, updateParticipant, isUpdating } = useParticipant();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { playSuccess, playError, playClick } = useRetroSounds();
 
   const form = useForm<Step3Data>({
     resolver: zodResolver(step3Schema),
@@ -41,153 +48,193 @@ export function Step3Preferences() {
         ...data,
         currentStep: 4,
       });
+      playSuccess();
+    } catch {
+      playError();
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const goBack = () => {
+    playClick();
     updateParticipant({ currentStep: 2 });
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Paso 3: Información Adicional</CardTitle>
-        <CardDescription>
-          Cuéntanos más sobre ti (opcional)
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+    <RetroCard>
+      <RetroCardHeader>
+        <RetroCardTitle>USER_CONFIG.set()</RetroCardTitle>
+        <RetroCardDescription>
+          OPTIONAL_INFORMATION
+        </RetroCardDescription>
+      </RetroCardHeader>
+      <RetroCardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="experienceLevel"
-              render={({ field }) => (
-                <FormItem className="space-y-3">
-                  <FormLabel>Nivel de Experiencia</FormLabel>
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      className="flex flex-col space-y-1"
-                    >
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="beginner" />
-                        </FormControl>
-                        <Label className="font-normal">
-                          Principiante - Estoy empezando en mi área
-                        </Label>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="intermediate" />
-                        </FormControl>
-                        <Label className="font-normal">
-                          Intermedio - Tengo experiencia en mi área
-                        </Label>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="advanced" />
-                        </FormControl>
-                        <Label className="font-normal">
-                          Avanzado - Soy experto/a en mi área
-                        </Label>
-                      </FormItem>
-                    </RadioGroup>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <FormField
+                control={form.control}
+                name="experienceLevel"
+                render={({ field }) => (
+                  <FormItem className="space-y-3">
+                    <label className="block text-xs font-adelle-mono font-bold uppercase tracking-wider text-muted-foreground">
+                      EXPERIENCE_LEVEL
+                    </label>
+                    <FormControl>
+                      <RetroRadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="flex flex-col space-y-2"
+                      >
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RetroRadioGroupItem value="beginner" />
+                          </FormControl>
+                          <Label className="font-adelle-mono text-sm uppercase">
+                            LVL_1 - BEGINNER
+                          </Label>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RetroRadioGroupItem value="intermediate" />
+                          </FormControl>
+                          <Label className="font-adelle-mono text-sm uppercase">
+                            LVL_2 - INTERMEDIATE
+                          </Label>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RetroRadioGroupItem value="advanced" />
+                          </FormControl>
+                          <Label className="font-adelle-mono text-sm uppercase">
+                            LVL_3 - ADVANCED
+                          </Label>
+                        </FormItem>
+                      </RetroRadioGroup>
+                    </FormControl>
+                    <FormMessage className="font-adelle-mono text-xs uppercase" />
+                  </FormItem>
+                )}
+              />
+            </motion.div>
 
-            <FormField
-              control={form.control}
-              name="gender"
-              render={({ field }) => (
-                <FormItem className="space-y-3">
-                  <FormLabel>Género (Opcional)</FormLabel>
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      className="flex flex-col space-y-1"
-                    >
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="male" />
-                        </FormControl>
-                        <Label className="font-normal">Masculino</Label>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="female" />
-                        </FormControl>
-                        <Label className="font-normal">Femenino</Label>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="other" />
-                        </FormControl>
-                        <Label className="font-normal">Otro</Label>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="prefer-not-to-say" />
-                        </FormControl>
-                        <Label className="font-normal">Prefiero no decir</Label>
-                      </FormItem>
-                    </RadioGroup>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <FormField
+                control={form.control}
+                name="gender"
+                render={({ field }) => (
+                  <FormItem className="space-y-3">
+                    <label className="block text-xs font-adelle-mono font-bold uppercase tracking-wider text-muted-foreground">
+                      GENDER [OPTIONAL]
+                    </label>
+                    <FormControl>
+                      <RetroRadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="flex flex-col space-y-2"
+                      >
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RetroRadioGroupItem value="male" />
+                          </FormControl>
+                          <Label className="font-adelle-mono text-sm uppercase">
+                            MALE
+                          </Label>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RetroRadioGroupItem value="female" />
+                          </FormControl>
+                          <Label className="font-adelle-mono text-sm uppercase">
+                            FEMALE
+                          </Label>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RetroRadioGroupItem value="other" />
+                          </FormControl>
+                          <Label className="font-adelle-mono text-sm uppercase">
+                            OTHER
+                          </Label>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RetroRadioGroupItem value="prefer-not-to-say" />
+                          </FormControl>
+                          <Label className="font-adelle-mono text-sm uppercase">
+                            PREFER_NOT_TO_SAY
+                          </Label>
+                        </FormItem>
+                      </RetroRadioGroup>
+                    </FormControl>
+                    <FormMessage className="font-adelle-mono text-xs uppercase" />
+                  </FormItem>
+                )}
+              />
+            </motion.div>
 
-            <FormField
-              control={form.control}
-              name="additionalNotes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Notas Adicionales (Opcional)</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="¿Algo que los organizadores deban saber?"
-                      {...field}
-                      rows={4}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Comparte cualquier información adicional que consideres relevante
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <FormField
+                control={form.control}
+                name="additionalNotes"
+                render={({ field }) => (
+                  <FormItem>
+                    <label className="block text-xs font-adelle-mono font-bold uppercase tracking-wider mb-1 text-muted-foreground">
+                      ADDITIONAL_NOTES [OPTIONAL]
+                    </label>
+                    <FormControl>
+                      <RetroTextarea
+                        placeholder="ANY_INFO_FOR_ORGANIZERS?"
+                        {...field}
+                        rows={4}
+                      />
+                    </FormControl>
+                    <p className="text-[10px] font-adelle-mono text-muted-foreground uppercase mt-1">
+                      DIETARY_RESTRICTIONS, ACCESSIBILITY_NEEDS, ETC
+                    </p>
+                    <FormMessage className="font-adelle-mono text-xs uppercase" />
+                  </FormItem>
+                )}
+              />
+            </motion.div>
 
-            <div className="flex gap-3">
-              <Button
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="flex gap-3 pt-4"
+            >
+              <PixelButton
                 type="button"
-                variant="outline"
+                variant="secondary"
                 onClick={goBack}
                 className="flex-1"
               >
-                Atrás
-              </Button>
-              <Button
+                &lt;&lt; BACK
+              </PixelButton>
+              <PixelButton
                 type="submit"
                 className="flex-1"
-                disabled={isSubmitting || isUpdating}
+                loading={isSubmitting || isUpdating}
               >
-                {isSubmitting || isUpdating ? "Guardando..." : "Siguiente"}
-              </Button>
-            </div>
+                NEXT_LEVEL &gt;&gt;
+              </PixelButton>
+            </motion.div>
           </form>
         </Form>
-      </CardContent>
-    </Card>
+      </RetroCardContent>
+    </RetroCard>
   );
 }

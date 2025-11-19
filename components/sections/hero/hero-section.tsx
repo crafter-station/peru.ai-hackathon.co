@@ -193,7 +193,7 @@ export default function HeroSection() {
             style={{ pointerEvents: "auto" }}
           >
             <Link
-              href="/sign-in"
+              href="/onboarding"
               className="flex items-center justify-center gap-3"
             >
               <div className="flex items-center justify-center w-6 h-6 bg-white/10 rounded-sm">
@@ -208,7 +208,7 @@ export default function HeroSection() {
                 </svg>
               </div>
               <span className="tracking-wide uppercase text-sm font-black">
-                INICIA SESIÓN PARA REGISTRARTE
+                ONBOARDING DE PARTICIPANTES
               </span>
             </Link>
           </Button>

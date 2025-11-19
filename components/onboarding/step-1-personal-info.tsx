@@ -7,21 +7,34 @@ import { useParticipant } from "@/hooks/use-participant";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RetroInput } from "@/components/ui/retro-input";
+import { PixelButton } from "@/components/ui/pixel-button";
+import {
+  RetroCard,
+  RetroCardContent,
+  RetroCardHeader,
+  RetroCardTitle,
+  RetroCardDescription,
+} from "@/components/ui/retro-card";
+import {
+  RetroSelect,
+  RetroSelectContent,
+  RetroSelectItem,
+  RetroSelectTrigger,
+  RetroSelectValue,
+} from "@/components/ui/retro-select";
 import { useState } from "react";
+import { motion } from "framer-motion";
+import { useRetroSounds } from "@/hooks/use-click-sound";
 
 export function Step1PersonalInfo() {
   const { participant, updateParticipant, isUpdating } = useParticipant();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { playSuccess, playError } = useRetroSounds();
 
   const form = useForm<Step1Data>({
     resolver: zodResolver(step1Schema),
@@ -49,185 +62,189 @@ export function Step1PersonalInfo() {
         emergencyContactRelationship: data.emergencyContactRelationship,
         currentStep: 2,
       });
+      playSuccess();
+    } catch {
+      playError();
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const onError = () => {
+    playError();
+  };
+
+  const formFields = [
+    { name: "fullName", label: "FULL_NAME", placeholder: "JUAN_PEREZ_GARCIA", maxLength: undefined },
+    { name: "dni", label: "DNI_NUMBER", placeholder: "12345678", maxLength: 8 },
+    { name: "phoneNumber", label: "PHONE_WHATSAPP", placeholder: "+51987654321", maxLength: undefined },
+  ];
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Paso 1: Información Personal</CardTitle>
-        <CardDescription>
-          Completa tus datos personales para el evento
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+    <RetroCard>
+      <RetroCardHeader>
+        <RetroCardTitle>PLAYER_DATA.init()</RetroCardTitle>
+        <RetroCardDescription>
+          INPUT_PERSONAL_INFORMATION
+        </RetroCardDescription>
+      </RetroCardHeader>
+      <RetroCardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="fullName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nombre Completo</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Juan Pérez García" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    Tu nombre completo como aparece en tu DNI
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="dni"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>DNI</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="12345678"
-                      maxLength={8}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Documento Nacional de Identidad (8 dígitos)
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="ageRange"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Rango de Edad</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecciona tu rango de edad" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="18-24">18-24 años</SelectItem>
-                      <SelectItem value="25-34">25-34 años</SelectItem>
-                      <SelectItem value="35-44">35-44 años</SelectItem>
-                      <SelectItem value="45+">45+ años</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormDescription>
-                    Debes tener 18+ años para participar
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="phoneNumber"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Número de Teléfono (WhatsApp)</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="+51987654321"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Formato: +51 seguido de 9 dígitos
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="space-y-4 pt-6 border-t">
-              <h3 className="font-semibold">Contacto de Emergencia</h3>
-              
-              <FormField
-                control={form.control}
-                name="emergencyContactName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nombre del Contacto</FormLabel>
-                    <FormControl>
-                      <Input placeholder="María García López" {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      Nombre completo de tu contacto de emergencia
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="emergencyContactPhone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Teléfono del Contacto</FormLabel>
-                    <FormControl>
-                      <Input placeholder="+51987654321" {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      Formato: +51 seguido de 9 dígitos
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="emergencyContactRelationship"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Relación</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecciona la relación" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="parent">Padre/Madre</SelectItem>
-                        <SelectItem value="sibling">Hermano/a</SelectItem>
-                        <SelectItem value="spouse">Esposo/a</SelectItem>
-                        <SelectItem value="friend">Amigo/a</SelectItem>
-                        <SelectItem value="other">Otro</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormDescription>
-                      Tu relación con el contacto de emergencia
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="flex gap-3">
-              <Button
-                type="submit"
-                className="flex-1"
-                disabled={isSubmitting || isUpdating}
+          <form onSubmit={form.handleSubmit(onSubmit, onError)} className="space-y-4">
+            {formFields.map((field, index) => (
+              <motion.div
+                key={field.name}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
               >
-                {isSubmitting || isUpdating ? "Guardando..." : "Siguiente"}
-              </Button>
-            </div>
+                <FormField
+                  control={form.control}
+                  name={field.name as keyof Step1Data}
+                  render={({ field: formField }) => (
+                    <FormItem>
+                      <FormControl>
+                        <RetroInput
+                          label={field.label}
+                          placeholder={field.placeholder}
+                          maxLength={field.maxLength}
+                          {...formField}
+                          value={formField.value as string}
+                        />
+                      </FormControl>
+                      <FormMessage className="font-adelle-mono text-xs uppercase" />
+                    </FormItem>
+                  )}
+                />
+              </motion.div>
+            ))}
+
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <FormField
+                control={form.control}
+                name="ageRange"
+                render={({ field }) => (
+                  <FormItem>
+                    <label className="block text-xs font-adelle-mono font-bold uppercase tracking-wider mb-1 text-muted-foreground">
+                      AGE_RANGE
+                    </label>
+                    <RetroSelect onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <RetroSelectTrigger>
+                          <RetroSelectValue placeholder="SELECT_AGE_RANGE" />
+                        </RetroSelectTrigger>
+                      </FormControl>
+                      <RetroSelectContent>
+                        <RetroSelectItem value="18-24">18-24 YEARS</RetroSelectItem>
+                        <RetroSelectItem value="25-34">25-34 YEARS</RetroSelectItem>
+                        <RetroSelectItem value="35-44">35-44 YEARS</RetroSelectItem>
+                        <RetroSelectItem value="45+">45+ YEARS</RetroSelectItem>
+                      </RetroSelectContent>
+                    </RetroSelect>
+                    <p className="text-[10px] font-adelle-mono text-muted-foreground uppercase mt-1">
+                      MUST_BE_18+_TO_PARTICIPATE
+                    </p>
+                    <FormMessage className="font-adelle-mono text-xs uppercase" />
+                  </FormItem>
+                )}
+              />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="pt-4 border-t-2 border-foreground/20"
+            >
+              <h3 className="font-adelle-mono font-bold text-sm uppercase tracking-wider mb-4">
+                EMERGENCY_CONTACT
+              </h3>
+              
+              <div className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="emergencyContactName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <RetroInput
+                          label="CONTACT_NAME"
+                          placeholder="MARIA_GARCIA_LOPEZ"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="font-adelle-mono text-xs uppercase" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="emergencyContactPhone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <RetroInput
+                          label="CONTACT_PHONE"
+                          placeholder="+51987654321"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="font-adelle-mono text-xs uppercase" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="emergencyContactRelationship"
+                  render={({ field }) => (
+                    <FormItem>
+                      <label className="block text-xs font-adelle-mono font-bold uppercase tracking-wider mb-1 text-muted-foreground">
+                        RELATIONSHIP
+                      </label>
+                      <RetroSelect onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <RetroSelectTrigger>
+                            <RetroSelectValue placeholder="SELECT_RELATIONSHIP" />
+                          </RetroSelectTrigger>
+                        </FormControl>
+                        <RetroSelectContent>
+                          <RetroSelectItem value="parent">PARENT</RetroSelectItem>
+                          <RetroSelectItem value="sibling">SIBLING</RetroSelectItem>
+                          <RetroSelectItem value="spouse">SPOUSE</RetroSelectItem>
+                          <RetroSelectItem value="friend">FRIEND</RetroSelectItem>
+                          <RetroSelectItem value="other">OTHER</RetroSelectItem>
+                        </RetroSelectContent>
+                      </RetroSelect>
+                      <FormMessage className="font-adelle-mono text-xs uppercase" />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="pt-4"
+            >
+              <PixelButton
+                type="submit"
+                className="w-full"
+                loading={isSubmitting || isUpdating}
+              >
+                NEXT_LEVEL &gt;&gt;
+              </PixelButton>
+            </motion.div>
           </form>
         </Form>
-      </CardContent>
-    </Card>
+      </RetroCardContent>
+    </RetroCard>
   );
 }

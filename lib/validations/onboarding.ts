@@ -25,7 +25,7 @@ export const step1Schema = z.object({
 });
 
 export const step2Schema = z.object({
-  profilePhotoUrl: z.string().optional(),
+  profilePhotoUrl: z.string().min(1, "Foto de perfil requerida"),
   hasLaptop: z.boolean(),
   laptopBrand: z.string().optional(),
   laptopModel: z.string().optional(),

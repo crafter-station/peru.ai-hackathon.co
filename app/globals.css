@@ -236,4 +236,185 @@
   .slider:focus {
     box-shadow: 0 0 0 2px rgba(185, 31, 46, 0.3);
   }
+
+  /* 8-bit Retro UI Utilities */
+  
+  /* Pixel border using box-shadow */
+  .pixel-border {
+    box-shadow: 
+      3px 0 0 0 currentColor,
+      -3px 0 0 0 currentColor,
+      0 3px 0 0 currentColor,
+      0 -3px 0 0 currentColor;
+  }
+
+  .pixel-border-sm {
+    box-shadow: 
+      2px 0 0 0 currentColor,
+      -2px 0 0 0 currentColor,
+      0 2px 0 0 currentColor,
+      0 -2px 0 0 currentColor;
+  }
+
+  /* Scanline overlay effect */
+  .scanlines {
+    position: relative;
+  }
+  
+  .scanlines::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.03) 2px,
+      rgba(0, 0, 0, 0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .dark .scanlines::after {
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.1) 2px,
+      rgba(0, 0, 0, 0.1) 4px
+    );
+  }
+
+  /* CRT screen glow */
+  .crt-glow {
+    box-shadow: 
+      0 0 20px rgba(0, 255, 65, 0.2),
+      inset 0 0 40px rgba(0, 255, 65, 0.05);
+  }
+
+  .crt-glow-amber {
+    box-shadow: 
+      0 0 20px rgba(255, 176, 0, 0.2),
+      inset 0 0 40px rgba(255, 176, 0, 0.05);
+  }
+
+  /* Blinking cursor animation */
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+  
+  .blink {
+    animation: blink 1s step-end infinite;
+  }
+
+  /* Glitch effect */
+  @keyframes glitch {
+    0% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+    100% { transform: translate(0); }
+  }
+
+  .glitch:hover {
+    animation: glitch 0.3s ease-in-out;
+  }
+
+  /* Pixel press animation */
+  .pixel-press {
+    transition: transform 0.1s ease;
+  }
+  
+  .pixel-press:active {
+    transform: translateY(2px);
+  }
+
+  /* 8-bit text shadow */
+  .pixel-shadow {
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
+  }
+
+  .pixel-shadow-sm {
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+  }
+
+  /* Terminal text colors */
+  .text-terminal-green {
+    color: #00ff41;
+  }
+
+  .text-terminal-amber {
+    color: #ffb000;
+  }
+
+  .bg-terminal-green {
+    background-color: #00ff41;
+  }
+
+  .bg-terminal-amber {
+    background-color: #ffb000;
+  }
+
+  /* Retro grid background */
+  .retro-grid {
+    background-image: 
+      linear-gradient(rgba(0, 255, 65, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 255, 65, 0.03) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  .dark .retro-grid {
+    background-image: 
+      linear-gradient(rgba(0, 255, 65, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 255, 65, 0.05) 1px, transparent 1px);
+  }
+
+  /* Pulse animation for progress segments */
+  @keyframes pixel-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+
+  .pixel-pulse {
+    animation: pixel-pulse 1.5s ease-in-out infinite;
+  }
+
+  /* Screen flash effect */
+  @keyframes screen-flash {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* Typewriter cursor */
+  .typewriter-cursor::after {
+    content: '█';
+    animation: blink 1s step-end infinite;
+  }
+
+  /* Retro input focus glow */
+  .retro-focus:focus {
+    outline: none;
+    box-shadow: 
+      3px 0 0 0 #00ff41,
+      -3px 0 0 0 #00ff41,
+      0 3px 0 0 #00ff41,
+      0 -3px 0 0 #00ff41,
+      0 0 10px rgba(0, 255, 65, 0.3);
+  }
+
+  /* Loading dots animation */
+  @keyframes loading-dots {
+    0% { content: '.'; }
+    33% { content: '..'; }
+    66% { content: '...'; }
+  }
+
+  .loading-dots::after {
+    content: '.';
+    animation: loading-dots 1.5s steps(1) infinite;
+  }
 }

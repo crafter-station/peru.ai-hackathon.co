@@ -7,20 +7,26 @@ import { useParticipant } from "@/hooks/use-participant";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
+import { RetroInput } from "@/components/ui/retro-input";
+import { PixelButton } from "@/components/ui/pixel-button";
+import {
+  RetroCard,
+  RetroCardContent,
+  RetroCardHeader,
+  RetroCardTitle,
+  RetroCardDescription,
+} from "@/components/ui/retro-card";
+import { PixelCheckbox } from "@/components/ui/pixel-checkbox";
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { Upload, X } from "lucide-react";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+import { useRetroSounds } from "@/hooks/use-click-sound";
 
 export function Step2Security() {
   const { participant, updateParticipant, isUpdating } = useParticipant();
@@ -30,15 +36,16 @@ export function Step2Security() {
   const [photoPreview, setPhotoPreview] = useState<string | null>(
     participant?.profilePhotoUrl || null
   );
+  const { playSuccess, playError, playClick } = useRetroSounds();
 
   const form = useForm<Step2Data>({
     resolver: zodResolver(step2Schema),
     defaultValues: {
-      profilePhotoUrl: participant?.profilePhotoUrl || undefined,
+      profilePhotoUrl: participant?.profilePhotoUrl || "",
       hasLaptop: participant?.hasLaptop || false,
-      laptopBrand: participant?.laptopBrand || undefined,
-      laptopModel: participant?.laptopModel || undefined,
-      laptopSerialNumber: participant?.laptopSerialNumber || undefined,
+      laptopBrand: participant?.laptopBrand || "",
+      laptopModel: participant?.laptopModel || "",
+      laptopSerialNumber: participant?.laptopSerialNumber || "",
     },
   });
 
@@ -102,8 +109,10 @@ export function Step2Security() {
       updateParticipant({
         profilePhotoUrl: url,
       });
+      playSuccess();
     } catch (error) {
       console.error("Error uploading photo:", error);
+      playError();
       const errorMessage = error instanceof Error 
         ? error.message 
         : "Error al subir la foto. Por favor intenta de nuevo.";
@@ -111,7 +120,7 @@ export function Step2Security() {
     } finally {
       setIsUploading(false);
     }
-  }, [form, updateParticipant, convertToWebFormat]);
+  }, [form, updateParticipant, convertToWebFormat, playSuccess, playError]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -123,7 +132,8 @@ export function Step2Security() {
   });
 
   const removePhoto = () => {
-    form.setValue("profilePhotoUrl", undefined);
+    playClick();
+    form.setValue("profilePhotoUrl", "");
     setPhotoPreview(null);
     updateParticipant({
       profilePhotoUrl: null,
@@ -137,166 +147,216 @@ export function Step2Security() {
         ...data,
         currentStep: 3,
       });
+      playSuccess();
+    } catch {
+      playError();
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const goBack = () => {
+    playClick();
     updateParticipant({ currentStep: 1 });
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Paso 2: Seguridad y Equipos</CardTitle>
-        <CardDescription>
-          Información requerida por el venue
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+    <RetroCard>
+      <RetroCardHeader>
+        <RetroCardTitle>SECURITY_CHECK.run()</RetroCardTitle>
+        <RetroCardDescription>
+          VENUE_REQUIRED_DATA
+        </RetroCardDescription>
+      </RetroCardHeader>
+      <RetroCardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="space-y-4">
-              <FormLabel>Foto de Perfil</FormLabel>
-              <FormDescription>
-                Tu foto aparecerá en tu badge de participante
-              </FormDescription>
-              
-              {!photoPreview ? (
-                <div
-                  {...getRootProps()}
-                  className={`
-                    border-2 border-dashed rounded-lg p-8 text-center cursor-pointer
-                    transition-colors
-                    ${isDragActive ? "border-primary bg-primary/5" : "border-muted-foreground/25"}
-                    ${isUploading ? "opacity-50 cursor-not-allowed" : "hover:border-primary"}
-                  `}
-                >
-                  <input {...getInputProps()} disabled={isUploading} />
-                  <Upload className="size-12 mx-auto mb-4 text-muted-foreground" />
-                  <p className="text-sm font-medium">
-                    {isConverting ? "Convirtiendo imagen..." : isUploading ? "Subiendo..." : isDragActive ? "Suelta la imagen aquí" : "Arrastra una imagen o haz clic"}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    PNG, JPG, WEBP o HEIC (máx. 5MB)
-                  </p>
-                </div>
-              ) : (
-                <div className="relative inline-block">
-                  <div className="relative size-32 rounded-lg overflow-hidden border">
-                    <Image
-                      src={photoPreview}
-                      alt="Preview"
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="icon"
-                    className="absolute -top-2 -right-2 size-6 rounded-full"
-                    onClick={removePhoto}
-                  >
-                    <X className="size-4" />
-                  </Button>
-                </div>
-              )}
-            </div>
-
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="hasLaptop"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormLabel>
-                      Traeré mi laptop al evento
-                    </FormLabel>
-                    <FormDescription>
-                      Requerido por seguridad del venue
-                    </FormDescription>
-                  </div>
+              name="profilePhotoUrl"
+              render={() => (
+                <FormItem>
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="space-y-2"
+                  >
+                    <label className="block text-xs font-adelle-mono font-bold uppercase tracking-wider text-muted-foreground">
+                      PROFILE_PHOTO
+                    </label>
+                    <p className="text-[10px] font-adelle-mono text-muted-foreground uppercase">
+                      WILL_APPEAR_ON_BADGE
+                    </p>
+                    
+                    {!photoPreview ? (
+                      <div
+                        {...getRootProps()}
+                        className={`
+                          border-2 border-dashed p-8 text-center cursor-pointer
+                          transition-colors font-adelle-mono
+                          ${isDragActive ? "border-terminal-green bg-terminal-green/5" : "border-foreground/50"}
+                          ${isUploading ? "opacity-50 cursor-not-allowed" : "hover:border-terminal-green"}
+                        `}
+                      >
+                        <input {...getInputProps()} disabled={isUploading} />
+                        <Upload className="size-8 mx-auto mb-3 text-muted-foreground" />
+                        <p className="text-xs uppercase">
+                          {isConverting ? "CONVERTING_IMAGE..." : isUploading ? "UPLOADING..." : isDragActive ? "DROP_FILE_HERE" : "DRAG_FILE.exe"}
+                        </p>
+                        <p className="text-[10px] text-muted-foreground mt-2 uppercase">
+                          PNG, JPG, WEBP, HEIC (MAX 5MB)
+                        </p>
+                      </div>
+                    ) : (
+                      <motion.div
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="relative inline-block"
+                      >
+                        <div className="relative size-32 border-2 border-foreground overflow-hidden">
+                          <Image
+                            src={photoPreview}
+                            alt="Preview"
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <PixelButton
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          className="absolute -top-2 -right-2 size-6"
+                          onClick={removePhoto}
+                        >
+                          <X className="size-3" />
+                        </PixelButton>
+                      </motion.div>
+                    )}
+                  </motion.div>
+                  <FormMessage className="font-adelle-mono text-xs uppercase" />
                 </FormItem>
               )}
             />
 
-            {hasLaptop && (
-              <>
-                <FormField
-                  control={form.control}
-                  name="laptopBrand"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Marca de Laptop</FormLabel>
-                      <FormControl>
-                        <Input placeholder="HP, Dell, Apple, etc." {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <FormField
+                control={form.control}
+                name="hasLaptop"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 border-2 border-foreground/50 p-4">
+                    <FormControl>
+                      <PixelCheckbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none font-adelle-mono">
+                      <label className="text-sm uppercase font-bold">
+                        BRINGING_LAPTOP
+                      </label>
+                      <p className="text-[10px] text-muted-foreground uppercase">
+                        REQUIRED_BY_VENUE_SECURITY
+                      </p>
+                    </div>
+                  </FormItem>
+                )}
+              />
+            </motion.div>
 
-                <FormField
-                  control={form.control}
-                  name="laptopModel"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Modelo</FormLabel>
-                      <FormControl>
-                        <Input placeholder="EliteBook 840, MacBook Pro, etc." {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+            <AnimatePresence>
+              {hasLaptop && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="space-y-4 overflow-hidden"
+                >
+                  <FormField
+                    control={form.control}
+                    name="laptopBrand"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <RetroInput
+                            label="LAPTOP_BRAND"
+                            placeholder="HP, DELL, APPLE, ETC"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage className="font-adelle-mono text-xs uppercase" />
+                      </FormItem>
+                    )}
+                  />
 
-                <FormField
-                  control={form.control}
-                  name="laptopSerialNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Número de Serie</FormLabel>
-                      <FormControl>
-                        <Input placeholder="ABC123XYZ" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        Requerido por seguridad del venue
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </>
-            )}
+                  <FormField
+                    control={form.control}
+                    name="laptopModel"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <RetroInput
+                            label="LAPTOP_MODEL"
+                            placeholder="MACBOOK_PRO, ELITEBOOK_840"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage className="font-adelle-mono text-xs uppercase" />
+                      </FormItem>
+                    )}
+                  />
 
-            <div className="flex gap-3">
-              <Button
+                  <FormField
+                    control={form.control}
+                    name="laptopSerialNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <RetroInput
+                            label="SERIAL_NUMBER"
+                            placeholder="ABC123XYZ"
+                            {...field}
+                          />
+                        </FormControl>
+                        <p className="text-[10px] font-adelle-mono text-muted-foreground uppercase mt-1">
+                          REQUIRED_FOR_SECURITY_CHECK
+                        </p>
+                        <FormMessage className="font-adelle-mono text-xs uppercase" />
+                      </FormItem>
+                    )}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="flex gap-3 pt-4"
+            >
+              <PixelButton
                 type="button"
-                variant="outline"
+                variant="secondary"
                 onClick={goBack}
                 className="flex-1"
               >
-                Atrás
-              </Button>
-              <Button
+                &lt;&lt; BACK
+              </PixelButton>
+              <PixelButton
                 type="submit"
                 className="flex-1"
-                disabled={isSubmitting || isUpdating}
+                loading={isSubmitting || isUpdating}
               >
-                {isSubmitting || isUpdating ? "Guardando..." : "Siguiente"}
-              </Button>
-            </div>
+                NEXT_LEVEL &gt;&gt;
+              </PixelButton>
+            </motion.div>
           </form>
         </Form>
-      </CardContent>
-    </Card>
+      </RetroCardContent>
+    </RetroCard>
   );
 }
