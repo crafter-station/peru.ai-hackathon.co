@@ -54,7 +54,7 @@ export const participants = pgTable("participants", {
   fullName: text("full_name"),
   
   dni: text("dni").unique(),
-  dateOfBirth: timestamp("date_of_birth"),
+  ageRange: text("age_range"),
   phoneNumber: text("phone_number"),
   
   profilePhotoUrl: text("profile_photo_url"),
@@ -64,11 +64,10 @@ export const participants = pgTable("participants", {
   laptopModel: text("laptop_model"),
   laptopSerialNumber: text("laptop_serial_number"),
   
-  dietaryPreferences: text("dietary_preferences").array(),
-  foodAllergies: text("food_allergies"),
-  tshirtSize: text("tshirt_size"),
+  gender: text("gender"),
   techStack: text("tech_stack").array(),
   experienceLevel: text("experience_level"),
+  additionalNotes: text("additional_notes"),
   
   rulesAccepted: boolean("rules_accepted").default(false),
   termsAccepted: boolean("terms_accepted").default(false),

@@ -6,7 +6,9 @@ export const step1Schema = z.object({
     .string()
     .length(8, "DNI debe tener 8 dígitos")
     .regex(/^\d+$/, "Solo números permitidos"),
-  dateOfBirth: z.date().max(new Date(), "Fecha inválida"),
+  ageRange: z.enum(["18-24", "25-34", "35-44", "45+"], {
+    message: "Selecciona tu rango de edad",
+  }),
   phoneNumber: z
     .string()
     .regex(/^\+51\d{9}$/, "Formato: +51XXXXXXXXX (9 dígitos)"),
@@ -32,11 +34,10 @@ export const step2Schema = z.object({
 );
 
 export const step3Schema = z.object({
-  dietaryPreferences: z.array(z.string()).optional().default([]),
-  foodAllergies: z.string().optional(),
-  tshirtSize: z.enum(["XS", "S", "M", "L", "XL", "XXL"]),
-  techStack: z.array(z.string()).optional().default([]),
   experienceLevel: z.enum(["beginner", "intermediate", "advanced"]),
+  gender: z.enum(["male", "female", "other", "prefer-not-to-say"]).optional(),
+  additionalNotes: z.string().optional(),
+  techStack: z.array(z.string()).optional(),
 });
 
 export const step4Schema = z.object({

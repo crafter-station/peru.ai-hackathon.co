@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { fal } from "@fal-ai/client";
-import fs from "fs";
 import path from "path";
+import sharp from "sharp";
 import { db } from "@/lib/db";
 import { participants } from "@/lib/schema";
 import { eq } from "drizzle-orm";
@@ -89,7 +89,11 @@ export async function POST(request: NextRequest) {
     const photoBuffer = Buffer.from(await photoResponse.arrayBuffer());
     const photoBase64 = `data:image/jpeg;base64,${photoBuffer.toString("base64")}`;
 
-    const pixelArtPrompt = `Create an anime-inspired 8-bit pixel art character based on this person's photo.
+    const bgPath = path.join(process.cwd(), "public", "pp-bg.png");
+    const bgBuffer = await sharp(bgPath).toBuffer();
+    const bgBase64 = `data:image/png;base64,${bgBuffer.toString("base64")}`;
+
+    const pixelArtPrompt = `Create an anime-inspired 8-bit pixel art character based on this person's photo, drawn on top of the provided background image.
 
 STYLE - ANIME 8-BIT FUSION:
 - Retro JRPG character portrait (Final Fantasy, Chrono Trigger, Fire Emblem style)
@@ -124,20 +128,22 @@ SHADING & DEPTH:
 - NOT flat - use strategic pixel placement for 3D form
 
 TECHNICAL SPECS:
-- Black background (#000000) - pure solid black
+- KEEP the provided background image exactly as-is
+- Draw the pixel art character ON TOP of this background
 - Character centered, fully visible
 - Sharp pixel edges and clean silhouette
 - No text, watermarks, or labels
+- Square format 500x500px
 
 OUTPUT GOAL:
-An anime-style 8-bit character portrait with personality, depth, and charm - like a beloved JRPG character sprite with expressive features and dimensional pixel shading.`;
+An anime-style 8-bit character portrait with personality, depth, and charm - like a beloved JRPG character sprite with expressive features and dimensional pixel shading, drawn on top of the provided background.`;
 
     console.log("[badge-ai] STEP 1: Generating pixel art portrait");
 
     const pixelArtResult = await fal.subscribe("fal-ai/nano-banana/edit", {
       input: {
         prompt: pixelArtPrompt,
-        image_urls: [photoBase64],
+        image_urls: [bgBase64, photoBase64],
         num_images: 1,
         output_format: "png",
       },
@@ -156,96 +162,49 @@ An anime-style 8-bit character portrait with personality, depth, and charm - lik
 
     const pixelArtResponse = await fetch(pixelArtImageUrl);
     const pixelArtBuffer = Buffer.from(await pixelArtResponse.arrayBuffer());
-    const pixelArtBase64 = `data:image/png;base64,${pixelArtBuffer.toString("base64")}`;
 
-    const imagePath = path.join(
-      process.cwd(),
-      "public",
-      "IA-HACK-PE-LLAMA.png",
-    );
+    console.log("[badge-ai] STEP 2: Composing badge with sharp");
 
-    if (!fs.existsSync(imagePath)) {
-      throw new Error("Base template image not found");
-    }
+    const templatePath = path.join(process.cwd(), "public", "badge-base.jpg");
 
-    const imageBuffer = fs.readFileSync(imagePath);
-    const imageBase64 = `data:image/png;base64,${imageBuffer.toString("base64")}`;
+    const pixelArt = await sharp(pixelArtBuffer)
+      .resize(500, 500, { fit: "cover" })
+      .ensureAlpha()
+      .toBuffer();
 
-    const badgeCompositionPrompt = `Create a participant badge by integrating a pixel art character portrait into this template.
+    const templateWidth = 1080;
+    const pixelArtSize = 500;
+    const pixelArtX = Math.floor((templateWidth - pixelArtSize) / 2);
+    const pixelArtY = 450;
 
-CRITICAL - LLAMA REPLACEMENT:
-- The pixel art portrait REPLACES the alpaca/llama character completely
-- DO NOT show the alpaca/llama behind or underneath the pixel art
-- REMOVE or COVER the alpaca/llama entirely with the pixel art portrait
-- The pixel art is the new centerpiece character, not an overlay
-- Position the pixel art exactly where the alpaca/llama currently is
+    const svgText = `
+      <svg width="1080" height="1265">
+        <style>
+          .number { fill: white; font-size: 48px; font-weight: bold; font-family: sans-serif; }
+          .name { fill: white; font-size: 36px; font-weight: bold; font-family: sans-serif; }
+        </style>
+        <text x="540" y="370" text-anchor="middle" class="number">${participantNumberFormatted}</text>
+        <text x="540" y="1000" text-anchor="middle" class="name">${participantName}</text>
+      </svg>
+    `;
 
-PRESERVE EVERYTHING ELSE:
-- Keep all original template colors, gradients, patterns intact
-- Preserve ALL logos: IA HACKATHON logo, sponsor logos
-- Keep all brand elements, decorative elements, and layout
-- Maintain background colors and design elements
-- Only the alpaca/llama gets replaced
+    const badgeBuffer = await sharp(templatePath)
+      .composite([
+        {
+          input: pixelArt,
+          top: pixelArtY,
+          left: pixelArtX,
+        },
+        {
+          input: Buffer.from(svgText),
+          top: 0,
+          left: 0,
+        },
+      ])
+      .jpeg({ quality: 90 })
+      .toBuffer();
 
-PIXEL ART PLACEMENT:
-- Position in the CENTER where the alpaca/llama currently appears
-- Size appropriately (30-40% of image height)
-- SEAMLESSLY blend the black background of pixel art with template's black background
-- No visible edges, borders, or "pasted on top" appearance
-- The pixel art should look DRAWN INTO the badge, not layered over it
-- Integrate naturally as if it was always part of the original design
-
-TEXT PLACEMENT (below the pixel art):
-Stack these text elements vertically UNDER the pixel art portrait:
-
-1. "${participantNumberFormatted}" - white or light gray (#FFFFFF or #CCCCCC), large, bold
-2. "${participantName}" - white or light gray (#FFFFFF or #CCCCCC), bold, uppercase
-3. "PARTICIPANTE" - light gray (#AAAAAA or #CCCCCC), smaller size
-
-TEXT RULES:
-- ALL text must be grayscale (white, light gray, dark gray) - NO colors
-- Position text in empty space directly below the pixel art
-- DO NOT overlap logos, sponsor names, or brand elements
-- Create tight vertical stack with good spacing
-- Ensure readability with high contrast against background
-
-COMPOSITION REQUIREMENTS:
-- ONE unified badge design (not separate layers)
-- Pixel art portrait has REPLACED the llama (llama not visible)
-- Black backgrounds perfectly blended
-- Text clearly visible below portrait
-- All original branding preserved except the llama
-- Professional, cohesive, seamless result
-
-FINAL CHECK:
-- Can you see the alpaca/llama? NO - it should be completely replaced
-- Does the pixel art look pasted on? NO - it should look integrated
-- Are backgrounds blended? YES - seamless black background throughout`;
-
-    console.log("[badge-ai] STEP 2: Composing final badge with pixel art");
-
-    const result = await fal.subscribe("fal-ai/nano-banana/edit", {
-      input: {
-        prompt: badgeCompositionPrompt,
-        image_urls: [imageBase64, pixelArtBase64],
-        num_images: 1,
-        output_format: "jpeg",
-      },
-    });
-
-    if (
-      !result.data ||
-      !result.data.images ||
-      result.data.images.length === 0
-    ) {
-      throw new Error("No badge image generated by FAL AI");
-    }
-
-    const generatedImageUrl = result.data.images[0].url;
-    console.log("[badge-ai] Badge generated, uploading to Vercel Blob");
-
-    const badgeResponse = await fetch(generatedImageUrl);
-    const badgeBuffer = Buffer.from(await badgeResponse.arrayBuffer());
+    console.log("[badge-ai] Badge composed, uploading to Vercel Blob");
 
     const timestamp = Date.now();
     const blobResult = await put(

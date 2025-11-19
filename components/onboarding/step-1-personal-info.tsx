@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 
 export function Step1PersonalInfo() {
@@ -27,9 +28,7 @@ export function Step1PersonalInfo() {
     defaultValues: {
       fullName: participant?.fullName || "",
       dni: participant?.dni || "",
-      dateOfBirth: participant?.dateOfBirth
-        ? new Date(participant.dateOfBirth)
-        : undefined,
+      ageRange: participant?.ageRange as Step1Data["ageRange"] || undefined,
       phoneNumber: participant?.phoneNumber || "",
     },
   });
@@ -40,7 +39,7 @@ export function Step1PersonalInfo() {
       updateParticipant({
         fullName: data.fullName,
         dni: data.dni,
-        dateOfBirth: data.dateOfBirth,
+        ageRange: data.ageRange,
         phoneNumber: data.phoneNumber,
         currentStep: 2,
       });
@@ -100,27 +99,23 @@ export function Step1PersonalInfo() {
 
             <FormField
               control={form.control}
-              name="dateOfBirth"
+              name="ageRange"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Fecha de Nacimiento</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="date"
-                      {...field}
-                      value={
-                        field.value
-                          ? new Date(field.value).toISOString().split("T")[0]
-                          : ""
-                      }
-                      onChange={(e) => {
-                        const date = e.target.value
-                          ? new Date(e.target.value)
-                          : undefined;
-                        field.onChange(date);
-                      }}
-                    />
-                  </FormControl>
+                  <FormLabel>Rango de Edad</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona tu rango de edad" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="18-24">18-24 años</SelectItem>
+                      <SelectItem value="25-34">25-34 años</SelectItem>
+                      <SelectItem value="35-44">35-44 años</SelectItem>
+                      <SelectItem value="45+">45+ años</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormDescription>
                     Debes tener 18+ años para participar
                   </FormDescription>
