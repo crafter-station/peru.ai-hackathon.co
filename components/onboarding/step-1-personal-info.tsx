@@ -30,6 +30,9 @@ export function Step1PersonalInfo() {
       dni: participant?.dni || "",
       ageRange: participant?.ageRange as Step1Data["ageRange"] || undefined,
       phoneNumber: participant?.phoneNumber || "",
+      emergencyContactName: participant?.emergencyContactName || "",
+      emergencyContactPhone: participant?.emergencyContactPhone || "",
+      emergencyContactRelationship: participant?.emergencyContactRelationship as Step1Data["emergencyContactRelationship"] || undefined,
     },
   });
 
@@ -41,6 +44,9 @@ export function Step1PersonalInfo() {
         dni: data.dni,
         ageRange: data.ageRange,
         phoneNumber: data.phoneNumber,
+        emergencyContactName: data.emergencyContactName,
+        emergencyContactPhone: data.emergencyContactPhone,
+        emergencyContactRelationship: data.emergencyContactRelationship,
         currentStep: 2,
       });
     } finally {
@@ -143,6 +149,72 @@ export function Step1PersonalInfo() {
                 </FormItem>
               )}
             />
+
+            <div className="space-y-4 pt-6 border-t">
+              <h3 className="font-semibold">Contacto de Emergencia</h3>
+              
+              <FormField
+                control={form.control}
+                name="emergencyContactName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nombre del Contacto</FormLabel>
+                    <FormControl>
+                      <Input placeholder="María García López" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      Nombre completo de tu contacto de emergencia
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="emergencyContactPhone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Teléfono del Contacto</FormLabel>
+                    <FormControl>
+                      <Input placeholder="+51987654321" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      Formato: +51 seguido de 9 dígitos
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="emergencyContactRelationship"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Relación</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecciona la relación" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="parent">Padre/Madre</SelectItem>
+                        <SelectItem value="sibling">Hermano/a</SelectItem>
+                        <SelectItem value="spouse">Esposo/a</SelectItem>
+                        <SelectItem value="friend">Amigo/a</SelectItem>
+                        <SelectItem value="other">Otro</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>
+                      Tu relación con el contacto de emergencia
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <div className="flex gap-3">
               <Button

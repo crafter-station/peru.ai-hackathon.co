@@ -21,7 +21,6 @@ import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { Upload, X } from "lucide-react";
 import Image from "next/image";
-import heic2any from "heic2any";
 
 export function Step2Security() {
   const { participant, updateParticipant, isUpdating } = useParticipant();
@@ -52,6 +51,7 @@ export function Step2Security() {
 
     try {
       setIsConverting(true);
+      const heic2any = (await import("heic2any")).default;
       const convertedBlob = await heic2any({
         blob: file,
         toType: "image/png",

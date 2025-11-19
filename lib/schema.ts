@@ -57,6 +57,10 @@ export const participants = pgTable("participants", {
   ageRange: text("age_range"),
   phoneNumber: text("phone_number"),
   
+  emergencyContactName: text("emergency_contact_name"),
+  emergencyContactPhone: text("emergency_contact_phone"),
+  emergencyContactRelationship: text("emergency_contact_relationship"),
+  
   profilePhotoUrl: text("profile_photo_url"),
   badgeBlobUrl: text("badge_blob_url"),
   hasLaptop: boolean("has_laptop").default(false),

@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { CheckCircle2, Download, Sparkles } from "lucide-react";
+import { CheckCircle2, Download, Sparkles, Copy, Linkedin, Twitter } from "lucide-react";
 import Image from "next/image";
 import { useBadgeGeneration } from "@/hooks/use-badge-generation";
 import { useState, useEffect } from "react";
@@ -82,14 +82,10 @@ export default function CompletePage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="text-center space-y-2">
+          <div className="text-center">
             <p className="text-lg">
               Tu registro para el IA Hackathon Peru 2025 ha sido completado
               exitosamente.
-            </p>
-            <p className="text-muted-foreground">
-              Recibirás un correo de confirmación con todos los detalles del
-              evento.
             </p>
           </div>
 
@@ -112,20 +108,73 @@ export default function CompletePage() {
             </div>
           </div>
 
-          <div className="space-y-3">
-            <Button asChild className="w-full" size="lg">
-              <a
-                href="https://chat.whatsapp.com/H6RV2cFfL47CCXVzVmHedR"
-                target="_blank"
-                rel="noopener noreferrer"
+          <div className="bg-muted p-6 rounded-lg space-y-4">
+            <h3 className="font-bold text-lg">¡Comparte la noticia!</h3>
+            
+            <div className="bg-background p-4 rounded-md border text-sm whitespace-pre-line">
+              🚀 ¡He sido satisfactoriamente registrado como participante en la IA Hackathon Peru 2025!
+
+Me emociona ser parte de este evento donde crearemos soluciones innovadoras con inteligencia artificial.
+
+📅 29-30 de Noviembre
+📍 Universidad Peruana Cayetano Heredia
+
+#IAHackathonPeru #AI #Hackathon #Peru #Innovation
+            </div>
+            
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  navigator.clipboard.writeText(
+                    "🚀 ¡He sido satisfactoriamente registrado como participante en la IA Hackathon Peru 2025!\n\nMe emociona ser parte de este evento donde crearemos soluciones innovadoras con inteligencia artificial.\n\n📅 29-30 de Noviembre\n📍 Universidad Peruana Cayetano Heredia\n\n#IAHackathonPeru #AI #Hackathon #Peru #Innovation"
+                  );
+                }}
               >
-                Únete al grupo de WhatsApp
-              </a>
-            </Button>
-            <Button asChild variant="outline" className="w-full">
-              <Link href="/">Volver al inicio</Link>
-            </Button>
+                <Copy className="size-4 mr-2" />
+                Copiar
+              </Button>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                asChild
+              >
+                <a
+                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent("https://iahackathon.pe")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Linkedin className="size-4 mr-2" />
+                  LinkedIn
+                </a>
+              </Button>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                asChild
+              >
+                <a
+                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent("🚀 ¡He sido satisfactoriamente registrado como participante en la IA Hackathon Peru 2025!\n\nMe emociona ser parte de este evento donde crearemos soluciones innovadoras con inteligencia artificial.\n\n📅 29-30 de Noviembre\n📍 Universidad Peruana Cayetano Heredia\n\n#IAHackathonPeru #AI #Hackathon #Peru #Innovation")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Twitter className="size-4 mr-2" />
+                  X (Twitter)
+                </a>
+              </Button>
+            </div>
+            
+            <p className="text-xs text-muted-foreground">
+              Para Instagram: copia el texto y pégalo en tu historia o publicación
+            </p>
           </div>
+
+          <Button asChild variant="outline" className="w-full">
+            <Link href="/">Volver al inicio</Link>
+          </Button>
 
           {participant.badgeBlobUrl ? (
             <div className="space-y-6">

@@ -12,6 +12,16 @@ export const step1Schema = z.object({
   phoneNumber: z
     .string()
     .regex(/^\+51\d{9}$/, "Formato: +51XXXXXXXXX (9 dígitos)"),
+  emergencyContactName: z
+    .string()
+    .min(3, "Nombre del contacto de emergencia requerido"),
+  emergencyContactPhone: z
+    .string()
+    .regex(/^\+51\d{9}$/, "Formato: +51XXXXXXXXX (9 dígitos)"),
+  emergencyContactRelationship: z.enum(
+    ["parent", "sibling", "spouse", "friend", "other"],
+    { message: "Selecciona la relación" }
+  ),
 });
 
 export const step2Schema = z.object({
