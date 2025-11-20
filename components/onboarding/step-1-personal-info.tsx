@@ -79,8 +79,8 @@ export function Step1PersonalInfo() {
   const formFields = [
     { name: "fullName", label: "FULL_NAME", placeholder: "JUAN_PEREZ_GARCIA", maxLength: undefined },
     { name: "organization", label: "ORGANIZATION", placeholder: "EMPRESA_O_UNIVERSIDAD", maxLength: undefined },
-    { name: "dni", label: "DNI_NUMBER", placeholder: "12345678", maxLength: 8 },
-    { name: "phoneNumber", label: "PHONE_WHATSAPP", placeholder: "+51987654321", maxLength: undefined },
+    { name: "dni", label: "DNI_NUMBER", placeholder: "DNI, PASAPORTE, OTRO", maxLength: 50 },
+    { name: "phoneNumber", label: "PHONE_WHATSAPP", placeholder: "+51987654321, +1234567890", maxLength: 20 },
   ];
 
   return (
@@ -193,7 +193,8 @@ export function Step1PersonalInfo() {
                       <FormControl>
                         <RetroInput
                           label="CONTACT_PHONE"
-                          placeholder="+51987654321"
+                          placeholder="+51987654321, +1234567890"
+                          maxLength={20}
                           {...field}
                         />
                       </FormControl>

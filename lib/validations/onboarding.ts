@@ -1,24 +1,29 @@
 import { z } from "zod";
 
 export const step1Schema = z.object({
-  fullName: z.string().min(3, "Nombre completo requerido"),
-  organization: z.string().min(2, "Organización requerida"),
+  fullName: z.string().min(3, "Ingresa tu nombre completo"),
+  organization: z.string().min(2, "Ingresa tu organización"),
   dni: z
     .string()
-    .length(8, "DNI debe tener 8 dígitos")
-    .regex(/^\d+$/, "Solo números permitidos"),
+    .min(3, "Mínimo 3 caracteres")
+    .max(50, "Máximo 50 caracteres")
+    .regex(/^[A-Za-z0-9]+$/, "Solo letras y números"),
   ageRange: z.enum(["18-24", "25-34", "35-44", "45+"], {
-    message: "Selecciona tu rango de edad",
+    message: "Selecciona tu edad",
   }),
   phoneNumber: z
     .string()
-    .regex(/^\+51\d{9}$/, "Formato: +51XXXXXXXXX (9 dígitos)"),
+    .min(8, "Número muy corto")
+    .max(20, "Número muy largo")
+    .regex(/^\+?[1-9]\d{1,14}$/, "Formato inválido. Ejemplo: +51987654321"),
   emergencyContactName: z
     .string()
-    .min(3, "Nombre del contacto de emergencia requerido"),
+    .min(3, "Ingresa el nombre del contacto"),
   emergencyContactPhone: z
     .string()
-    .regex(/^\+51\d{9}$/, "Formato: +51XXXXXXXXX (9 dígitos)"),
+    .min(8, "Número muy corto")
+    .max(20, "Número muy largo")
+    .regex(/^\+?[1-9]\d{1,14}$/, "Formato inválido. Ejemplo: +51987654321"),
   emergencyContactRelationship: z.enum(
     ["parent", "sibling", "spouse", "friend", "other"],
     { message: "Selecciona la relación" }
@@ -26,7 +31,7 @@ export const step1Schema = z.object({
 });
 
 export const step2Schema = z.object({
-  profilePhotoUrl: z.string().min(1, "Foto de perfil requerida"),
+  profilePhotoUrl: z.string().min(1, "Sube tu foto de perfil"),
   hasLaptop: z.boolean(),
   laptopBrand: z.string().optional(),
   laptopModel: z.string().optional(),
@@ -39,7 +44,7 @@ export const step2Schema = z.object({
     return true;
   },
   {
-    message: "Todos los campos de laptop son requeridos",
+    message: "Completa todos los datos de la laptop",
     path: ["laptopBrand"],
   }
 );
@@ -53,19 +58,19 @@ export const step3Schema = z.object({
 
 export const step4Schema = z.object({
   rulesAccepted: z.boolean().refine((val) => val === true, {
-    message: "Debes aceptar las reglas del hackathon",
+    message: "Acepta las reglas del hackathon",
   }),
   termsAccepted: z.boolean().refine((val) => val === true, {
-    message: "Debes aceptar los términos y condiciones",
+    message: "Acepta los términos y condiciones",
   }),
   dataConsentAccepted: z.boolean().refine((val) => val === true, {
-    message: "Debes autorizar el uso de datos",
+    message: "Autoriza el uso de datos",
   }),
   mediaReleaseAccepted: z.boolean().refine((val) => val === true, {
-    message: "Debes autorizar el uso de fotos/videos",
+    message: "Autoriza el uso de fotos y videos",
   }),
   ageVerified: z.boolean().refine((val) => val === true, {
-    message: "Debes confirmar que tienes 18+ años",
+    message: "Confirma que tienes 18+ años",
   }),
 });
 
