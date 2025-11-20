@@ -47,6 +47,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
+    "dedent": "^1.7.0",
     "drizzle-kit": "^0.31.5",
     "drizzle-orm": "^0.44.5",
     "framer-motion": "^12.23.24",
