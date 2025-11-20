@@ -52,6 +52,7 @@ export const participants = pgTable("participants", {
   clerkUserId: text("clerk_user_id").notNull().unique(),
   email: text("email").notNull().unique(),
   fullName: text("full_name"),
+  organization: text("organization"),
   
   dni: text("dni").unique(),
   ageRange: text("age_range"),
@@ -63,6 +64,7 @@ export const participants = pgTable("participants", {
   
   profilePhotoUrl: text("profile_photo_url"),
   badgeBlobUrl: text("badge_blob_url"),
+  pixelArtUrl: text("pixel_art_url"),
   hasLaptop: boolean("has_laptop").default(false),
   laptopBrand: text("laptop_brand"),
   laptopModel: text("laptop_model"),
@@ -86,6 +88,13 @@ export const participants = pgTable("participants", {
   participantNumber: integer("participant_number").unique(),
   badgeGeneratedAt: timestamp("badge_generated_at"),
   lastBadgeGenerationAt: timestamp("last_badge_generation_at"),
+  
+  bio: text("bio"),
+  linkedinUrl: text("linkedin_url"),
+  instagramUrl: text("instagram_url"),
+  twitterUrl: text("twitter_url"),
+  githubUrl: text("github_url"),
+  websiteUrl: text("website_url"),
   
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

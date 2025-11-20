@@ -40,6 +40,7 @@ export function Step1PersonalInfo() {
     resolver: zodResolver(step1Schema),
     defaultValues: {
       fullName: participant?.fullName || "",
+      organization: participant?.organization || "",
       dni: participant?.dni || "",
       ageRange: participant?.ageRange as Step1Data["ageRange"] || undefined,
       phoneNumber: participant?.phoneNumber || "",
@@ -54,6 +55,7 @@ export function Step1PersonalInfo() {
     try {
       updateParticipant({
         fullName: data.fullName,
+        organization: data.organization,
         dni: data.dni,
         ageRange: data.ageRange,
         phoneNumber: data.phoneNumber,
@@ -76,6 +78,7 @@ export function Step1PersonalInfo() {
 
   const formFields = [
     { name: "fullName", label: "FULL_NAME", placeholder: "JUAN_PEREZ_GARCIA", maxLength: undefined },
+    { name: "organization", label: "ORGANIZATION", placeholder: "EMPRESA_O_UNIVERSIDAD", maxLength: undefined },
     { name: "dni", label: "DNI_NUMBER", placeholder: "12345678", maxLength: 8 },
     { name: "phoneNumber", label: "PHONE_WHATSAPP", placeholder: "+51987654321", maxLength: undefined },
   ];

@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const step1Schema = z.object({
   fullName: z.string().min(3, "Nombre completo requerido"),
+  organization: z.string().min(2, "Organización requerida"),
   dni: z
     .string()
     .length(8, "DNI debe tener 8 dígitos")

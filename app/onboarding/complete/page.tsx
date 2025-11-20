@@ -11,7 +11,7 @@ import {
 import { PixelConfetti } from "@/components/ui/pixel-confetti";
 import { GlitchText } from "@/components/ui/terminal-text";
 import Link from "next/link";
-import { Download, Sparkles, Copy } from "lucide-react";
+import { Download, Sparkles, Copy, User, ExternalLink } from "lucide-react";
 import Image from "next/image";
 import { useBadgeGeneration } from "@/hooks/use-badge-generation";
 import { useState, useEffect } from "react";
@@ -383,6 +383,46 @@ Me emociona ser parte de este evento donde crearemos soluciones innovadoras con 
               </PixelButton>
             </div>
           </motion.div>
+
+          {participant.participantNumber && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.88 }}
+              className="border-2 border-terminal-green/50 bg-terminal-green/5 p-4 space-y-3"
+            >
+              <h3 className="font-adelle-mono font-bold text-sm uppercase text-terminal-green">
+                YOUR_PROFILE
+              </h3>
+              <p className="font-adelle-mono text-xs text-muted-foreground uppercase">
+                SHARE_YOUR_PROFILE_FOR_NETWORKING
+              </p>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <PixelButton
+                  asChild
+                  variant="terminal"
+                  size="sm"
+                  className="flex-1"
+                >
+                  <Link href={`/p/${participant.participantNumber}`} target="_blank">
+                    <ExternalLink className="size-3" />
+                    VIEW_PROFILE
+                  </Link>
+                </PixelButton>
+                <PixelButton
+                  asChild
+                  variant="secondary"
+                  size="sm"
+                  className="flex-1"
+                >
+                  <Link href="/profile">
+                    <User className="size-3" />
+                    EDIT_PROFILE
+                  </Link>
+                </PixelButton>
+              </div>
+            </motion.div>
+          )}
 
           <motion.div
             initial={{ opacity: 0, y: 10 }}

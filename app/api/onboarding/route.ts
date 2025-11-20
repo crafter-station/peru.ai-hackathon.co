@@ -87,6 +87,8 @@ export async function PATCH(request: NextRequest) {
       processedData.participantNumber = (completedCount[0]?.count || 0) + 1;
       console.log("[onboarding] Assigning participant number:", processedData.participantNumber);
     }
+
+
   }
 
   const updated = await db
