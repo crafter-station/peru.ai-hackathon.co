@@ -27,6 +27,10 @@
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
+  --color-edge: var(--edge);
+  --color-zinc-950: oklch(0.141 0.005 285.823);
+  --color-white: oklch(0.985 0 0);
+  --color-info: var(--info);
   --color-destructive: var(--destructive);
   --color-brand-red: var(--brand-red);
   --color-red-600: var(--brand-red);
@@ -69,8 +73,10 @@
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
+  --edge: color-mix(in oklab, var(--border) 64%, var(--background));
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
+  --info: oklch(0.67 0.17 244.98);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -103,6 +109,7 @@
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
+  --edge: color-mix(in oklab, var(--border) 64%, var(--background));
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
   --chart-1: oklch(0.488 0.243 264.376);
@@ -125,10 +132,11 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground overflow-x-hidden;
   }
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
   }
 }
 
@@ -416,5 +424,13 @@
   .loading-dots::after {
     content: '.';
     animation: loading-dots 1.5s steps(1) infinite;
+  }
+
+  .screen-line-before {
+    @apply relative before:absolute before:top-0 before:-left-[100vw] before:-z-10 before:h-px before:w-[200vw] before:bg-edge;
+  }
+
+  .screen-line-after {
+    @apply relative after:absolute after:bottom-0 after:-left-[100vw] after:-z-10 after:h-px after:w-[200vw] after:bg-edge;
   }
 }
