@@ -20,6 +20,20 @@ export default function HeroSection() {
     seconds: 0,
   });
   const [play] = useSound("/sounds/bite.mp3", { volume: 0.5 });
+  const [showWorkshopsIndicator, setShowWorkshopsIndicator] = useState(false);
+
+  useEffect(() => {
+    const hasSeenWorkshops = localStorage.getItem("workshops-indicator-seen");
+    if (!hasSeenWorkshops) {
+      setShowWorkshopsIndicator(true);
+    }
+  }, []);
+
+  const handleWorkshopsClick = () => {
+    play();
+    localStorage.setItem("workshops-indicator-seen", "true");
+    setShowWorkshopsIndicator(false);
+  };
 
   const scrollToNextSection = () => {
     play();
@@ -241,6 +255,42 @@ export default function HeroSection() {
                 Únete al WhatsApp
               </span>
             </a>
+          </Button>
+
+          <Button
+            asChild
+            size="lg"
+            onClick={handleWorkshopsClick}
+            className="w-full px-8 py-4 bg-white/10 text-white font-bold text-lg border-2 border-white/30 rounded-none hover:bg-white/20 hover:border-white/50"
+            style={{ pointerEvents: "auto" }}
+          >
+            <Link
+              href="/workshops"
+              className="flex items-center justify-center gap-3 relative"
+            >
+              {showWorkshopsIndicator && (
+                <div className="absolute -top-1 -right-1 w-2 h-2 bg-brand-red rounded-full">
+                  <div className="absolute inset-0 bg-brand-red rounded-full animate-ping opacity-75"></div>
+                </div>
+              )}
+              <div className="flex items-center justify-center w-6 h-6 bg-white/10 rounded-sm">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className="w-4 h-4"
+                >
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                </svg>
+              </div>
+              <span className="tracking-wide uppercase text-sm font-black">
+                Ver Workshops
+              </span>
+            </Link>
           </Button>
 
           <Button
