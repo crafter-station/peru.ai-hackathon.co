@@ -62,6 +62,7 @@ export const participants = pgTable("participants", {
   emergencyContactRelationship: text("emergency_contact_relationship"),
   
   profilePhotoUrl: text("profile_photo_url"),
+  profilePhotoAiUrl: text("profile_photo_ai_url"),
   badgeBlobUrl: text("badge_blob_url"),
   hasLaptop: boolean("has_laptop").default(false),
   laptopBrand: text("laptop_brand"),
