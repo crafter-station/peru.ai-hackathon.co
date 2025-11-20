@@ -72,6 +72,11 @@ export default function WorkshopsPage() {
       url: "https://luma.com/embed/event/evt-4P2LUnbPJgMgJBc",
     },
     {
+      name: "Métele más diseño: Herramientas para vibecodear sin sacrificar diseño",
+      startDate: "2025-11-25T18:00:00-05:00",
+      url: "https://luma.com/embed/event/evt-rgjgXaPshpMCQQc",
+    },
+    {
       name: "Add auth to your app in seconds with Clerk",
       startDate: "2025-11-25T19:00:00-05:00",
       url: "https://luma.com/embed/event/evt-D2X1QLuzb8zz3LG",

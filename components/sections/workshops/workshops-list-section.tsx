@@ -28,6 +28,13 @@ export default function WorkshopsListSection() {
       url: "https://luma.com/oqb5jxtk",
     },
     {
+      title:
+        "Métele más diseño: Herramientas para vibecodear sin sacrificar diseño",
+      date: "25 de Noviembre • 18:00",
+      eventId: "evt-rgjgXaPshpMCQQc",
+      url: "https://luma.com/7nu0wxau",
+    },
+    {
       title: "Add auth to your app in seconds with Clerk",
       date: "25 de Noviembre • 19:00",
       eventId: "evt-D2X1QLuzb8zz3LG",
