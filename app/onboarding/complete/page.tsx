@@ -122,14 +122,17 @@ export default function CompletePage() {
     );
   }
 
-  const shareText = `🚀 ¡He sido satisfactoriamente registrado como participante en la IA Hackathon Peru 2025!
+  const shareText = `🚀 ¡Ya estoy dentro! Acabo de registrarme para la IA Hackathon Peru 2025 y no puedo estar más emocionado/a.
 
-Me emociona ser parte de este evento donde crearemos soluciones innovadoras con inteligencia artificial.
+Este 29 y 30 de noviembre estaré en la Universidad Peruana Cayetano Heredia junto a otros developers, diseñadores y entusiastas de la tecnología creando soluciones con inteligencia artificial. Van a ser 2 días intensos de código, creatividad y mucho café ☕
+
+Si todavía no te registraste, ¿qué estás esperando? 👀
 
 📅 29-30 de Noviembre
-📍 Universidad Peruana Cayetano Heredia
+📍 Universidad Peruana Cayetano Heredia, La Molina
+🔗 iahackathon.pe
 
-#IAHackathonPeru #AI #Hackathon #Peru #Innovation`;
+#IAHackathonPeru #AI #Hackathon #Peru #Innovation #Tech`;
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -261,10 +264,66 @@ Me emociona ser parte de este evento donde crearemos soluciones innovadoras con 
                 REGENERATE_BADGE
               </PixelButton>
 
-              <p className="text-[10px] font-adelle-mono text-muted-foreground text-center uppercase">
-                SHARE_WITH #IAHACKATHONPERU
-              </p>
             </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.65 }}
+              className="border-2 border-foreground/50 p-4 space-y-3"
+            >
+              <h3 className="font-adelle-mono font-bold text-sm uppercase">
+                SHARE_NEWS
+              </h3>
+
+              <div className="bg-black p-3 border border-terminal-green/50 font-adelle-mono text-xs text-terminal-green whitespace-pre-line">
+                {shareText}
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <PixelButton
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => {
+                    playClick();
+                    navigator.clipboard.writeText(shareText);
+                  }}
+                >
+                  <Copy className="size-3" />
+                  COPY
+                </PixelButton>
+
+                <PixelButton variant="secondary" size="sm" asChild>
+                  <a
+                    href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent("https://iahackathon.pe")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    LINKEDIN
+                  </a>
+                </PixelButton>
+
+                <PixelButton variant="secondary" size="sm" asChild>
+                  <a
+                    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    X_TWITTER
+                  </a>
+                </PixelButton>
+
+                <PixelButton variant="secondary" size="sm" asChild>
+                  <a
+                    href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    WHATSAPP
+                  </a>
+                </PixelButton>
+              </div>
+            </motion.div>
           </motion.div>
 
           <motion.div
@@ -344,65 +403,6 @@ Me emociona ser parte de este evento donde crearemos soluciones innovadoras con 
                 TEAMS_FORMED_ON_SITE
               </li>
             </ul>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.85 }}
-            className="border-2 border-foreground/50 p-4 space-y-3"
-          >
-            <h3 className="font-adelle-mono font-bold text-sm uppercase">
-              SHARE_NEWS
-            </h3>
-
-            <div className="bg-black p-3 border border-terminal-green/50 font-adelle-mono text-xs text-terminal-green whitespace-pre-line">
-              {shareText}
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              <PixelButton
-                variant="secondary"
-                size="sm"
-                onClick={() => {
-                  playClick();
-                  navigator.clipboard.writeText(shareText);
-                }}
-              >
-                <Copy className="size-3" />
-                COPY
-              </PixelButton>
-
-              <PixelButton variant="secondary" size="sm" asChild>
-                <a
-                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent("https://iahackathon.pe")}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  LINKEDIN
-                </a>
-              </PixelButton>
-
-              <PixelButton variant="secondary" size="sm" asChild>
-                <a
-                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  X_TWITTER
-                </a>
-              </PixelButton>
-
-              <PixelButton variant="secondary" size="sm" asChild>
-                <a
-                  href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  WHATSAPP
-                </a>
-              </PixelButton>
-            </div>
           </motion.div>
 
           {participant.participantNumber && (
