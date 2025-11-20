@@ -74,7 +74,7 @@ export default function CompletePage() {
       await refetch();
       playSuccess();
     } catch (err) {
-      console.error("Badge regeneration failed:", err);
+      console.error("Badge regeneration failed!", err);
       playError();
     }
   }, [
@@ -263,7 +263,6 @@ Gracias a The Hackathon Company, Makers, Crafter Station y AI Playgrounds por or
                 <RefreshCw className="size-4" />
                 REGENERATE_BADGE
               </PixelButton>
-
             </div>
 
             <motion.div
