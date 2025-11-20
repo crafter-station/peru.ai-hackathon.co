@@ -43,7 +43,7 @@ const BADGE_CONFIG = {
     fontFamily: "'Adelle Mono'",
   },
   firstName: {
-    x: 473.5817012876032,
+    x: 520,
     y: 1198.84882384131,
     fontSize: 60,
     fontWeight: "700",
@@ -52,7 +52,7 @@ const BADGE_CONFIG = {
     letterSpacing: "0.08em",
   },
   lastName: {
-    x: 458.33774981191004,
+    x: 520,
     y: 1256.790067915308,
     fontSize: 60,
     fontWeight: "700",
@@ -61,7 +61,7 @@ const BADGE_CONFIG = {
     letterSpacing: "0.08em",
   },
   role: {
-    x: 467.92609730627487,
+    x: 520,
     y: 1317.076218001156,
     fontSize: 40,
     fontWeight: "400",
@@ -69,10 +69,10 @@ const BADGE_CONFIG = {
     fontFamily: "'Adelle Mono'",
   },
   qrCode: {
-    x: 107.5300849661869,
-    y: 1152.0579656293544,
+    x: 109.5300849661869,
+    y: 1137.0579656293544,
     width: 179,
-    height: 169.05,
+    height: 179,
   },
 };
 
@@ -312,7 +312,7 @@ export async function POST(request: NextRequest) {
     const qrCodeBuffer = await QRCode.toBuffer(profileUrl, {
       errorCorrectionLevel: "M",
       type: "png",
-      width: Math.round(BADGE_CONFIG.qrCode.width),
+      width: 60,
       margin: 0,
       color: {
         dark: "#000000",
@@ -320,7 +320,16 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    const borderSize = 8;
+
     const qrCode = await sharp(qrCodeBuffer)
+      .extend({
+        top: borderSize,
+        bottom: borderSize,
+        left: borderSize,
+        right: borderSize,
+        background: { r: 255, g: 255, b: 255, alpha: 1 },
+      })
       .resize(
         Math.round(BADGE_CONFIG.qrCode.width),
         Math.round(BADGE_CONFIG.qrCode.height),
@@ -368,7 +377,7 @@ export async function POST(request: NextRequest) {
         <text x="${BADGE_CONFIG.participantNumber2.x}" y="${BADGE_CONFIG.participantNumber2.y}" text-anchor="middle" class="number">${numberText}</text>
         <text x="${BADGE_CONFIG.firstName.x}" y="${BADGE_CONFIG.firstName.y}" text-anchor="middle" class="firstName">${firstName}</text>
         <text x="${BADGE_CONFIG.lastName.x}" y="${BADGE_CONFIG.lastName.y}" text-anchor="middle" class="lastName">${lastName}</text>
-        <text x="${BADGE_CONFIG.role.x}" y="${BADGE_CONFIG.role.y}" text-anchor="middle" class="role">HACKER</text>
+        <text x="${BADGE_CONFIG.role.x}" y="${BADGE_CONFIG.role.y}" text-anchor="middle" class="role">${participant.organization?.toUpperCase() || "HACKER"}</text>
       </svg>
     `;
 
