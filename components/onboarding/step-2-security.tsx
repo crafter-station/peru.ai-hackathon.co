@@ -33,6 +33,7 @@ export function Step2Security() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isConverting, setIsConverting] = useState(false);
+  const [isGeneratingAi, setIsGeneratingAi] = useState(false);
   const [photoPreview, setPhotoPreview] = useState<string | null>(
     participant?.profilePhotoUrl || null
   );
@@ -110,6 +111,33 @@ export function Step2Security() {
         profilePhotoUrl: url,
       });
       playSuccess();
+      
+      setIsGeneratingAi(true);
+      try {
+        const aiResponse = await fetch("/api/onboarding/generate-ai-avatar", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ profilePhotoUrl: url }),
+        });
+
+        if (!aiResponse.ok) {
+          throw new Error("Failed to generate AI avatar");
+        }
+
+        const { profilePhotoAiUrl } = await aiResponse.json();
+        
+        updateParticipant({
+          profilePhotoAiUrl,
+        });
+        playSuccess();
+      } catch (aiError) {
+        console.error("Error generating AI avatar:", aiError);
+        alert("Foto subida, pero hubo un error generando el avatar AI. Se generará más tarde.");
+      } finally {
+        setIsGeneratingAi(false);
+      }
     } catch (error) {
       console.error("Error uploading photo:", error);
       playError();
@@ -137,6 +165,7 @@ export function Step2Security() {
     setPhotoPreview(null);
     updateParticipant({
       profilePhotoUrl: null,
+      profilePhotoAiUrl: null,
     });
   };
 
@@ -214,51 +243,64 @@ export function Step2Security() {
                         className="space-y-3"
                       >
                         <div className="space-y-2">
-                          <p className="text-xs font-adelle-mono text-brand-red uppercase text-center">
-                            PHOTO_UPLOADED
-                          </p>
-                          {participant?.profilePhotoAiUrl ? (
-                            <div className="flex gap-4 justify-center items-start">
-                              <div className="space-y-2">
-                                <p className="text-[10px] font-adelle-mono text-white/60 uppercase text-center">
-                                  ORIGINAL
-                                </p>
-                                <div className="relative w-64 h-64 border-2 border-brand-red/50 overflow-hidden shadow-lg">
-                                  <Image
-                                    src={photoPreview}
-                                    alt="Original"
-                                    fill
-                                    className="object-cover"
-                                  />
-                                </div>
-                              </div>
-                              <div className="space-y-2">
-                                <p className="text-[10px] font-adelle-mono text-brand-red uppercase text-center">
-                                  AI_AVATAR
-                                </p>
-                                <div className="relative w-64 h-64 border-2 border-brand-red overflow-hidden shadow-lg ring-2 ring-brand-red/30 ring-offset-2 ring-offset-black">
-                                  <Image
-                                    src={participant.profilePhotoAiUrl}
-                                    alt="AI Avatar"
-                                    fill
-                                    className="object-contain"
-                                  />
-                                </div>
-                              </div>
-                            </div>
-                          ) : (
+                          {isGeneratingAi ? (
                             <>
+                              <p className="text-xs font-adelle-mono text-brand-red uppercase text-center animate-pulse">
+                                GENERATING_AI_AVATAR...
+                              </p>
                               <div className="relative w-64 h-64 mx-auto border-2 border-brand-red overflow-hidden shadow-lg">
                                 <Image
                                   src={photoPreview}
-                                  alt="Preview"
+                                  alt="Processing"
                                   fill
-                                  className="object-cover"
+                                  className="object-cover opacity-50"
                                 />
+                                <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                                  <motion.div
+                                    animate={{ rotate: 360 }}
+                                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                                    className="w-12 h-12 border-4 border-brand-red border-t-transparent rounded-full"
+                                  />
+                                </div>
                               </div>
                               <p className="text-[10px] font-adelle-mono text-white/60 uppercase text-center">
-                                AI_AVATAR_GENERATED_ON_COMPLETION
+                                CREATING_YOUR_PIXEL_ART_AVATAR
                               </p>
+                            </>
+                          ) : (
+                            <>
+                              <p className="text-xs font-adelle-mono text-brand-red uppercase text-center">
+                                {participant?.profilePhotoAiUrl ? "AI_AVATAR_READY" : "PHOTO_UPLOADED"}
+                              </p>
+                              {participant?.profilePhotoAiUrl ? (
+                                <div className="space-y-2">
+                                  <div className="relative w-64 h-64 mx-auto border-2 border-brand-red overflow-hidden shadow-lg ring-2 ring-brand-red/30 ring-offset-2 ring-offset-black">
+                                    <Image
+                                      src={participant.profilePhotoAiUrl}
+                                      alt="AI Avatar"
+                                      fill
+                                      className="object-contain"
+                                    />
+                                  </div>
+                                  <p className="text-[10px] font-adelle-mono text-brand-red uppercase text-center">
+                                    ✓ AI_AVATAR_GENERATED
+                                  </p>
+                                </div>
+                              ) : (
+                                <>
+                                  <div className="relative w-64 h-64 mx-auto border-2 border-brand-red overflow-hidden shadow-lg">
+                                    <Image
+                                      src={photoPreview}
+                                      alt="Preview"
+                                      fill
+                                      className="object-cover"
+                                    />
+                                  </div>
+                                  <p className="text-[10px] font-adelle-mono text-white/60 uppercase text-center">
+                                    AI_AVATAR_GENERATED_ON_COMPLETION
+                                  </p>
+                                </>
+                              )}
                             </>
                           )}
                         </div>
@@ -269,6 +311,7 @@ export function Step2Security() {
                             variant="destructive"
                             size="sm"
                             onClick={removePhoto}
+                            disabled={isGeneratingAi}
                           >
                             <X className="size-3 mr-1" />
                             REMOVE_PHOTO

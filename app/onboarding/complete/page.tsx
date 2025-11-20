@@ -11,10 +11,10 @@ import {
 } from "@/components/ui/retro-card";
 import { PixelConfetti } from "@/components/ui/pixel-confetti";
 import { GlitchText } from "@/components/ui/terminal-text";
+import { BadgePreview3D } from "@/components/badge/badge-preview-3d";
 import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import { Download, Copy, User, ExternalLink, RefreshCw } from "lucide-react";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { useRetroSounds } from "@/hooks/use-click-sound";
 
@@ -65,27 +65,6 @@ export default function CompletePage() {
     refetch,
   ]);
 
-  const handleRegenerateBadge = useCallback(async () => {
-    if (!participant?.id) return;
-
-    playClick();
-    try {
-      await generateBadge(participant.id);
-      await refetch();
-      playSuccess();
-    } catch (err) {
-      console.error("Badge regeneration failed!", err);
-      playError();
-    }
-  }, [
-    participant?.id,
-    generateBadge,
-    refetch,
-    playClick,
-    playSuccess,
-    playError,
-  ]);
-
   const downloadBadge = useCallback(async () => {
     if (!participant?.badgeBlobUrl) return;
 
@@ -103,82 +82,99 @@ export default function CompletePage() {
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error downloading badge:", error);
-      alert("Error downloading badge. Please try again.");
+      alert("Error al descargar la credencial. Por favor intenta de nuevo.");
     }
   }, [participant, playClick]);
+
+  const handleRegenerateBadge = useCallback(async () => {
+    if (!participant?.id) return;
+
+    playClick();
+    try {
+      await generateBadge(participant.id);
+      await refetch();
+      playSuccess();
+    } catch (err) {
+      console.error("Badge regeneration failed:", err);
+      playError();
+    }
+  }, [participant?.id, generateBadge, refetch, playClick, playSuccess, playError]);
 
   if (!participant || participant.registrationStatus !== "completed") {
     return (
       <RetroCard className="max-w-2xl mx-auto">
         <RetroCardContent className="py-12 text-center">
           <p className="font-adelle-mono text-sm uppercase text-white/60">
-            REGISTRATION_NOT_COMPLETE
+            REGISTRO_NO_COMPLETADO
           </p>
           <PixelButton asChild className="mt-4">
-            <Link href="/onboarding">RETURN_TO_REGISTRATION</Link>
+            <Link href="/onboarding">VOLVER_AL_REGISTRO</Link>
           </PixelButton>
         </RetroCardContent>
       </RetroCard>
     );
   }
 
-  const shareText = `🚀 ¡Ya estoy dentro! Me registré para la IA Hackathon Peru 2025 y no puedo estar más emocionado/a.
+  const baseUrl = typeof window !== "undefined" ? window.location.origin : "https://www.peru.ai-hackathon.co";
+  const shareUrl = participant?.participantNumber
+    ? `${baseUrl}/share/badge/${participant.participantNumber}`
+    : "https://www.peru.ai-hackathon.co/";
 
-Este 29 y 30 de noviembre estaré en la Universidad Peruana Cayetano Heredia junto a otros developers, diseñadores y entusiastas de la tecnología creando soluciones con inteligencia artificial. Van a ser 2 días intensos de código, creatividad y mucho café ☕
+  const shareText = `🚀 ¡Ya estoy dentro! Me registré para la IA Hackathon Peru 2025 🎯
 
-Gracias a The Hackathon Company, Makers, Crafter Station y AI Playgrounds por organizar este evento 🙌
+📅 29-30 Nov | 📍 UPCH La Molina
+💻 2 días de código, creatividad y soluciones con IA
 
-📅 29-30 de Noviembre
-📍 Universidad Peruana Cayetano Heredia, La Molina
-🔗 iahackathon.pe
+🔗 ${shareUrl}
 
-#IAHackathonPeru #AI #Hackathon #Peru #Innovation #Tech`;
+#IAHackathonPeru #AI #Hackathon #Peru`;
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6 pt-8">
+      <div className="fixed top-0 left-0 right-0 h-6 bg-black/40 backdrop-blur-sm border-b border-brand-red/20 flex items-center px-4 font-adelle-mono text-[10px] uppercase tracking-wider text-white/80 z-50">
+        <span>SYSTEM_BOOT / IA_HACKATHON_2025.exe</span>
+        <span className="ml-auto">
+          <span className="text-brand-red">●</span> SYSTEM ONLINE
+        </span>
+      </div>
       <PixelConfetti isActive={showConfetti} particleCount={60} />
 
       <RetroCard>
-        <RetroCardHeader className="text-center">
+        <RetroCardHeader className="text-center pb-3">
           <motion.div
-            initial={{ scale: 0, rotate: -180 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ type: "spring", duration: 0.8 }}
-            className="text-4xl mb-4"
-          >
-            🏆
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="space-y-2"
+            transition={{ delay: 0.2 }}
+            className="flex items-center justify-center gap-2 mb-2"
           >
-            <div className="inline-block border border-brand-red bg-black/60 backdrop-blur-sm px-4 py-2">
-              <span className="font-adelle-mono text-2xl text-brand-red font-bold">
+            <span className="text-xl">🏆</span>
+            <div className="border border-brand-red bg-black/60 backdrop-blur-sm px-2 py-1">
+              <span className="font-adelle-mono text-sm text-brand-red font-bold">
                 #{String(participant.participantNumber || 0).padStart(4, "0")}
               </span>
             </div>
+          </motion.div>
 
-            <RetroCardTitle className="justify-center text-lg">
-              <GlitchText>ACHIEVEMENT_UNLOCKED!</GlitchText>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            <RetroCardTitle className="justify-center text-xs">
+              <GlitchText>¡LOGRO_DESBLOQUEADO!</GlitchText>
             </RetroCardTitle>
           </motion.div>
         </RetroCardHeader>
 
-        <RetroCardContent className="space-y-6">
+        <RetroCardContent className="space-y-4">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
             className="text-center"
           >
-          <p className="font-adelle-mono text-sm uppercase text-white">
-            REGISTRATION_COMPLETE
-          </p>
-          <p className="font-adelle-mono text-xs text-white/60 mt-1">
-            IA_HACKATHON_PERU_2025
+          <p className="font-adelle-mono text-xs uppercase text-white/80">
+            REGISTRO_COMPLETO
           </p>
           </motion.div>
 
@@ -186,84 +182,49 @@ Gracias a The Hackathon Company, Makers, Crafter Station y AI Playgrounds por or
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
-            className="space-y-4"
+            className="space-y-3"
           >
             <div className="text-center">
-              <h3 className="font-adelle-mono font-bold text-lg uppercase mb-4">
-                YOUR_BADGE
-              </h3>
-              <div className="relative w-full max-w-md mx-auto border border-brand-red">
-                {isGenerating || isInitialGeneration ? (
-                  <div className="aspect-[1080/1440] bg-black flex items-center justify-center">
-                    <motion.div
-                      animate={{ opacity: [0.3, 1, 0.3] }}
-                      transition={{ duration: 1.5, repeat: Infinity }}
-                      className="text-center p-8"
-                    >
-                      <RefreshCw className="size-8 mx-auto mb-4 text-brand-red animate-spin" />
-                      <p className="font-adelle-mono text-sm text-brand-red uppercase">
-                        GENERATING_BADGE...
-                      </p>
-                      <p className="font-adelle-mono text-xs text-white/60 uppercase mt-2">
-                        CREATING_AI_AVATAR
-                      </p>
-                    </motion.div>
-                  </div>
-                ) : participant.badgeBlobUrl ? (
-                  <Image
-                    src={participant.badgeBlobUrl}
-                    alt="Your Badge"
-                    width={1080}
-                    height={1440}
-                    className="w-full h-auto"
-                    priority
-                  />
-                ) : (
-                  <div className="aspect-[1080/1440] bg-black flex items-center justify-center">
-                    <div className="text-center p-8">
-                      <p className="font-adelle-mono text-sm text-white/60 uppercase">
-                        BADGE_NOT_GENERATED
-                      </p>
-                      {badgeError && (
-                        <p className="font-adelle-mono text-xs text-brand-red uppercase mt-2">
-                          {badgeError}
-                        </p>
-                      )}
-                    </div>
-                  </div>
+              <div className="relative w-full flex items-center justify-center">
+                <BadgePreview3D
+                  badgeUrl={participant.badgeBlobUrl || null}
+                  isGenerating={isGenerating && !participant.badgeBlobUrl}
+                  participantNumber={participant.participantNumber?.toString() || null}
+                />
+                {badgeError && (
+                  <p className="font-adelle-mono text-xs text-brand-red uppercase mt-2 absolute -bottom-6 left-1/2 -translate-x-1/2">
+                    {badgeError}
+                  </p>
                 )}
-                <div className="absolute inset-0 scanlines pointer-events-none" />
               </div>
               {participant.profilePhotoAiUrl && (
-                <p className="text-[10px] font-adelle-mono text-brand-red uppercase mt-2">
-                  ✓ AI_AVATAR_GENERATED
+                <p className="text-[10px] font-adelle-mono text-brand-red uppercase mt-4">
+                  ✓ AVATAR_IA_GENERADO
                 </p>
               )}
             </div>
 
-            <div className="flex flex-col gap-3">
-              <PixelButton
-                onClick={downloadBadge}
-                size="lg"
-                className="w-full"
-                disabled={!participant.badgeBlobUrl || isGenerating}
-              >
-                <Download className="size-4" />
-                DOWNLOAD_BADGE
-              </PixelButton>
+            <PixelButton
+              onClick={downloadBadge}
+              size="lg"
+              className="w-full"
+              disabled={!participant.badgeBlobUrl}
+            >
+              <Download className="size-4" />
+              DESCARGAR_CREDENCIAL
+            </PixelButton>
 
-              <PixelButton
-                onClick={handleRegenerateBadge}
-                variant="terminal"
-                size="lg"
-                className="w-full"
-                loading={isGenerating}
-                disabled={isGenerating}
-              >
-                <RefreshCw className="size-4" />
-                REGENERATE_BADGE
-              </PixelButton>
-            </div>
+            <PixelButton
+              onClick={handleRegenerateBadge}
+              variant="terminal"
+              size="lg"
+              className="w-full"
+              loading={isGenerating}
+              disabled={isGenerating || !participant?.id}
+            >
+              <RefreshCw className="size-4" />
+              REGENERAR_CREDENCIAL
+            </PixelButton>
 
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -272,7 +233,7 @@ Gracias a The Hackathon Company, Makers, Crafter Station y AI Playgrounds por or
               className="border border-brand-red/30 p-4 space-y-3"
             >
               <h3 className="font-adelle-mono font-bold text-sm uppercase text-white">
-                SHARE_NEWS
+                COMPARTE_EN_REDES
               </h3>
 
               <div className="bg-black/60 backdrop-blur-sm p-3 border border-brand-red/50 font-adelle-mono text-xs text-brand-red whitespace-pre-line">
@@ -289,12 +250,12 @@ Gracias a The Hackathon Company, Makers, Crafter Station y AI Playgrounds por or
                   }}
                 >
                   <Copy className="size-3" />
-                  COPY
+                  COPIAR
                 </PixelButton>
 
                 <PixelButton variant="secondary" size="sm" asChild>
                   <a
-                    href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent("https://iahackathon.pe")}`}
+                    href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -304,7 +265,7 @@ Gracias a The Hackathon Company, Makers, Crafter Station y AI Playgrounds por or
 
                 <PixelButton variant="secondary" size="sm" asChild>
                   <a
-                    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`}
+                    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -331,14 +292,14 @@ Gracias a The Hackathon Company, Makers, Crafter Station y AI Playgrounds por or
               transition={{ delay: 0.7 }}
               className="border border-brand-red/30 p-4 space-y-2 font-adelle-mono"
             >
-              <h3 className="font-bold text-sm uppercase text-white">EVENT_DETAILS</h3>
+              <h3 className="font-bold text-sm uppercase text-white">DETALLES_DEL_EVENTO</h3>
               <div className="space-y-1 text-xs uppercase">
                 <p className="text-white">
-                  <span className="text-white/60">DATE:</span>{" "}
+                  <span className="text-white/60">FECHA:</span>{" "}
                   29-30_NOV_2025
                 </p>
                 <p className="text-white">
-                  <span className="text-white/60">LOCATION:</span>{" "}
+                  <span className="text-white/60">UBICACIÓN:</span>{" "}
                   UPCH_LA_MOLINA
                 </p>
                 <p className="text-white">
@@ -354,23 +315,23 @@ Gracias a The Hackathon Company, Makers, Crafter Station y AI Playgrounds por or
               transition={{ delay: 0.75 }}
               className="border border-brand-red/30 p-4 space-y-2 font-adelle-mono"
             >
-              <h3 className="font-bold text-sm uppercase text-white">WHAT_TO_BRING</h3>
+              <h3 className="font-bold text-sm uppercase text-white">QUÉ_TRAER</h3>
               <ul className="space-y-1 text-xs uppercase text-white">
                 <li className="flex items-center gap-2">
-                  <span className="text-brand-red">✓</span> LAPTOP_+_CHARGER
+                  <span className="text-brand-red">✓</span> LAPTOP_+_CARGADOR
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-brand-red">✓</span> DNI_OR_ID
+                  <span className="text-brand-red">✓</span> DNI_O_IDENTIFICACIÓN
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-brand-red">✓</span> WATER_BOTTLE
+                  <span className="text-brand-red">✓</span> BOTELLA_DE_AGUA
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-brand-red">✓</span> NOTEBOOK_+_PEN
+                  <span className="text-brand-red">✓</span> CUADERNO_+_LÁPIZ
                 </li>
                 <li className="flex items-center gap-2">
                   <span className="text-brand-red">✓</span>{" "}
-                  COMFORTABLE_CLOTHES
+                  ROPA_CÓMODA
                 </li>
               </ul>
             </motion.div>
@@ -382,24 +343,24 @@ Gracias a The Hackathon Company, Makers, Crafter Station y AI Playgrounds por or
               className="border border-brand-red/50 bg-brand-red/10 p-4 space-y-2 font-adelle-mono"
             >
               <h3 className="font-bold text-sm uppercase text-brand-red">
-                IMPORTANT_REMINDERS
+                RECORDATORIOS_IMPORTANTES
               </h3>
               <ul className="space-y-1 text-xs uppercase text-white">
                 <li>
                   <span className="text-white/60">•</span>{" "}
-                  ARRIVE_EARLY_FOR_CHECK_IN
+                  LLEGAR_TEMPRANO_PARA_CHECK_IN
                 </li>
                 <li>
                   <span className="text-white/60">•</span>{" "}
-                  BRING_THIS_BADGE_(PRINTED_OR_PHONE)
+                  TRAER_ESTA_CREDENCIAL_(IMPRESA_O_EN_TELÉFONO)
                 </li>
                 <li>
                   <span className="text-white/60">•</span>{" "}
-                  FOOD_AND_DRINKS_PROVIDED
+                  COMIDA_Y_BEBIDAS_INCLUIDAS
                 </li>
                 <li>
                   <span className="text-white/60">•</span>{" "}
-                  TEAMS_FORMED_ON_SITE
+                  EQUIPOS_FORMADOS_EN_EL_LUGAR
                 </li>
               </ul>
             </motion.div>
@@ -412,10 +373,10 @@ Gracias a The Hackathon Company, Makers, Crafter Station y AI Playgrounds por or
               className="border border-brand-red/50 bg-brand-red/10 p-4 space-y-3"
             >
               <h3 className="font-adelle-mono font-bold text-sm uppercase text-brand-red">
-                YOUR_PROFILE
+                TU_PERFIL
               </h3>
               <p className="font-adelle-mono text-xs text-white/60 uppercase">
-                SHARE_YOUR_PROFILE_FOR_NETWORKING
+                COMPARTE_TU_PERFIL_PARA_NETWORKING
               </p>
               <div className="flex flex-col sm:flex-row gap-2">
                 <PixelButton
@@ -429,7 +390,7 @@ Gracias a The Hackathon Company, Makers, Crafter Station y AI Playgrounds por or
                     target="_blank"
                   >
                     <ExternalLink className="size-3" />
-                    VIEW_PROFILE
+                    VER_PERFIL
                   </Link>
                 </PixelButton>
                 <PixelButton
@@ -440,7 +401,7 @@ Gracias a The Hackathon Company, Makers, Crafter Station y AI Playgrounds por or
                 >
                   <Link href="/profile">
                     <User className="size-3" />
-                    EDIT_PROFILE
+                    EDITAR_PERFIL
                   </Link>
                 </PixelButton>
               </div>
@@ -454,15 +415,15 @@ Gracias a The Hackathon Company, Makers, Crafter Station y AI Playgrounds por or
             className="text-center py-4"
           >
             <p className="font-adelle-mono text-lg uppercase font-bold text-brand-red mb-2">
-              SEE_YOU_THERE!
+              ¡NOS_VEMOS_ALLÍ!
             </p>
             <p className="font-adelle-mono text-xs text-white/60 uppercase">
-              GET_READY_TO_BUILD_SOMETHING_AMAZING
+              PREPÁRATE_PARA_CONSTRUIR_ALGO_INCREÍBLE
             </p>
           </motion.div>
 
           <PixelButton asChild variant="ghost" className="w-full">
-            <Link href="/">&lt;&lt; RETURN_HOME</Link>
+            <Link href="/">&lt;&lt; VOLVER_AL_INICIO</Link>
           </PixelButton>
         </RetroCardContent>
       </RetroCard>

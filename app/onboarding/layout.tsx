@@ -1,7 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Volume2, VolumeX } from "lucide-react";
 import Image from "next/image";
 
 export default function OnboardingLayout({
@@ -9,22 +7,6 @@ export default function OnboardingLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [isMuted, setIsMuted] = useState(false);
-
-  useEffect(() => {
-    const stored = localStorage.getItem("retro-sounds-muted");
-    if (stored === "true") {
-      setIsMuted(true);
-    }
-  }, []);
-
-  const toggleMute = () => {
-    setIsMuted((prev) => {
-      const newValue = !prev;
-      localStorage.setItem("retro-sounds-muted", String(newValue));
-      return newValue;
-    });
-  };
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -54,27 +36,7 @@ export default function OnboardingLayout({
 
       {/* Content */}
       <div className="relative z-20 min-h-screen flex flex-col">
-        <div className="fixed top-0 left-0 right-0 h-8 bg-foreground/90 backdrop-blur-sm text-background flex items-center px-4 font-adelle-mono text-xs uppercase tracking-wider z-50 border-b border-brand-red/30">
-          <span className="text-brand-red mr-2">&gt;</span>
-          <span>SYSTEM_BOOT</span>
-          <span className="mx-2">/</span>
-          <span>IA_HACKATHON_2025.exe</span>
-          <span className="ml-auto flex items-center gap-2">
-            <span className="opacity-60">v1.0.0</span>
-            <button
-              onClick={toggleMute}
-              className="p-1 hover:bg-background/20 transition-colors"
-            >
-              {isMuted ? (
-                <VolumeX className="size-3" />
-              ) : (
-                <Volume2 className="size-3" />
-              )}
-            </button>
-          </span>
-        </div>
-
-        <div className="max-w-3xl mx-auto py-8 px-4 pt-16 flex-1">
+        <div className="max-w-3xl mx-auto py-8 px-4 flex-1">
           {children}
         </div>
 
