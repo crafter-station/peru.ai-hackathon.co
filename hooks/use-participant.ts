@@ -4,7 +4,7 @@ import type { Participant } from "@/lib/schema";
 export function useParticipant() {
   const queryClient = useQueryClient();
 
-  const { data: participant, isLoading } = useQuery<Participant | null>({
+  const { data: participant, isLoading, refetch } = useQuery<Participant | null>({
     queryKey: ["participant"],
     queryFn: async () => {
       const response = await fetch("/api/onboarding");
@@ -33,5 +33,6 @@ export function useParticipant() {
     isLoading,
     updateParticipant: updateMutation.mutate,
     isUpdating: updateMutation.isPending,
+    refetch,
   };
 }

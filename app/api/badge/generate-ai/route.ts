@@ -7,12 +7,94 @@ import { db } from "@/lib/db";
 import { participants } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 import { put } from "@vercel/blob";
+import * as falStorage from "@fal-ai/serverless-client";
 
 fal.config({
   credentials: process.env.FAL_API_KEY,
 });
 
+falStorage.config({
+  credentials: process.env.FAL_API_KEY,
+});
+
 const RATE_LIMIT_SECONDS = 10;
+
+const BADGE_CONFIG = {
+  profilePicture: {
+    x: 45.842790213430476,
+    y: 265.46173867777236,
+    width: 700,
+    height: 700,
+  },
+  participantNumber: {
+    x: 407.8021863612701,
+    y: 343.34721499219154,
+    fontSize: 32,
+    fontWeight: "400",
+    color: "rgba(246, 246, 246, 0.09)",
+    fontFamily: "'Adelle Mono'",
+  },
+  participantNumber2: {
+    x: 411.5190005205624,
+    y: 1031.5543987506467,
+    fontSize: 32,
+    fontWeight: "400",
+    color: "rgba(246, 246, 246, 0.09)",
+    fontFamily: "'Adelle Mono'",
+  },
+  firstName: {
+    x: 473.5817012876032,
+    y: 1198.84882384131,
+    fontSize: 60,
+    fontWeight: "700",
+    color: "#FFFFFF",
+    fontFamily: "sans-serif",
+    letterSpacing: "0.08em",
+  },
+  lastName: {
+    x: 458.33774981191004,
+    y: 1256.790067915308,
+    fontSize: 60,
+    fontWeight: "700",
+    color: "#FFFFFF",
+    fontFamily: "sans-serif",
+    letterSpacing: "0.08em",
+  },
+  role: {
+    x: 467.92609730627487,
+    y: 1317.076218001156,
+    fontSize: 40,
+    fontWeight: "400",
+    color: "#FFFFFF",
+    fontFamily: "'Adelle Mono'",
+  },
+  qrCode: {
+    x: 107.5300849661869,
+    y: 1152.0579656293544,
+    width: 179,
+    height: 169.05,
+  },
+};
+
+function base64ToFile(base64String: string, filename = "upload.jpg"): File {
+  const matches = base64String.match(/^data:([A-Za-z-+/]+);base64,(.+)$/);
+
+  if (!matches || matches.length !== 3) {
+    throw new Error("Invalid base64 string");
+  }
+
+  const mimeType = matches[1];
+  const base64Data = matches[2];
+
+  const binaryString = atob(base64Data);
+  const bytes = new Uint8Array(binaryString.length);
+
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+
+  return new File([bytes], filename, { type: mimeType });
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -50,15 +132,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!participant.profilePhotoAiUrl && !participant.profilePhotoUrl) {
+    if (!participant.profilePhotoUrl) {
       return NextResponse.json(
         { error: "Profile photo required for badge generation" },
         { status: 400 },
       );
     }
-
-    // Use AI-generated photo if available, otherwise fallback to original
-    const photoUrl = participant.profilePhotoAiUrl || participant.profilePhotoUrl;
 
     if (participant.lastBadgeGenerationAt) {
       const lastGenerationTime = new Date(
@@ -85,109 +164,111 @@ export async function POST(request: NextRequest) {
       participant.participantNumber,
     );
 
-    const participantNumberFormatted = `#${String(participant.participantNumber).padStart(4, "0")}`;
-    const participantName =
-      participant.fullName?.toUpperCase() || "PARTICIPANT";
-
-    const photoResponse = await fetch(photoUrl!);
-    const photoBuffer = Buffer.from(await photoResponse.arrayBuffer());
-    const photoBase64 = `data:image/jpeg;base64,${photoBuffer.toString("base64")}`;
-
-    const bgPath = path.join(process.cwd(), "public", "pp-bg.png");
-    const bgBuffer = await sharp(bgPath).toBuffer();
-    const bgBase64 = `data:image/png;base64,${bgBuffer.toString("base64")}`;
-
-    const pixelArtPrompt = `Create an anime-inspired 8-bit pixel art character based on this person's photo, drawn on top of the provided background image.
-
-STYLE - ANIME 8-BIT FUSION:
-- Retro JRPG character portrait (Final Fantasy, Chrono Trigger, Fire Emblem style)
-- Anime/manga aesthetic with expressive eyes and stylized features
-- Pixelated but with character depth and personality
-- Mix of cute chibi proportions with detailed pixel shading
-- NOT flat 2D - use pixel shading to create dimension and form
-- Think classic SNES RPG character portraits with personality
-
-PIXEL ART EXECUTION:
-- Large visible pixels with intentional pixel placement
-- Dithering and pixel patterns for texture and depth
-- Anime-style large expressive eyes (simplified but with life)
-- Detailed pixel work for hair strands and highlights
-- Strategic use of pixels to show volume and form
-- Retro game character portrait quality
-
-CHARACTER DESIGN:
-- Chest-up portrait view
-- Anime-influenced facial features (larger eyes, stylized nose/mouth)
-- Expressive and characterful pose
-- Hair with volume and pixel-shaded highlights
-- Clothing/outfit suggested with pixel details
-- Cute but with depth and dimension
-
-SHADING & DEPTH:
-- Grayscale only: 4 tones (black #000000, dark gray #555555, light gray #AAAAAA, white #FFFFFF)
-- Use dithering patterns to create mid-tones and texture
-- Pixel-based shading to show facial contours and depth
-- Highlights on hair, face, and clothing for dimension
-- Cell-shaded anime approach adapted to pixel art
-- NOT flat - use strategic pixel placement for 3D form
-
-TECHNICAL SPECS:
-- KEEP the provided background image exactly as-is
-- Draw the pixel art character ON TOP of this background
-- Character centered, fully visible
-- Sharp pixel edges and clean silhouette
-- No text, watermarks, or labels
-- Square format 500x500px
-
-OUTPUT GOAL:
-An anime-style 8-bit character portrait with personality, depth, and charm - like a beloved JRPG character sprite with expressive features and dimensional pixel shading, drawn on top of the provided background.`;
+    const participantNumberFormatted = `#${String(participant.participantNumber).padStart(3, "0")}`;
+    const firstName = participant.fullName?.split(" ")[0]?.toUpperCase() || "PARTICIPANT";
+    const lastName = participant.fullName?.split(" ").slice(1).join(" ")?.toUpperCase() || "";
 
     console.log("[badge-ai] STEP 1: Generating pixel art portrait");
 
-    const pixelArtResult = await fal.subscribe("fal-ai/nano-banana/edit", {
-      input: {
-        prompt: pixelArtPrompt,
-        image_urls: [bgBase64, photoBase64],
-        num_images: 1,
-        output_format: "png",
-      },
-    });
+    const photoResponse = await fetch(participant.profilePhotoUrl);
+    const photoBuffer = Buffer.from(await photoResponse.arrayBuffer());
+    const photoBase64 = `data:image/jpeg;base64,${photoBuffer.toString("base64")}`;
 
-    if (
-      !pixelArtResult.data ||
-      !pixelArtResult.data.images ||
-      pixelArtResult.data.images.length === 0
-    ) {
+    console.log("[badge-ai] Converting base64 to File and uploading to fal.storage");
+    const imageFile = base64ToFile(photoBase64, "profile-photo.jpg");
+    const uploadedImageUrl = await falStorage.storage.upload(imageFile);
+    console.log("[badge-ai] Image uploaded to fal.storage:", uploadedImageUrl);
+
+    const prompt =
+      "8-bit pixel art portrait, chest-up view. Simple solid background for easy cutout. Flat grayscale shading with four tones. Printed, cartoonish, and cute. Preserve facial structure. The character should fit entirely within the frame, without labels or text.";
+
+    console.log("[badge-ai] Calling qwen-image-edit with uploaded image URL");
+    const pixelArtResult = (await falStorage.subscribe("fal-ai/qwen-image-edit", {
+      input: {
+        prompt,
+        image_url: uploadedImageUrl,
+      },
+    })) as {
+      data?: { images?: Array<{ url: string }>; image?: { url: string } };
+      images?: Array<{ url: string }>;
+      image?: { url: string };
+    };
+
+    console.log("[badge-ai] FAL result received");
+
+    let pixelArtImageUrl: string | undefined;
+
+    if (pixelArtResult.data?.images && Array.isArray(pixelArtResult.data.images) && pixelArtResult.data.images.length > 0) {
+      pixelArtImageUrl = pixelArtResult.data.images[0].url;
+    } else if (pixelArtResult.images && Array.isArray(pixelArtResult.images) && pixelArtResult.images.length > 0) {
+      pixelArtImageUrl = pixelArtResult.images[0].url;
+    } else if (pixelArtResult.data?.image?.url) {
+      pixelArtImageUrl = pixelArtResult.data.image.url;
+    } else if (pixelArtResult.image?.url) {
+      pixelArtImageUrl = pixelArtResult.image.url;
+    }
+
+    if (!pixelArtImageUrl) {
+      console.error("[badge-ai] Could not find image URL in result");
       throw new Error("No pixel art image generated by FAL AI");
     }
 
-    const pixelArtImageUrl = pixelArtResult.data.images[0].url;
     console.log("[badge-ai] Pixel art generated:", pixelArtImageUrl);
 
-    const pixelArtResponse = await fetch(pixelArtImageUrl);
+    console.log("[badge-ai] Removing background from pixel art");
+    
+    interface QueueUpdate {
+      status: string;
+      logs?: Array<{ message: string }>;
+    }
+    
+    const bgRemovalResult = (await falStorage.subscribe("fal-ai/birefnet/v2", {
+      input: {
+        image_url: pixelArtImageUrl,
+      },
+      logs: true,
+      onQueueUpdate: (update: QueueUpdate) => {
+        if (update.status === "IN_PROGRESS" && update.logs) {
+          update.logs.map((log) => log.message).forEach(console.log);
+        }
+      },
+    })) as { data?: { image?: { url: string } }; image?: { url: string } };
+
+    let transparentImageUrl: string | undefined;
+
+    if (bgRemovalResult.data?.image?.url) {
+      transparentImageUrl = bgRemovalResult.data.image.url;
+      console.log("[badge-ai] Background removed successfully:", transparentImageUrl);
+    } else if (bgRemovalResult.image?.url) {
+      transparentImageUrl = bgRemovalResult.image.url;
+      console.log("[badge-ai] Background removed successfully:", transparentImageUrl);
+    } else {
+      console.warn("[badge-ai] Could not remove background, using original image");
+      transparentImageUrl = pixelArtImageUrl;
+    }
+
+    const finalPixelArtUrl = transparentImageUrl || pixelArtImageUrl;
+
+    const pixelArtResponse = await fetch(finalPixelArtUrl);
     const pixelArtBuffer = Buffer.from(await pixelArtResponse.arrayBuffer());
+
+    const processedPixelArt = await sharp(pixelArtBuffer)
+      .resize(700, 700, { fit: "cover" })
+      .grayscale()
+      .png()
+      .toBuffer();
 
     const pixelArtTimestamp = Date.now();
     const pixelArtBlobResult = await put(
-      `pixel-art/${participantId}-${pixelArtTimestamp}.png`,
-      pixelArtBuffer,
+      `ai-profile-photos/${participantId}-${pixelArtTimestamp}.png`,
+      processedPixelArt,
       { access: "public", contentType: "image/png" },
     );
     console.log("[badge-ai] Pixel art uploaded to Vercel Blob:", pixelArtBlobResult.url);
 
     console.log("[badge-ai] STEP 2: Composing badge with sharp");
 
-    const templatePath = path.join(process.cwd(), "public", "badge-base.jpg");
-
-    const pixelArt = await sharp(pixelArtBuffer)
-      .resize(500, 500, { fit: "cover" })
-      .ensureAlpha()
-      .toBuffer();
-
-    const templateWidth = 1080;
-    const pixelArtSize = 500;
-    const pixelArtX = Math.floor((templateWidth - pixelArtSize) / 2);
-    const pixelArtY = 450;
+    const templatePath = path.join(process.cwd(), "public", "onboarding", "THC-IA HACK PE-ID-Participante.png");
 
     const profileUrl = `https://peru.ai-hackathon.co/p/${participant.participantNumber}`;
     
@@ -196,8 +277,8 @@ An anime-style 8-bit character portrait with personality, depth, and charm - lik
     const qrCodeBuffer = await QRCode.toBuffer(profileUrl, {
       errorCorrectionLevel: 'M',
       type: 'png',
-      width: 120,
-      margin: 1,
+      width: Math.round(BADGE_CONFIG.qrCode.width),
+      margin: 0,
       color: {
         dark: '#000000',
         light: '#FFFFFF',
@@ -205,26 +286,60 @@ An anime-style 8-bit character portrait with personality, depth, and charm - lik
     });
 
     const qrCode = await sharp(qrCodeBuffer)
-      .resize(120, 120)
+      .resize(Math.round(BADGE_CONFIG.qrCode.width), Math.round(BADGE_CONFIG.qrCode.height))
       .toBuffer();
 
+    const numberText = `${participantNumberFormatted.toUpperCase()} * ${participantNumberFormatted.toUpperCase()} * ${participantNumberFormatted.toUpperCase()}`;
+
     const svgText = `
-      <svg width="1080" height="1265">
+      <svg width="1080" height="1440">
         <style>
-          .number { fill: white; font-size: 48px; font-weight: bold; font-family: sans-serif; }
-          .name { fill: white; font-size: 36px; font-weight: bold; font-family: sans-serif; }
+          .number { 
+            fill: rgba(246, 246, 246, 0.09); 
+            font-size: 32px; 
+            font-weight: 400; 
+            font-family: monospace;
+            letter-spacing: 0.34em;
+            text-transform: uppercase;
+          }
+          .firstName { 
+            fill: white; 
+            font-size: 60px; 
+            font-weight: 700; 
+            font-family: sans-serif;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+          }
+          .lastName { 
+            fill: white; 
+            font-size: 60px; 
+            font-weight: 700; 
+            font-family: sans-serif;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+          }
+          .role { 
+            fill: white; 
+            font-size: 40px; 
+            font-weight: 400; 
+            font-family: monospace;
+            text-transform: uppercase;
+          }
         </style>
-        <text x="540" y="370" text-anchor="middle" class="number">${participantNumberFormatted}</text>
-        <text x="540" y="1000" text-anchor="middle" class="name">${participantName}</text>
+        <text x="${BADGE_CONFIG.participantNumber.x}" y="${BADGE_CONFIG.participantNumber.y}" text-anchor="middle" class="number">${numberText}</text>
+        <text x="${BADGE_CONFIG.participantNumber2.x}" y="${BADGE_CONFIG.participantNumber2.y}" text-anchor="middle" class="number">${numberText}</text>
+        <text x="${BADGE_CONFIG.firstName.x}" y="${BADGE_CONFIG.firstName.y}" text-anchor="middle" class="firstName">${firstName}</text>
+        <text x="${BADGE_CONFIG.lastName.x}" y="${BADGE_CONFIG.lastName.y}" text-anchor="middle" class="lastName">${lastName}</text>
+        <text x="${BADGE_CONFIG.role.x}" y="${BADGE_CONFIG.role.y}" text-anchor="middle" class="role">HACKER</text>
       </svg>
     `;
 
     const badgeBuffer = await sharp(templatePath)
       .composite([
         {
-          input: pixelArt,
-          top: pixelArtY,
-          left: pixelArtX,
+          input: processedPixelArt,
+          top: Math.round(BADGE_CONFIG.profilePicture.y),
+          left: Math.round(BADGE_CONFIG.profilePicture.x),
         },
         {
           input: Buffer.from(svgText),
@@ -233,20 +348,20 @@ An anime-style 8-bit character portrait with personality, depth, and charm - lik
         },
         {
           input: qrCode,
-          top: 1120,
-          left: 930,
+          top: Math.round(BADGE_CONFIG.qrCode.y),
+          left: Math.round(BADGE_CONFIG.qrCode.x),
         },
       ])
-      .jpeg({ quality: 90 })
+      .png({ quality: 90 })
       .toBuffer();
 
     console.log("[badge-ai] Badge composed, uploading to Vercel Blob");
 
     const timestamp = Date.now();
     const blobResult = await put(
-      `badges/${participantId}-${timestamp}.jpg`,
+      `badges/${participantId}-${timestamp}.png`,
       badgeBuffer,
-      { access: "public", contentType: "image/jpeg" },
+      { access: "public", contentType: "image/png" },
     );
 
     console.log("[badge-ai] Uploaded to Vercel Blob:", blobResult.url);
