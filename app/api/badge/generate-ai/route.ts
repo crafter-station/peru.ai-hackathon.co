@@ -49,12 +49,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!participant.profilePhotoUrl) {
+    if (!participant.profilePhotoAiUrl && !participant.profilePhotoUrl) {
       return NextResponse.json(
         { error: "Profile photo required for badge generation" },
         { status: 400 },
       );
     }
+
+    // Use AI-generated photo if available, otherwise fallback to original
+    const photoUrl = participant.profilePhotoAiUrl || participant.profilePhotoUrl;
 
     if (participant.lastBadgeGenerationAt) {
       const lastGenerationTime = new Date(
@@ -85,7 +88,7 @@ export async function POST(request: NextRequest) {
     const participantName =
       participant.fullName?.toUpperCase() || "PARTICIPANT";
 
-    const photoResponse = await fetch(participant.profilePhotoUrl);
+    const photoResponse = await fetch(photoUrl!);
     const photoBuffer = Buffer.from(await photoResponse.arrayBuffer());
     const photoBase64 = `data:image/jpeg;base64,${photoBuffer.toString("base64")}`;
 
