@@ -11,19 +11,17 @@ import {
 import { PixelConfetti } from "@/components/ui/pixel-confetti";
 import { GlitchText } from "@/components/ui/terminal-text";
 import Link from "next/link";
-import { Download, Sparkles, Copy } from "lucide-react";
-import Image from "next/image";
-import { useBadgeGeneration } from "@/hooks/use-badge-generation";
-import { useState, useEffect } from "react";
+import { Download, Copy, Share2 } from "lucide-react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useRetroSounds } from "@/hooks/use-click-sound";
+import { BadgePreview } from "@/components/badge/badge-preview";
 
 export default function CompletePage() {
   const { participant } = useParticipant();
-  const { generateBadge, isGenerating, error } = useBadgeGeneration();
-  const [countdown, setCountdown] = useState(0);
   const [showConfetti, setShowConfetti] = useState(true);
   const { playSuccess, playClick } = useRetroSounds();
+  const svgRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
     if (showConfetti) {
@@ -33,51 +31,161 @@ export default function CompletePage() {
     }
   }, [showConfetti, playSuccess]);
 
-  useEffect(() => {
-    if (
-      participant?.id &&
-      participant.registrationStatus === "completed" &&
-      !participant.badgeBlobUrl &&
-      !isGenerating
-    ) {
-      generateBadge(participant.id).catch((err) => {
-        console.error("Auto badge generation failed:", err);
-      });
-    }
-  }, [participant?.id, participant?.registrationStatus, participant?.badgeBlobUrl, isGenerating, generateBadge]);
-
-  useEffect(() => {
-    if (!participant?.lastBadgeGenerationAt) return;
-
-    const checkCooldown = () => {
-      const lastGen = new Date(participant.lastBadgeGenerationAt!).getTime();
-      const now = Date.now();
-      const elapsed = (now - lastGen) / 1000;
-      const remaining = Math.max(0, 10 - elapsed);
-
-      setCountdown(Math.ceil(remaining));
-
-      if (remaining > 0) {
-        setTimeout(checkCooldown, 1000);
-      }
-    };
-
-    checkCooldown();
-  }, [participant?.lastBadgeGenerationAt]);
-
-  const handleGenerateBadge = async () => {
-    if (!participant?.id || countdown > 0) return;
+  const downloadBadge = useCallback(async () => {
+    if (!svgRef.current || !participant) return;
 
     try {
-      await generateBadge(participant.id);
-      playSuccess();
-    } catch (err) {
-      console.error("Badge generation error:", err);
-      alert(error || "Error generando badge. Por favor, intenta de nuevo.");
-    }
-  };
+      playClick();
+      const canvas = document.createElement("canvas");
+      canvas.width = 1080;
+      canvas.height = 1440;
+      const ctx = canvas.getContext("2d");
+      
+      if (!ctx) {
+        alert("Canvas not supported");
+        return;
+      }
 
-  const canGenerate = countdown === 0 && !isGenerating;
+      ctx.fillStyle = "#0C0C0E";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Load base badge image
+      const baseImg = new Image();
+      baseImg.crossOrigin = "anonymous";
+      
+      await new Promise<void>((resolve, reject) => {
+        baseImg.onload = () => {
+          ctx.drawImage(baseImg, 0, 0, 1080, 1440);
+          resolve();
+        };
+        baseImg.onerror = () => {
+          reject(new Error("Failed to load base image"));
+        };
+        baseImg.src = "/onboarding/THC-IA HACK PE-ID-Participante.svg";
+      });
+
+      // Load and draw AI avatar if available
+      const aiPhotoUrl = participant.profilePhotoAiUrl || participant.profilePhotoUrl;
+      if (aiPhotoUrl) {
+        try {
+          const avatarImg = new Image();
+          avatarImg.crossOrigin = "anonymous";
+          
+          await new Promise<void>((resolve) => {
+            avatarImg.onload = () => {
+              // Apply grayscale filter
+              const tempCanvas = document.createElement("canvas");
+              tempCanvas.width = 700;
+              tempCanvas.height = 700;
+              const tempCtx = tempCanvas.getContext("2d");
+              
+              if (tempCtx) {
+                tempCtx.filter = "grayscale(100%)";
+                tempCtx.drawImage(avatarImg, 0, 0, 700, 700);
+                
+                // Draw the grayscale image on main canvas
+                ctx.drawImage(tempCanvas, 45.842790213430476, 265.46173867777236, 700, 700);
+              }
+              resolve();
+            };
+            avatarImg.onerror = () => {
+              console.warn("Failed to load avatar, continuing without it");
+              resolve(); // Don't reject, just continue
+            };
+            avatarImg.src = aiPhotoUrl;
+          });
+        } catch (error) {
+          console.warn("Error loading avatar:", error);
+        }
+      }
+
+      // Clone and process SVG
+      const svg = svgRef.current.cloneNode(true) as SVGSVGElement;
+      
+      // Remove profile image element from SVG since we already drew it on canvas
+      const imageElements = svg.querySelectorAll("image");
+      imageElements.forEach((imgEl) => {
+        // Only remove the profile photo, keep the QR code
+        const href = imgEl.getAttribute("href") || "";
+        if (href && !href.startsWith("data:image/png;base64")) {
+          imgEl.remove();
+        }
+      });
+      
+      const svgData = new XMLSerializer().serializeToString(svg);
+      
+      const svgWithFonts = svgData.replace(
+        /font-family="[^"]*"/g,
+        (match) => {
+          if (match.includes("Adelle Mono")) {
+            return `font-family="'Adelle Mono'"`;
+          }
+          return match;
+        }
+      );
+
+      const svgBlob = new Blob([svgWithFonts], { type: "image/svg+xml;charset=utf-8" });
+      const svgUrl = URL.createObjectURL(svgBlob);
+
+      const overlayImg = new Image();
+      await new Promise<void>((resolve, reject) => {
+        overlayImg.onload = () => {
+          ctx.drawImage(overlayImg, 0, 0, 1080, 1440);
+          URL.revokeObjectURL(svgUrl);
+          resolve();
+        };
+        overlayImg.onerror = () => {
+          URL.revokeObjectURL(svgUrl);
+          reject(new Error("Failed to load overlay"));
+        };
+        overlayImg.src = svgUrl;
+      });
+
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = `ia-hack-badge-${participant.participantNumber}.png`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        }
+      }, "image/png", 1.0);
+    } catch (error) {
+      console.error("Error downloading badge:", error);
+      alert("Error downloading badge. Please try again.");
+    }
+  }, [participant, playClick]);
+
+  const handleShare = useCallback(async () => {
+    if (!participant) return;
+
+    const shareUrl = `${window.location.origin}/badge/${participant.id}`;
+    const shareText = `🎉 ¡Estoy registrado para IA Hackathon Peru 2025! Badge #${String(participant.participantNumber).padStart(4, "0")}
+
+📅 29-30 de Noviembre
+📍 Universidad Peruana Cayetano Heredia
+
+#IAHackathonPeru #AI #Hackathon`;
+
+    try {
+      playClick();
+      if (navigator.share) {
+        await navigator.share({
+          title: `${participant.fullName} - IA Hackathon Peru`,
+          text: shareText,
+          url: shareUrl,
+        });
+      } else {
+        await navigator.clipboard.writeText(`${shareText}\n\n${shareUrl}`);
+        alert("¡Enlace copiado al portapapeles!");
+      }
+    } catch (error) {
+      console.error("Error sharing:", error);
+    }
+  }, [participant, playClick]);
 
   if (!participant || participant.registrationStatus !== "completed") {
     return (
@@ -151,100 +259,59 @@ Me emociona ser parte de este evento donde crearemos soluciones innovadoras con 
             </p>
           </motion.div>
 
-          {participant.badgeBlobUrl ? (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="space-y-4"
-            >
-              <div className="text-center">
-                <h3 className="font-adelle-mono font-bold text-lg uppercase mb-4">
-                  YOUR_BADGE
-                </h3>
-                <div className="relative w-full max-w-3xl mx-auto border-4 border-foreground">
-                  <Image
-                    src={participant.badgeBlobUrl}
-                    alt="Participant Badge"
-                    width={1600}
-                    height={900}
-                    className="w-full h-auto"
-                  />
-                  <div className="absolute inset-0 scanlines pointer-events-none" />
-                </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="space-y-4"
+          >
+            <div className="text-center">
+              <h3 className="font-adelle-mono font-bold text-lg uppercase mb-4">
+                YOUR_BADGE_PREVIEW
+              </h3>
+              <div className="relative w-full max-w-md mx-auto border-4 border-foreground">
+                <BadgePreview
+                  ref={svgRef}
+                  profilePictureUrl={participant.profilePhotoAiUrl || participant.profilePhotoUrl}
+                  participantNumber={`#${String(participant.participantNumber || 0).padStart(3, "0")}`}
+                  firstName={participant.fullName?.split(" ")[0] || "PARTICIPANT"}
+                  lastName={participant.fullName?.split(" ").slice(1).join(" ") || ""}
+                  role="HACKER"
+                />
+                <div className="absolute inset-0 scanlines pointer-events-none" />
               </div>
-
-              <div className="flex flex-col gap-3">
-                <PixelButton
-                  onClick={() => {
-                    playClick();
-                    const link = document.createElement("a");
-                    link.href = participant.badgeBlobUrl!;
-                    link.download = `ia-hack-badge-${participant.participantNumber}.jpg`;
-                    link.click();
-                  }}
-                  size="lg"
-                  className="w-full"
-                >
-                  <Download className="size-4" />
-                  DOWNLOAD_BADGE
-                </PixelButton>
-
-                <PixelButton
-                  onClick={handleGenerateBadge}
-                  variant="secondary"
-                  disabled={!canGenerate}
-                  className="w-full"
-                >
-                  {isGenerating ? (
-                    <>
-                      <span className="loading-dots">GENERATING</span>
-                    </>
-                  ) : countdown > 0 ? (
-                    `WAIT_${countdown}s`
-                  ) : (
-                    <>
-                      <Sparkles className="size-4" />
-                      REGENERATE_BADGE
-                    </>
-                  )}
-                </PixelButton>
-
-                <p className="text-[10px] font-adelle-mono text-muted-foreground text-center uppercase">
-                  SHARE_WITH #IAHACKATHONPERU
+              {participant.profilePhotoAiUrl && (
+                <p className="text-[10px] font-adelle-mono text-terminal-green uppercase mt-2">
+                  ✓ AI_AVATAR_LOADED
                 </p>
-              </div>
-            </motion.div>
-          ) : (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
-              className="text-center py-8 space-y-4"
-            >
-              <p className="font-adelle-mono text-sm text-muted-foreground uppercase">
-                BADGE_NOT_GENERATED
-              </p>
-              <PixelButton 
-                onClick={handleGenerateBadge} 
-                size="lg"
-                disabled={!canGenerate}
-                variant="terminal"
-              >
-                {isGenerating ? (
-                  <span className="loading-dots">GENERATING</span>
-                ) : (
-                  <>
-                    <Sparkles className="size-4" />
-                    GENERATE_BADGE.exe
-                  </>
-                )}
-              </PixelButton>
-              {error && (
-                <p className="text-xs font-adelle-mono text-destructive uppercase">{error}</p>
               )}
-            </motion.div>
-          )}
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <PixelButton
+                onClick={downloadBadge}
+                size="lg"
+                className="w-full"
+              >
+                <Download className="size-4" />
+                DOWNLOAD_BADGE
+              </PixelButton>
+
+              <PixelButton
+                onClick={handleShare}
+                variant="secondary"
+                size="lg"
+                className="w-full"
+              >
+                <Share2 className="size-4" />
+                SHARE_BADGE
+              </PixelButton>
+
+              <p className="text-[10px] font-adelle-mono text-muted-foreground text-center uppercase">
+                SHARE_WITH #IAHACKATHONPERU
+              </p>
+            </div>
+          </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 10 }}

@@ -33,8 +33,12 @@ export function Step2Security() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isConverting, setIsConverting] = useState(false);
+  const [isGeneratingAi, setIsGeneratingAi] = useState(false);
   const [photoPreview, setPhotoPreview] = useState<string | null>(
     participant?.profilePhotoUrl || null
+  );
+  const [aiPhotoUrl, setAiPhotoUrl] = useState<string | null>(
+    participant?.profilePhotoAiUrl || null
   );
   const { playSuccess, playError, playClick } = useRetroSounds();
 
@@ -110,6 +114,30 @@ export function Step2Security() {
         profilePhotoUrl: url,
       });
       playSuccess();
+      
+      // Trigger AI generation in the background
+      setIsGeneratingAi(true);
+      try {
+        const aiResponse = await fetch("/api/onboarding/generate-ai-photo", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ profilePhotoUrl: url }),
+        });
+
+        if (aiResponse.ok) {
+          const { aiPhotoUrl: generatedAiUrl } = await aiResponse.json();
+          setAiPhotoUrl(generatedAiUrl);
+          console.log("AI profile photo generated:", generatedAiUrl);
+        } else {
+          console.warn("AI generation failed, but original photo was saved");
+        }
+      } catch (aiError) {
+        console.error("AI generation error:", aiError);
+      } finally {
+        setIsGeneratingAi(false);
+      }
     } catch (error) {
       console.error("Error uploading photo:", error);
       playError();
@@ -135,8 +163,10 @@ export function Step2Security() {
     playClick();
     form.setValue("profilePhotoUrl", "");
     setPhotoPreview(null);
+    setAiPhotoUrl(null);
     updateParticipant({
       profilePhotoUrl: null,
+      profilePhotoAiUrl: null,
     });
   };
 
@@ -211,25 +241,68 @@ export function Step2Security() {
                       <motion.div
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
-                        className="relative inline-block"
+                        className="space-y-3"
                       >
-                        <div className="relative size-32 border-2 border-foreground overflow-hidden">
-                          <Image
-                            src={photoPreview}
-                            alt="Preview"
-                            fill
-                            className="object-cover"
-                          />
+                        {isGeneratingAi ? (
+                          <div className="space-y-2">
+                            <p className="text-xs font-adelle-mono text-terminal-green uppercase text-center">
+                              GENERATING_AI_AVATAR...
+                            </p>
+                            <div className="relative w-48 h-48 mx-auto border-2 border-terminal-green overflow-hidden flex items-center justify-center bg-black">
+                              <motion.div
+                                animate={{ opacity: [0.3, 1, 0.3] }}
+                                transition={{ duration: 1.5, repeat: Infinity }}
+                                className="text-center"
+                              >
+                                <span className="font-adelle-mono text-xs text-terminal-green">PROCESSING...</span>
+                              </motion.div>
+                            </div>
+                          </div>
+                        ) : aiPhotoUrl ? (
+                          <div className="space-y-2">
+                            <p className="text-xs font-adelle-mono text-terminal-green uppercase text-center">
+                              AI_AVATAR_READY
+                            </p>
+                            <div className="relative w-48 h-48 mx-auto border-2 border-terminal-green overflow-hidden">
+                              <Image
+                                src={aiPhotoUrl}
+                                alt="AI Generated Avatar"
+                                fill
+                                className="object-cover"
+                              />
+                            </div>
+                            <p className="text-[10px] font-adelle-mono text-terminal-green uppercase text-center">
+                              ✓ READY_FOR_BADGE
+                            </p>
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            <p className="text-xs font-adelle-mono text-muted-foreground uppercase text-center">
+                              UPLOADED
+                            </p>
+                            <div className="relative w-48 h-48 mx-auto border-2 border-foreground overflow-hidden">
+                              <Image
+                                src={photoPreview}
+                                alt="Preview"
+                                fill
+                                className="object-cover"
+                              />
+                            </div>
+                          </div>
+                        )}
+                        
+                        <div className="flex justify-center">
+                          <PixelButton
+                            type="button"
+                            variant="destructive"
+                            size="sm"
+                            onClick={removePhoto}
+                            disabled={isGeneratingAi}
+                          >
+                            <X className="size-3 mr-1" />
+                            REMOVE_PHOTO
+                          </PixelButton>
                         </div>
-                        <PixelButton
-                          type="button"
-                          variant="destructive"
-                          size="icon"
-                          className="absolute -top-2 -right-2 size-6"
-                          onClick={removePhoto}
-                        >
-                          <X className="size-3" />
-                        </PixelButton>
                       </motion.div>
                     )}
                   </motion.div>
