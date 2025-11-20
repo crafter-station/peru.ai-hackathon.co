@@ -21,10 +21,10 @@ const RATE_LIMIT_SECONDS = 10;
 
 const BADGE_CONFIG = {
   profilePicture: {
-    x: 45.842790213430476,
-    y: 265.46173867777236,
-    width: 700,
-    height: 700,
+    x: 125,
+    y: 393,
+    width: 574,
+    height: 574,
   },
   participantNumber: {
     x: 407.8021863612701,
@@ -165,8 +165,10 @@ export async function POST(request: NextRequest) {
     );
 
     const participantNumberFormatted = `#${String(participant.participantNumber).padStart(3, "0")}`;
-    const firstName = participant.fullName?.split(" ")[0]?.toUpperCase() || "PARTICIPANT";
-    const lastName = participant.fullName?.split(" ").slice(1).join(" ")?.toUpperCase() || "";
+    const firstName =
+      participant.fullName?.split(" ")[0]?.toUpperCase() || "PARTICIPANT";
+    const lastName =
+      participant.fullName?.split(" ").slice(1).join(" ")?.toUpperCase() || "";
 
     console.log("[badge-ai] STEP 1: Generating pixel art portrait");
 
@@ -174,7 +176,9 @@ export async function POST(request: NextRequest) {
     const photoBuffer = Buffer.from(await photoResponse.arrayBuffer());
     const photoBase64 = `data:image/jpeg;base64,${photoBuffer.toString("base64")}`;
 
-    console.log("[badge-ai] Converting base64 to File and uploading to fal.storage");
+    console.log(
+      "[badge-ai] Converting base64 to File and uploading to fal.storage",
+    );
     const imageFile = base64ToFile(photoBase64, "profile-photo.jpg");
     const uploadedImageUrl = await falStorage.storage.upload(imageFile);
     console.log("[badge-ai] Image uploaded to fal.storage:", uploadedImageUrl);
@@ -183,12 +187,15 @@ export async function POST(request: NextRequest) {
       "8-bit pixel art portrait, chest-up view. Simple solid background for easy cutout. Flat grayscale shading with four tones. Printed, cartoonish, and cute. Preserve facial structure. The character should fit entirely within the frame, without labels or text.";
 
     console.log("[badge-ai] Calling qwen-image-edit with uploaded image URL");
-    const pixelArtResult = (await falStorage.subscribe("fal-ai/qwen-image-edit", {
-      input: {
-        prompt,
-        image_url: uploadedImageUrl,
+    const pixelArtResult = (await falStorage.subscribe(
+      "fal-ai/qwen-image-edit",
+      {
+        input: {
+          prompt,
+          image_url: uploadedImageUrl,
+        },
       },
-    })) as {
+    )) as {
       data?: { images?: Array<{ url: string }>; image?: { url: string } };
       images?: Array<{ url: string }>;
       image?: { url: string };
@@ -198,9 +205,17 @@ export async function POST(request: NextRequest) {
 
     let pixelArtImageUrl: string | undefined;
 
-    if (pixelArtResult.data?.images && Array.isArray(pixelArtResult.data.images) && pixelArtResult.data.images.length > 0) {
+    if (
+      pixelArtResult.data?.images &&
+      Array.isArray(pixelArtResult.data.images) &&
+      pixelArtResult.data.images.length > 0
+    ) {
       pixelArtImageUrl = pixelArtResult.data.images[0].url;
-    } else if (pixelArtResult.images && Array.isArray(pixelArtResult.images) && pixelArtResult.images.length > 0) {
+    } else if (
+      pixelArtResult.images &&
+      Array.isArray(pixelArtResult.images) &&
+      pixelArtResult.images.length > 0
+    ) {
       pixelArtImageUrl = pixelArtResult.images[0].url;
     } else if (pixelArtResult.data?.image?.url) {
       pixelArtImageUrl = pixelArtResult.data.image.url;
@@ -216,12 +231,12 @@ export async function POST(request: NextRequest) {
     console.log("[badge-ai] Pixel art generated:", pixelArtImageUrl);
 
     console.log("[badge-ai] Removing background from pixel art");
-    
+
     interface QueueUpdate {
       status: string;
       logs?: Array<{ message: string }>;
     }
-    
+
     const bgRemovalResult = (await falStorage.subscribe("fal-ai/birefnet/v2", {
       input: {
         image_url: pixelArtImageUrl,
@@ -238,12 +253,20 @@ export async function POST(request: NextRequest) {
 
     if (bgRemovalResult.data?.image?.url) {
       transparentImageUrl = bgRemovalResult.data.image.url;
-      console.log("[badge-ai] Background removed successfully:", transparentImageUrl);
+      console.log(
+        "[badge-ai] Background removed successfully:",
+        transparentImageUrl,
+      );
     } else if (bgRemovalResult.image?.url) {
       transparentImageUrl = bgRemovalResult.image.url;
-      console.log("[badge-ai] Background removed successfully:", transparentImageUrl);
+      console.log(
+        "[badge-ai] Background removed successfully:",
+        transparentImageUrl,
+      );
     } else {
-      console.warn("[badge-ai] Could not remove background, using original image");
+      console.warn(
+        "[badge-ai] Could not remove background, using original image",
+      );
       transparentImageUrl = pixelArtImageUrl;
     }
 
@@ -253,7 +276,11 @@ export async function POST(request: NextRequest) {
     const pixelArtBuffer = Buffer.from(await pixelArtResponse.arrayBuffer());
 
     const processedPixelArt = await sharp(pixelArtBuffer)
-      .resize(700, 700, { fit: "cover" })
+      .resize(
+        BADGE_CONFIG.profilePicture.width,
+        BADGE_CONFIG.profilePicture.height,
+        { fit: "cover" },
+      )
       .grayscale()
       .png()
       .toBuffer();
@@ -264,29 +291,40 @@ export async function POST(request: NextRequest) {
       processedPixelArt,
       { access: "public", contentType: "image/png" },
     );
-    console.log("[badge-ai] Pixel art uploaded to Vercel Blob:", pixelArtBlobResult.url);
+    console.log(
+      "[badge-ai] Pixel art uploaded to Vercel Blob:",
+      pixelArtBlobResult.url,
+    );
 
     console.log("[badge-ai] STEP 2: Composing badge with sharp");
 
-    const templatePath = path.join(process.cwd(), "public", "onboarding", "THC-IA HACK PE-ID-Participante.png");
+    const templatePath = path.join(
+      process.cwd(),
+      "public",
+      "onboarding",
+      "THC-IA HACK PE-ID-Participante.png",
+    );
 
     const profileUrl = `https://peru.ai-hackathon.co/p/${participant.participantNumber}`;
-    
+
     console.log("[badge-ai] Generating QR code for:", profileUrl);
-    
+
     const qrCodeBuffer = await QRCode.toBuffer(profileUrl, {
-      errorCorrectionLevel: 'M',
-      type: 'png',
+      errorCorrectionLevel: "M",
+      type: "png",
       width: Math.round(BADGE_CONFIG.qrCode.width),
       margin: 0,
       color: {
-        dark: '#000000',
-        light: '#FFFFFF',
+        dark: "#000000",
+        light: "#FFFFFF",
       },
     });
 
     const qrCode = await sharp(qrCodeBuffer)
-      .resize(Math.round(BADGE_CONFIG.qrCode.width), Math.round(BADGE_CONFIG.qrCode.height))
+      .resize(
+        Math.round(BADGE_CONFIG.qrCode.width),
+        Math.round(BADGE_CONFIG.qrCode.height),
+      )
       .toBuffer();
 
     const numberText = `${participantNumberFormatted.toUpperCase()} * ${participantNumberFormatted.toUpperCase()} * ${participantNumberFormatted.toUpperCase()}`;
@@ -294,34 +332,34 @@ export async function POST(request: NextRequest) {
     const svgText = `
       <svg width="1080" height="1440">
         <style>
-          .number { 
-            fill: rgba(246, 246, 246, 0.09); 
-            font-size: 32px; 
-            font-weight: 400; 
+          .number {
+            fill: rgba(246, 246, 246, 0.09);
+            font-size: 32px;
+            font-weight: 400;
             font-family: monospace;
             letter-spacing: 0.34em;
             text-transform: uppercase;
           }
-          .firstName { 
-            fill: white; 
-            font-size: 60px; 
-            font-weight: 700; 
+          .firstName {
+            fill: white;
+            font-size: 60px;
+            font-weight: 700;
             font-family: sans-serif;
             letter-spacing: 0.08em;
             text-transform: uppercase;
           }
-          .lastName { 
-            fill: white; 
-            font-size: 60px; 
-            font-weight: 700; 
+          .lastName {
+            fill: white;
+            font-size: 60px;
+            font-weight: 700;
             font-family: sans-serif;
             letter-spacing: 0.08em;
             text-transform: uppercase;
           }
-          .role { 
-            fill: white; 
-            font-size: 40px; 
-            font-weight: 400; 
+          .role {
+            fill: white;
+            font-size: 40px;
+            font-weight: 400;
             font-family: monospace;
             text-transform: uppercase;
           }
