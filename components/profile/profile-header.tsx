@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { Edit } from "lucide-react";
 import { SimpleTooltip } from "@/components/ui/simple-tooltip";
 import { cn } from "@/lib/utils";
 import { VerifiedIcon } from "./verified-icon";
@@ -7,12 +8,16 @@ interface ProfileHeaderProps {
   displayName: string;
   avatar?: string | null;
   bio?: string | null;
+  showEditButton?: boolean;
+  onEditClick?: () => void;
 }
 
 export function ProfileHeader({
   displayName,
   avatar,
   bio,
+  showEditButton = false,
+  onEditClick,
 }: ProfileHeaderProps) {
   return (
     <div className="screen-line-after flex border-x border-edge border-l-[1.5px] border-r-[1.5px]">
@@ -47,13 +52,33 @@ export function ProfileHeader({
         />
 
         <div className="border-t border-edge border-t-[1.5px] relative before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-edge/60 before:to-transparent">
-          <h1 className="flex items-center pl-4 text-3xl font-black uppercase tracking-tight relative z-10">
-            {displayName}
-            &nbsp;
-            <SimpleTooltip content="Verified">
-              <VerifiedIcon className="size-[0.6em] translate-y-px text-brand-red select-none" />
-            </SimpleTooltip>
-          </h1>
+          <div className="flex items-center justify-between">
+            <h1 className="flex items-center pl-4 text-3xl font-black uppercase tracking-tight relative z-10">
+              {displayName}
+              &nbsp;
+              <SimpleTooltip content="Verified">
+                <VerifiedIcon className="size-[0.6em] translate-y-px text-brand-red select-none" />
+              </SimpleTooltip>
+            </h1>
+            {showEditButton && (
+              <button
+                onClick={onEditClick}
+                className={cn(
+                  "mr-4 p-2 sm:p-2.5 rounded-md",
+                  "bg-background/50 hover:bg-background/80",
+                  "border border-edge/50 hover:border-edge",
+                  "transition-all duration-200",
+                  "active:scale-95",
+                  "touch-manipulation",
+                  "min-w-[44px] min-h-[44px]",
+                  "flex items-center justify-center"
+                )}
+                aria-label="Edit profile"
+              >
+                <Edit className="size-5 text-foreground" />
+              </button>
+            )}
+          </div>
 
           {bio && (
             <div className="border-t border-edge border-t-[1.5px] py-1 pl-4 relative before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-edge/40 before:to-transparent">

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { useUser } from "@clerk/nextjs";
 import { Achievements } from "@/components/profile/achievements";
 import { Overview } from "@/components/profile/overview";
 import { ProfileCover } from "@/components/profile/profile-cover";
@@ -11,6 +12,7 @@ import { ProfileHeader } from "@/components/profile/profile-header";
 import { Separator } from "@/components/profile/separator";
 import { SocialLinks } from "@/components/profile/social-links";
 import { TechStack } from "@/components/profile/tech-stack";
+import { ProfileEditModal } from "@/components/profile/profile-edit-modal";
 
 interface PublicProfile {
   fullName: string | null;
@@ -27,15 +29,19 @@ interface PublicProfile {
   twitterUrl: string | null;
   githubUrl: string | null;
   websiteUrl: string | null;
+  clerkUserId: string;
 }
 
 export default function PublicProfilePage() {
   const params = useParams();
+  const { user, isLoaded: isUserLoaded } = useUser();
   const [profile, setProfile] = useState<PublicProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const number = params.number as string;
+  const isOwnProfile = !!(isUserLoaded && user && profile && user.id === profile.clerkUserId);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -103,6 +109,14 @@ export default function PublicProfilePage() {
     profile.profilePhotoUrl ||
     null;
 
+  const handleEditSuccess = async () => {
+    const response = await fetch(`/api/profile/${number}`);
+    if (response.ok) {
+      const data = await response.json();
+      setProfile(data);
+    }
+  };
+
   return (
     <div className="mx-auto md:max-w-3xl">
       <ProfileCover />
@@ -110,6 +124,8 @@ export default function PublicProfilePage() {
         displayName={profile.fullName || "Participant"}
         avatar={avatar}
         bio={profile.bio}
+        showEditButton={isOwnProfile}
+        onEditClick={() => setIsEditModalOpen(true)}
       />
       <Separator />
 
@@ -137,6 +153,22 @@ export default function PublicProfilePage() {
 
       <TechStack techStack={profile.techStack} />
       <Separator />
+
+      {isOwnProfile && (
+        <ProfileEditModal
+          open={isEditModalOpen}
+          onOpenChange={setIsEditModalOpen}
+          initialData={{
+            bio: profile.bio,
+            linkedinUrl: profile.linkedinUrl,
+            instagramUrl: profile.instagramUrl,
+            twitterUrl: profile.twitterUrl,
+            githubUrl: profile.githubUrl,
+            websiteUrl: profile.websiteUrl,
+          }}
+          onSuccess={handleEditSuccess}
+        />
+      )}
     </div>
   );
 }

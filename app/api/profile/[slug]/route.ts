@@ -62,6 +62,7 @@ export async function GET(
     twitterUrl: participant.twitterUrl,
     githubUrl: participant.githubUrl,
     websiteUrl: participant.websiteUrl,
+    clerkUserId: participant.clerkUserId,
   };
 
   return NextResponse.json(publicProfile);
