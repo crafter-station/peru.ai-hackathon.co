@@ -143,6 +143,7 @@ export async function POST(request: NextRequest) {
     console.log("[badge-ai] STEP 1: Generating pixel art portrait");
 
     let processedPixelArt: Buffer;
+    let processedPixelArtForProfile: Buffer;
 
     const isDev = process.env.NODE_ENV === "development";
 
@@ -159,6 +160,12 @@ export async function POST(request: NextRequest) {
           BADGE_CONFIG.profilePicture.height,
           { fit: "cover" },
         )
+        .grayscale()
+        .png()
+        .toBuffer();
+
+      processedPixelArtForProfile = await sharp(testImageBuffer)
+        .resize(574, 1020, { fit: "inside" })
         .grayscale()
         .png()
         .toBuffer();
@@ -268,6 +275,17 @@ export async function POST(request: NextRequest) {
           BADGE_CONFIG.profilePicture.height,
           { fit: "cover" },
         )
+        .grayscale()
+        .png()
+        .toBuffer();
+
+      const pixelArtResponseForProfile = await fetch(finalPixelArtUrl);
+      const pixelArtBufferForProfile = Buffer.from(
+        await pixelArtResponseForProfile.arrayBuffer(),
+      );
+
+      processedPixelArtForProfile = await sharp(pixelArtBufferForProfile)
+        .resize(574, 1020, { fit: "inside" })
         .grayscale()
         .png()
         .toBuffer();
@@ -508,7 +526,7 @@ export async function POST(request: NextRequest) {
           ? Promise.resolve({ url: "/test-img.png" })
           : put(
               `ai-profile-photos/${participantId}-${timestamp}.png`,
-              processedPixelArt,
+              processedPixelArtForProfile,
               { access: "public", contentType: "image/png" },
             ),
       ];

@@ -48,15 +48,15 @@ function LegalDialog({ title, content }: { title: string; content: string }) {
       <DialogTrigger asChild>
         <button 
           onClick={() => playClick()}
-          className="font-adelle-mono text-[10px] uppercase underline text-terminal-green hover:text-terminal-green/80"
+          className="font-adelle-mono text-[10px] uppercase underline text-brand-red hover:text-brand-red/80"
         >
           [READ_DOCUMENT]
         </button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl border-2 border-foreground">
-        <DialogHeader className="border-b-2 border-foreground pb-4">
-          <DialogTitle className="font-adelle-mono uppercase tracking-wider flex items-center gap-2">
-            <span className="text-terminal-green">&gt;_</span>
+      <DialogContent className="max-w-2xl border border-brand-red bg-black/95 backdrop-blur-sm text-white">
+        <DialogHeader className="border-b border-brand-red/30 pb-4">
+          <DialogTitle className="font-adelle-mono uppercase tracking-wider flex items-center gap-2 text-white">
+            <span className="text-brand-red">&gt;_</span>
             {title}
           </DialogTitle>
         </DialogHeader>
@@ -187,7 +187,7 @@ export function Step4Legal() {
                   control={form.control}
                   name={item.name}
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 border-2 border-foreground/50 p-3">
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 border border-brand-red/30 p-3">
                       <FormControl>
                         <PixelCheckbox
                           checked={field.value}
@@ -195,10 +195,10 @@ export function Step4Legal() {
                         />
                       </FormControl>
                       <div className="space-y-1 leading-none font-adelle-mono flex-1">
-                        <label className="text-xs uppercase font-bold">
+                        <label className="text-xs uppercase font-bold text-white">
                           {item.label}
                         </label>
-                        <p className="text-[10px] text-muted-foreground uppercase">
+                        <p className="text-[10px] text-white/60 uppercase">
                           {item.description}
                         </p>
                         <LegalDialog title={item.dialogTitle} content={item.dialogContent} />

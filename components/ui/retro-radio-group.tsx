@@ -29,10 +29,10 @@ const RetroRadioGroupItem = React.forwardRef<
     <RadioGroupPrimitive.Item
       ref={ref}
       className={cn(
-        "aspect-square size-5 border-2 border-foreground bg-background",
-        "focus:outline-none focus-visible:border-terminal-green focus-visible:shadow-[0_0_10px_rgba(0,255,65,0.3)]",
+        "aspect-square size-5 border border-brand-red/50 bg-black/40 backdrop-blur-sm",
+        "focus:outline-none focus-visible:border-brand-red focus-visible:shadow-[0_0_10px_rgba(185,31,46,0.3)]",
         "disabled:cursor-not-allowed disabled:opacity-50",
-        "data-[state=checked]:bg-foreground",
+        "data-[state=checked]:bg-brand-red",
         "transition-all duration-150",
         className
       )}
@@ -40,7 +40,7 @@ const RetroRadioGroupItem = React.forwardRef<
       {...props}
     >
       <RadioGroupPrimitive.Indicator className="flex items-center justify-center">
-        <span className="size-2 bg-background" />
+        <span className="size-2 bg-white" />
       </RadioGroupPrimitive.Indicator>
     </RadioGroupPrimitive.Item>
   );

@@ -11,11 +11,11 @@ const pixelButtonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-foreground text-background border-foreground hover:bg-foreground/90",
-        secondary: "bg-background text-foreground border-foreground hover:bg-muted",
+        default: "bg-brand-red text-white border-brand-red hover:bg-brand-red/90",
+        secondary: "bg-black/40 backdrop-blur-sm text-white border-brand-red/50 hover:bg-black/60",
         destructive: "bg-destructive text-white border-destructive hover:bg-destructive/90",
-        ghost: "bg-transparent border-transparent hover:bg-muted hover:border-foreground/20",
-        terminal: "bg-black text-terminal-green border-terminal-green hover:bg-terminal-green/10",
+        ghost: "bg-transparent border-transparent hover:bg-black/40 hover:border-brand-red/30 text-white",
+        terminal: "bg-black text-brand-red border-brand-red hover:bg-brand-red/10",
       },
       size: {
         default: "h-10 px-4 py-2 text-sm",

@@ -29,7 +29,7 @@ const RetroInput = React.forwardRef<HTMLInputElement, RetroInputProps>(
     return (
       <div className="relative">
         {label && (
-          <label className="block text-xs font-adelle-mono font-bold uppercase tracking-wider mb-1 text-muted-foreground">
+          <label className="block text-xs font-adelle-mono font-bold uppercase tracking-wider mb-1 text-white/80">
             {label}
           </label>
         )}
@@ -37,10 +37,10 @@ const RetroInput = React.forwardRef<HTMLInputElement, RetroInputProps>(
           <input
             type={type}
             className={cn(
-              "flex h-10 w-full bg-background px-3 py-2 text-sm font-adelle-mono",
-              "border-2 border-foreground",
-              "placeholder:text-muted-foreground placeholder:uppercase",
-              "focus:outline-none focus:border-terminal-green focus:shadow-[0_0_10px_rgba(0,255,65,0.3)]",
+              "flex h-10 w-full bg-black/40 backdrop-blur-sm px-3 py-2 text-sm font-adelle-mono text-white",
+              "border border-brand-red/50",
+              "placeholder:text-white/50 placeholder:uppercase",
+              "focus:outline-none focus:border-brand-red focus:shadow-[0_0_10px_rgba(185,31,46,0.3)]",
               "disabled:cursor-not-allowed disabled:opacity-50",
               "transition-all duration-150",
               className
@@ -52,7 +52,7 @@ const RetroInput = React.forwardRef<HTMLInputElement, RetroInputProps>(
             {...props}
           />
           {isFocused && (
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-terminal-green blink font-adelle-mono">
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-red blink font-adelle-mono">
               █
             </span>
           )}

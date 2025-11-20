@@ -22,7 +22,7 @@ function LoadingState() {
             {[0, 1, 2].map((i) => (
               <motion.div
                 key={i}
-                className="size-3 bg-terminal-green"
+                className="size-3 bg-brand-red"
                 animate={{ opacity: [0.3, 1, 0.3] }}
                 transition={{
                   duration: 1,
@@ -68,10 +68,10 @@ export default function OnboardingPage() {
   return (
     <div className="space-y-6">
       <div className="text-center space-y-2">
-        <h1 className="text-3xl md:text-4xl font-adelle-mono font-bold uppercase tracking-wider pixel-shadow">
+        <h1 className="text-3xl md:text-4xl font-adelle-mono font-bold uppercase tracking-wider pixel-shadow text-white">
           <GlitchText>IA_HACKATHON.exe</GlitchText>
         </h1>
-        <p className="font-adelle-mono text-sm text-muted-foreground uppercase tracking-wider">
+        <p className="font-adelle-mono text-sm text-white/60 uppercase tracking-wider">
           {/* // */}REGISTRATION_PROTOCOL_v2025
          ]</p>
       </div>
@@ -98,7 +98,7 @@ export default function OnboardingPage() {
         </motion.div>
       </AnimatePresence>
 
-      <div className="text-center font-adelle-mono text-xs text-muted-foreground uppercase tracking-wider space-y-1">
+      <div className="text-center font-adelle-mono text-xs text-white/60 uppercase tracking-wider space-y-1">
         <p>EVENT_DATE: 29-30 NOV 2025 ]</p>
         <p>LOCATION: UPCH_LA_MOLINA ]</p>
       </div>

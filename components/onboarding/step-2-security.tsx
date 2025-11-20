@@ -181,10 +181,10 @@ export function Step2Security() {
                     animate={{ opacity: 1, y: 0 }}
                     className="space-y-2"
                   >
-                    <label className="block text-xs font-adelle-mono font-bold uppercase tracking-wider text-muted-foreground">
+                    <label className="block text-xs font-adelle-mono font-bold uppercase tracking-wider text-white/80">
                       PROFILE_PHOTO
                     </label>
-                    <p className="text-[10px] font-adelle-mono text-muted-foreground uppercase">
+                    <p className="text-[10px] font-adelle-mono text-white/60 uppercase">
                       WILL_APPEAR_ON_BADGE
                     </p>
                     
@@ -192,18 +192,18 @@ export function Step2Security() {
                       <div
                         {...getRootProps()}
                         className={`
-                          border-2 border-dashed p-8 text-center cursor-pointer
+                          border border-dashed p-8 text-center cursor-pointer
                           transition-colors font-adelle-mono
-                          ${isDragActive ? "border-terminal-green bg-terminal-green/5" : "border-foreground/50"}
-                          ${isUploading ? "opacity-50 cursor-not-allowed" : "hover:border-terminal-green"}
+                          ${isDragActive ? "border-brand-red bg-brand-red/10" : "border-brand-red/50"}
+                          ${isUploading ? "opacity-50 cursor-not-allowed" : "hover:border-brand-red"}
                         `}
                       >
                         <input {...getInputProps()} disabled={isUploading} />
-                        <Upload className="size-8 mx-auto mb-3 text-muted-foreground" />
-                        <p className="text-xs uppercase">
+                        <Upload className="size-8 mx-auto mb-3 text-white/60" />
+                        <p className="text-xs uppercase text-white">
                           {isConverting ? "CONVERTING_IMAGE..." : isUploading ? "UPLOADING..." : isDragActive ? "DROP_FILE_HERE" : "DRAG_FILE.exe"}
                         </p>
-                        <p className="text-[10px] text-muted-foreground mt-2 uppercase">
+                        <p className="text-[10px] text-white/60 mt-2 uppercase">
                           PNG, JPG, WEBP, HEIC (MAX 5MB)
                         </p>
                       </div>
@@ -214,20 +214,53 @@ export function Step2Security() {
                         className="space-y-3"
                       >
                         <div className="space-y-2">
-                          <p className="text-xs font-adelle-mono text-terminal-green uppercase text-center">
+                          <p className="text-xs font-adelle-mono text-brand-red uppercase text-center">
                             PHOTO_UPLOADED
                           </p>
-                          <div className="relative w-48 h-48 mx-auto border-2 border-terminal-green overflow-hidden">
-                            <Image
-                              src={photoPreview}
-                              alt="Preview"
-                              fill
-                              className="object-cover"
-                            />
-                          </div>
-                          <p className="text-[10px] font-adelle-mono text-muted-foreground uppercase text-center">
-                            AI_AVATAR_GENERATED_ON_COMPLETION
-                          </p>
+                          {participant?.profilePhotoAiUrl ? (
+                            <div className="flex gap-4 justify-center items-start">
+                              <div className="space-y-2">
+                                <p className="text-[10px] font-adelle-mono text-white/60 uppercase text-center">
+                                  ORIGINAL
+                                </p>
+                                <div className="relative w-64 h-64 border-2 border-brand-red/50 overflow-hidden shadow-lg">
+                                  <Image
+                                    src={photoPreview}
+                                    alt="Original"
+                                    fill
+                                    className="object-cover"
+                                  />
+                                </div>
+                              </div>
+                              <div className="space-y-2">
+                                <p className="text-[10px] font-adelle-mono text-brand-red uppercase text-center">
+                                  AI_AVATAR
+                                </p>
+                                <div className="relative w-64 h-64 border-2 border-brand-red overflow-hidden shadow-lg ring-2 ring-brand-red/30 ring-offset-2 ring-offset-black">
+                                  <Image
+                                    src={participant.profilePhotoAiUrl}
+                                    alt="AI Avatar"
+                                    fill
+                                    className="object-contain"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <>
+                              <div className="relative w-64 h-64 mx-auto border-2 border-brand-red overflow-hidden shadow-lg">
+                                <Image
+                                  src={photoPreview}
+                                  alt="Preview"
+                                  fill
+                                  className="object-cover"
+                                />
+                              </div>
+                              <p className="text-[10px] font-adelle-mono text-white/60 uppercase text-center">
+                                AI_AVATAR_GENERATED_ON_COMPLETION
+                              </p>
+                            </>
+                          )}
                         </div>
                         
                         <div className="flex justify-center">
@@ -258,7 +291,7 @@ export function Step2Security() {
                 control={form.control}
                 name="hasLaptop"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 border-2 border-foreground/50 p-4">
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 border border-brand-red/30 p-4">
                     <FormControl>
                       <PixelCheckbox
                         checked={field.value}
@@ -266,10 +299,10 @@ export function Step2Security() {
                       />
                     </FormControl>
                     <div className="space-y-1 leading-none font-adelle-mono">
-                      <label className="text-sm uppercase font-bold">
+                      <label className="text-sm uppercase font-bold text-white">
                         BRINGING_LAPTOP
                       </label>
-                      <p className="text-[10px] text-muted-foreground uppercase">
+                      <p className="text-[10px] text-white/60 uppercase">
                         REQUIRED_BY_VENUE_SECURITY
                       </p>
                     </div>
@@ -332,7 +365,7 @@ export function Step2Security() {
                             {...field}
                           />
                         </FormControl>
-                        <p className="text-[10px] font-adelle-mono text-muted-foreground uppercase mt-1">
+                        <p className="text-[10px] font-adelle-mono text-white/60 uppercase mt-1">
                           REQUIRED_FOR_SECURITY_CHECK
                         </p>
                         <FormMessage className="font-adelle-mono text-xs uppercase" />

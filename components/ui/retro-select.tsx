@@ -21,10 +21,10 @@ const RetroSelectTrigger = React.forwardRef<
     <SelectPrimitive.Trigger
       ref={ref}
       className={cn(
-        "flex h-10 w-full items-center justify-between bg-background px-3 py-2",
-        "border-2 border-foreground font-adelle-mono text-sm uppercase",
-        "placeholder:text-muted-foreground",
-        "focus:outline-none focus:border-terminal-green focus:shadow-[0_0_10px_rgba(0,255,65,0.3)]",
+        "flex h-10 w-full items-center justify-between bg-black/40 backdrop-blur-sm px-3 py-2",
+        "border border-brand-red/50 font-adelle-mono text-sm uppercase text-white",
+        "placeholder:text-white/50",
+        "focus:outline-none focus:border-brand-red focus:shadow-[0_0_10px_rgba(185,31,46,0.3)]",
         "disabled:cursor-not-allowed disabled:opacity-50",
         "[&>span]:line-clamp-1",
         className
@@ -50,7 +50,7 @@ const RetroSelectContent = React.forwardRef<
       ref={ref}
       className={cn(
         "relative z-50 max-h-96 min-w-[8rem] overflow-hidden",
-        "bg-background border-2 border-foreground font-adelle-mono",
+        "bg-black/95 backdrop-blur-sm border border-brand-red font-adelle-mono text-white",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
@@ -88,7 +88,7 @@ const RetroSelectItem = React.forwardRef<
       ref={ref}
       className={cn(
         "relative flex w-full cursor-pointer select-none items-center py-2 px-3 text-sm uppercase outline-none",
-        "focus:bg-foreground focus:text-background",
+        "focus:bg-brand-red/20 focus:text-white",
         "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         className
       )}

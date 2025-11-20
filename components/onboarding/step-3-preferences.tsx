@@ -81,7 +81,7 @@ export function Step3Preferences() {
                 name="experienceLevel"
                 render={({ field }) => (
                   <FormItem className="space-y-3">
-                    <label className="block text-xs font-adelle-mono font-bold uppercase tracking-wider text-muted-foreground">
+                    <label className="block text-xs font-adelle-mono font-bold uppercase tracking-wider text-white/80">
                       EXPERIENCE_LEVEL
                     </label>
                     <FormControl>
@@ -94,7 +94,7 @@ export function Step3Preferences() {
                           <FormControl>
                             <RetroRadioGroupItem value="beginner" />
                           </FormControl>
-                          <Label className="font-adelle-mono text-sm uppercase">
+                          <Label className="font-adelle-mono text-sm uppercase text-white">
                             LVL_1 - BEGINNER
                           </Label>
                         </FormItem>
@@ -102,7 +102,7 @@ export function Step3Preferences() {
                           <FormControl>
                             <RetroRadioGroupItem value="intermediate" />
                           </FormControl>
-                          <Label className="font-adelle-mono text-sm uppercase">
+                          <Label className="font-adelle-mono text-sm uppercase text-white">
                             LVL_2 - INTERMEDIATE
                           </Label>
                         </FormItem>
@@ -110,7 +110,7 @@ export function Step3Preferences() {
                           <FormControl>
                             <RetroRadioGroupItem value="advanced" />
                           </FormControl>
-                          <Label className="font-adelle-mono text-sm uppercase">
+                          <Label className="font-adelle-mono text-sm uppercase text-white">
                             LVL_3 - ADVANCED
                           </Label>
                         </FormItem>
@@ -132,7 +132,7 @@ export function Step3Preferences() {
                 name="gender"
                 render={({ field }) => (
                   <FormItem className="space-y-3">
-                    <label className="block text-xs font-adelle-mono font-bold uppercase tracking-wider text-muted-foreground">
+                    <label className="block text-xs font-adelle-mono font-bold uppercase tracking-wider text-white/80">
                       GENDER [OPTIONAL]
                     </label>
                     <FormControl>
@@ -145,7 +145,7 @@ export function Step3Preferences() {
                           <FormControl>
                             <RetroRadioGroupItem value="male" />
                           </FormControl>
-                          <Label className="font-adelle-mono text-sm uppercase">
+                          <Label className="font-adelle-mono text-sm uppercase text-white">
                             MALE
                           </Label>
                         </FormItem>
@@ -153,7 +153,7 @@ export function Step3Preferences() {
                           <FormControl>
                             <RetroRadioGroupItem value="female" />
                           </FormControl>
-                          <Label className="font-adelle-mono text-sm uppercase">
+                          <Label className="font-adelle-mono text-sm uppercase text-white">
                             FEMALE
                           </Label>
                         </FormItem>
@@ -161,7 +161,7 @@ export function Step3Preferences() {
                           <FormControl>
                             <RetroRadioGroupItem value="other" />
                           </FormControl>
-                          <Label className="font-adelle-mono text-sm uppercase">
+                          <Label className="font-adelle-mono text-sm uppercase text-white">
                             OTHER
                           </Label>
                         </FormItem>
@@ -169,7 +169,7 @@ export function Step3Preferences() {
                           <FormControl>
                             <RetroRadioGroupItem value="prefer-not-to-say" />
                           </FormControl>
-                          <Label className="font-adelle-mono text-sm uppercase">
+                          <Label className="font-adelle-mono text-sm uppercase text-white">
                             PREFER_NOT_TO_SAY
                           </Label>
                         </FormItem>
@@ -191,7 +191,7 @@ export function Step3Preferences() {
                 name="additionalNotes"
                 render={({ field }) => (
                   <FormItem>
-                    <label className="block text-xs font-adelle-mono font-bold uppercase tracking-wider mb-1 text-muted-foreground">
+                    <label className="block text-xs font-adelle-mono font-bold uppercase tracking-wider mb-1 text-white/80">
                       ADDITIONAL_NOTES [OPTIONAL]
                     </label>
                     <FormControl>
@@ -201,7 +201,7 @@ export function Step3Preferences() {
                         rows={4}
                       />
                     </FormControl>
-                    <p className="text-[10px] font-adelle-mono text-muted-foreground uppercase mt-1">
+                    <p className="text-[10px] font-adelle-mono text-white/60 uppercase mt-1">
                       DIETARY_RESTRICTIONS, ACCESSIBILITY_NEEDS, ETC
                     </p>
                     <FormMessage className="font-adelle-mono text-xs uppercase" />

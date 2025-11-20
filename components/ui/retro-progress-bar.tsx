@@ -23,8 +23,8 @@ export function RetroProgressBar({
   return (
     <div className={cn("space-y-2", className)}>
       <div className="flex justify-between text-xs font-adelle-mono uppercase tracking-wider">
-        <span className="text-muted-foreground">PROGRESS</span>
-        <span className="text-terminal-green">
+        <span className="text-white/60">PROGRESS</span>
+        <span className="text-brand-red">
           {currentStep}/{totalSteps}
         </span>
       </div>
@@ -38,8 +38,8 @@ export function RetroProgressBar({
             <motion.div
               key={index}
               className={cn(
-                "flex-1 h-6 border-2 border-foreground relative overflow-hidden",
-                isCompleted ? "bg-foreground" : "bg-background"
+                "flex-1 h-6 border border-brand-red/50 relative overflow-hidden",
+                isCompleted ? "bg-brand-red" : "bg-black/40 backdrop-blur-sm"
               )}
               initial={{ scaleX: 0 }}
               animate={{ scaleX: 1 }}
@@ -47,14 +47,14 @@ export function RetroProgressBar({
             >
               {isCurrent && (
                 <motion.div
-                  className="absolute inset-0 bg-terminal-green/30"
+                  className="absolute inset-0 bg-brand-red/30"
                   animate={{ opacity: [0.3, 0.7, 0.3] }}
                   transition={{ duration: 1.5, repeat: Infinity }}
                 />
               )}
               {isCompleted && (
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-background text-xs font-adelle-mono font-bold">
+                  <span className="text-white text-xs font-adelle-mono font-bold">
                     ✓
                   </span>
                 </div>
@@ -71,10 +71,10 @@ export function RetroProgressBar({
             className={cn(
               "text-[10px] font-adelle-mono uppercase tracking-wider",
               index < currentStep
-                ? "text-foreground"
+                ? "text-white"
                 : index === currentStep - 1
-                ? "text-terminal-green"
-                : "text-muted-foreground"
+                ? "text-brand-red"
+                : "text-white/40"
             )}
           >
             {label}

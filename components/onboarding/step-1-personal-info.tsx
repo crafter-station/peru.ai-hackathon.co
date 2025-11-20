@@ -132,7 +132,7 @@ export function Step1PersonalInfo() {
                 name="ageRange"
                 render={({ field }) => (
                   <FormItem>
-                    <label className="block text-xs font-adelle-mono font-bold uppercase tracking-wider mb-1 text-muted-foreground">
+                    <label className="block text-xs font-adelle-mono font-bold uppercase tracking-wider mb-1 text-white/80">
                       AGE_RANGE
                     </label>
                     <RetroSelect onValueChange={field.onChange} defaultValue={field.value}>
@@ -148,7 +148,7 @@ export function Step1PersonalInfo() {
                         <RetroSelectItem value="45+">45+ YEARS</RetroSelectItem>
                       </RetroSelectContent>
                     </RetroSelect>
-                    <p className="text-[10px] font-adelle-mono text-muted-foreground uppercase mt-1">
+                    <p className="text-[10px] font-adelle-mono text-white/60 uppercase mt-1">
                       MUST_BE_18+_TO_PARTICIPATE
                     </p>
                     <FormMessage className="font-adelle-mono text-xs uppercase" />
@@ -161,7 +161,7 @@ export function Step1PersonalInfo() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="pt-4 border-t-2 border-foreground/20"
+              className="pt-4 border-t border-brand-red/30"
             >
               <h3 className="font-adelle-mono font-bold text-sm uppercase tracking-wider mb-4">
                 EMERGENCY_CONTACT
@@ -207,7 +207,7 @@ export function Step1PersonalInfo() {
                   name="emergencyContactRelationship"
                   render={({ field }) => (
                     <FormItem>
-                      <label className="block text-xs font-adelle-mono font-bold uppercase tracking-wider mb-1 text-muted-foreground">
+                      <label className="block text-xs font-adelle-mono font-bold uppercase tracking-wider mb-1 text-white/80">
                         RELATIONSHIP
                       </label>
                       <RetroSelect onValueChange={field.onChange} defaultValue={field.value}>

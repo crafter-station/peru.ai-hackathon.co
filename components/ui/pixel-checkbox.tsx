@@ -20,10 +20,10 @@ const PixelCheckbox = React.forwardRef<
     <CheckboxPrimitive.Root
       ref={ref}
       className={cn(
-        "peer size-5 shrink-0 border-2 border-foreground bg-background",
-        "focus-visible:outline-none focus-visible:border-terminal-green focus-visible:shadow-[0_0_10px_rgba(0,255,65,0.3)]",
+        "peer size-5 shrink-0 border border-brand-red/50 bg-black/40 backdrop-blur-sm",
+        "focus-visible:outline-none focus-visible:border-brand-red focus-visible:shadow-[0_0_10px_rgba(185,31,46,0.3)]",
         "disabled:cursor-not-allowed disabled:opacity-50",
-        "data-[state=checked]:bg-foreground data-[state=checked]:text-background",
+        "data-[state=checked]:bg-brand-red data-[state=checked]:text-white",
         "transition-all duration-150",
         className
       )}

@@ -28,10 +28,10 @@ const RetroTextarea = React.forwardRef<
     <div className="relative">
       <textarea
         className={cn(
-          "flex min-h-[80px] w-full bg-background px-3 py-2 text-sm font-adelle-mono",
-          "border-2 border-foreground",
-          "placeholder:text-muted-foreground placeholder:uppercase",
-          "focus:outline-none focus:border-terminal-green focus:shadow-[0_0_10px_rgba(0,255,65,0.3)]",
+          "flex min-h-[80px] w-full bg-black/40 backdrop-blur-sm px-3 py-2 text-sm font-adelle-mono text-white",
+          "border border-brand-red/50",
+          "placeholder:text-white/50 placeholder:uppercase",
+          "focus:outline-none focus:border-brand-red focus:shadow-[0_0_10px_rgba(185,31,46,0.3)]",
           "disabled:cursor-not-allowed disabled:opacity-50",
           "transition-all duration-150 resize-none",
           className
@@ -43,7 +43,7 @@ const RetroTextarea = React.forwardRef<
         {...props}
       />
       {isFocused && (
-        <span className="absolute right-3 bottom-3 text-terminal-green blink font-adelle-mono text-sm">
+        <span className="absolute right-3 bottom-3 text-brand-red blink font-adelle-mono text-sm">
           █
         </span>
       )}
