@@ -134,7 +134,14 @@ export function Step2Security() {
         playSuccess();
       } catch (aiError) {
         console.error("Error generating AI avatar:", aiError);
-        alert("Foto subida, pero hubo un error generando el avatar AI. Se generará más tarde.");
+        playError();
+        alert("Error generando el avatar AI. Intenta subir la foto nuevamente.");
+        form.setValue("profilePhotoUrl", "");
+        setPhotoPreview(null);
+        updateParticipant({
+          profilePhotoUrl: null,
+          profilePhotoAiUrl: null,
+        });
       } finally {
         setIsGeneratingAi(false);
       }
@@ -170,6 +177,12 @@ export function Step2Security() {
   };
 
   const onSubmit = async (data: Step2Data) => {
+    if (!participant?.profilePhotoAiUrl) {
+      playError();
+      alert("Espera a que se genere tu avatar AI antes de continuar.");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       updateParticipant({
@@ -288,16 +301,19 @@ export function Step2Security() {
                                 </div>
                               ) : (
                                 <>
-                                  <div className="relative w-64 h-64 mx-auto border-2 border-brand-red overflow-hidden shadow-lg">
+                                  <div className="relative w-64 h-64 mx-auto border-2 border-brand-red/50 overflow-hidden shadow-lg">
                                     <Image
                                       src={photoPreview}
                                       alt="Preview"
                                       fill
-                                      className="object-cover"
+                                      className="object-cover opacity-60"
                                     />
                                   </div>
-                                  <p className="text-[10px] font-adelle-mono text-white/60 uppercase text-center">
-                                    AI_AVATAR_GENERATED_ON_COMPLETION
+                                  <p className="text-[10px] font-adelle-mono text-brand-red uppercase text-center animate-pulse">
+                                    ESPERANDO_GENERACION_AVATAR_AI...
+                                  </p>
+                                  <p className="text-[10px] font-adelle-mono text-white/60 uppercase text-center mt-1">
+                                    NO_PUEDES_CONTINUAR_SIN_AVATAR
                                   </p>
                                 </>
                               )}
@@ -436,9 +452,14 @@ export function Step2Security() {
               <PixelButton
                 type="submit"
                 className="flex-1"
-                loading={isSubmitting || isUpdating}
+                loading={isSubmitting || isUpdating || isGeneratingAi}
+                disabled={!participant?.profilePhotoAiUrl || isGeneratingAi}
               >
-                NEXT_LEVEL &gt;&gt;
+                {isGeneratingAi 
+                  ? "GENERANDO_AVATAR..." 
+                  : !participant?.profilePhotoAiUrl 
+                    ? "ESPERA_AVATAR_AI" 
+                    : "NEXT_LEVEL &gt;&gt;"}
               </PixelButton>
             </motion.div>
           </form>
