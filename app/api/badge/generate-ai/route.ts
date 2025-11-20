@@ -305,7 +305,22 @@ export async function POST(request: NextRequest) {
       "THC-IA HACK PE-ID-Participante.png",
     );
 
-    const profileUrl = `https://peru.ai-hackathon.co/p/${participant.participantNumber}`;
+    let domain = "peru.ai-hackathon.co";
+
+    switch (process.env.VERCEL_ENV) {
+      case "production":
+        if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+          domain = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+        }
+        break;
+      case "preview":
+        if (process.env.VERCEL_BRANCH_URL) {
+          domain = process.env.VERCEL_BRANCH_URL;
+        }
+        break;
+    }
+
+    const profileUrl = `https://${domain}/p/${participant.participantNumber}`;
 
     console.log("[badge-ai] Generating QR code for:", profileUrl);
 
