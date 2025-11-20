@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { fal } from "@fal-ai/client";
 import path from "path";
 import sharp from "sharp";
+import QRCode from "qrcode";
 import { db } from "@/lib/db";
 import { participants } from "@/lib/schema";
 import { eq } from "drizzle-orm";
@@ -166,6 +167,14 @@ An anime-style 8-bit character portrait with personality, depth, and charm - lik
     const pixelArtResponse = await fetch(pixelArtImageUrl);
     const pixelArtBuffer = Buffer.from(await pixelArtResponse.arrayBuffer());
 
+    const pixelArtTimestamp = Date.now();
+    const pixelArtBlobResult = await put(
+      `pixel-art/${participantId}-${pixelArtTimestamp}.png`,
+      pixelArtBuffer,
+      { access: "public", contentType: "image/png" },
+    );
+    console.log("[badge-ai] Pixel art uploaded to Vercel Blob:", pixelArtBlobResult.url);
+
     console.log("[badge-ai] STEP 2: Composing badge with sharp");
 
     const templatePath = path.join(process.cwd(), "public", "badge-base.jpg");
@@ -179,6 +188,25 @@ An anime-style 8-bit character portrait with personality, depth, and charm - lik
     const pixelArtSize = 500;
     const pixelArtX = Math.floor((templateWidth - pixelArtSize) / 2);
     const pixelArtY = 450;
+
+    const profileUrl = `https://peru.ai-hackathon.co/p/${participant.participantNumber}`;
+    
+    console.log("[badge-ai] Generating QR code for:", profileUrl);
+    
+    const qrCodeBuffer = await QRCode.toBuffer(profileUrl, {
+      errorCorrectionLevel: 'M',
+      type: 'png',
+      width: 120,
+      margin: 1,
+      color: {
+        dark: '#000000',
+        light: '#FFFFFF',
+      },
+    });
+
+    const qrCode = await sharp(qrCodeBuffer)
+      .resize(120, 120)
+      .toBuffer();
 
     const svgText = `
       <svg width="1080" height="1265">
@@ -203,6 +231,11 @@ An anime-style 8-bit character portrait with personality, depth, and charm - lik
           top: 0,
           left: 0,
         },
+        {
+          input: qrCode,
+          top: 1120,
+          left: 930,
+        },
       ])
       .jpeg({ quality: 90 })
       .toBuffer();
@@ -222,6 +255,7 @@ An anime-style 8-bit character portrait with personality, depth, and charm - lik
       .update(participants)
       .set({
         badgeBlobUrl: blobResult.url,
+        profilePhotoAiUrl: pixelArtBlobResult.url,
         badgeGeneratedAt: new Date(),
         lastBadgeGenerationAt: new Date(),
         updatedAt: new Date(),
@@ -233,6 +267,7 @@ An anime-style 8-bit character portrait with personality, depth, and charm - lik
     return NextResponse.json({
       participantNumber: participant.participantNumber,
       badgeUrl: blobResult.url,
+      profilePhotoAiUrl: pixelArtBlobResult.url,
     });
   } catch (error) {
     console.error("[badge-ai] Error generating badge:", error);

@@ -11,8 +11,9 @@ import {
 import { PixelConfetti } from "@/components/ui/pixel-confetti";
 import { GlitchText } from "@/components/ui/terminal-text";
 import Link from "next/link";
-import { Download, Copy, Share2 } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
+import { Download, Share2, Copy, User, ExternalLink } from "lucide-react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { useRetroSounds } from "@/hooks/use-click-sound";
 import { BadgePreview } from "@/components/badge/badge-preview";
@@ -40,7 +41,7 @@ export default function CompletePage() {
       canvas.width = 1080;
       canvas.height = 1440;
       const ctx = canvas.getContext("2d");
-      
+
       if (!ctx) {
         alert("Canvas not supported");
         return;
@@ -52,7 +53,7 @@ export default function CompletePage() {
       // Load base badge image
       const baseImg = new Image();
       baseImg.crossOrigin = "anonymous";
-      
+
       await new Promise<void>((resolve, reject) => {
         baseImg.onload = () => {
           ctx.drawImage(baseImg, 0, 0, 1080, 1440);
@@ -65,12 +66,13 @@ export default function CompletePage() {
       });
 
       // Load and draw AI avatar if available
-      const aiPhotoUrl = participant.profilePhotoAiUrl || participant.profilePhotoUrl;
+      const aiPhotoUrl =
+        participant.profilePhotoAiUrl || participant.profilePhotoUrl;
       if (aiPhotoUrl) {
         try {
           const avatarImg = new Image();
           avatarImg.crossOrigin = "anonymous";
-          
+
           await new Promise<void>((resolve) => {
             avatarImg.onload = () => {
               // Apply grayscale filter
@@ -78,13 +80,19 @@ export default function CompletePage() {
               tempCanvas.width = 700;
               tempCanvas.height = 700;
               const tempCtx = tempCanvas.getContext("2d");
-              
+
               if (tempCtx) {
                 tempCtx.filter = "grayscale(100%)";
                 tempCtx.drawImage(avatarImg, 0, 0, 700, 700);
-                
+
                 // Draw the grayscale image on main canvas
-                ctx.drawImage(tempCanvas, 45.842790213430476, 265.46173867777236, 700, 700);
+                ctx.drawImage(
+                  tempCanvas,
+                  45.842790213430476,
+                  265.46173867777236,
+                  700,
+                  700,
+                );
               }
               resolve();
             };
@@ -101,7 +109,7 @@ export default function CompletePage() {
 
       // Clone and process SVG
       const svg = svgRef.current.cloneNode(true) as SVGSVGElement;
-      
+
       // Remove profile image element from SVG since we already drew it on canvas
       const imageElements = svg.querySelectorAll("image");
       imageElements.forEach((imgEl) => {
@@ -111,20 +119,19 @@ export default function CompletePage() {
           imgEl.remove();
         }
       });
-      
-      const svgData = new XMLSerializer().serializeToString(svg);
-      
-      const svgWithFonts = svgData.replace(
-        /font-family="[^"]*"/g,
-        (match) => {
-          if (match.includes("Adelle Mono")) {
-            return `font-family="'Adelle Mono'"`;
-          }
-          return match;
-        }
-      );
 
-      const svgBlob = new Blob([svgWithFonts], { type: "image/svg+xml;charset=utf-8" });
+      const svgData = new XMLSerializer().serializeToString(svg);
+
+      const svgWithFonts = svgData.replace(/font-family="[^"]*"/g, (match) => {
+        if (match.includes("Adelle Mono")) {
+          return `font-family="'Adelle Mono'"`;
+        }
+        return match;
+      });
+
+      const svgBlob = new Blob([svgWithFonts], {
+        type: "image/svg+xml;charset=utf-8",
+      });
       const svgUrl = URL.createObjectURL(svgBlob);
 
       const overlayImg = new Image();
@@ -141,18 +148,22 @@ export default function CompletePage() {
         overlayImg.src = svgUrl;
       });
 
-      canvas.toBlob((blob) => {
-        if (blob) {
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement("a");
-          link.href = url;
-          link.download = `ia-hack-badge-${participant.participantNumber}.png`;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          URL.revokeObjectURL(url);
-        }
-      }, "image/png", 1.0);
+      canvas.toBlob(
+        (blob) => {
+          if (blob) {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `ia-hack-badge-${participant.participantNumber}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+          }
+        },
+        "image/png",
+        1.0,
+      );
     } catch (error) {
       console.error("Error downloading badge:", error);
       alert("Error downloading badge. Please try again.");
@@ -225,7 +236,7 @@ Me emociona ser parte de este evento donde crearemos soluciones innovadoras con 
           >
             🏆
           </motion.div>
-          
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -237,7 +248,7 @@ Me emociona ser parte de este evento donde crearemos soluciones innovadoras con 
                 #{String(participant.participantNumber || 0).padStart(4, "0")}
               </span>
             </div>
-            
+
             <RetroCardTitle className="justify-center text-lg">
               <GlitchText>ACHIEVEMENT_UNLOCKED!</GlitchText>
             </RetroCardTitle>
@@ -272,10 +283,16 @@ Me emociona ser parte de este evento donde crearemos soluciones innovadoras con 
               <div className="relative w-full max-w-md mx-auto border-4 border-foreground">
                 <BadgePreview
                   ref={svgRef}
-                  profilePictureUrl={participant.profilePhotoAiUrl || participant.profilePhotoUrl}
+                  profilePictureUrl={
+                    participant.profilePhotoAiUrl || participant.profilePhotoUrl
+                  }
                   participantNumber={`#${String(participant.participantNumber || 0).padStart(3, "0")}`}
-                  firstName={participant.fullName?.split(" ")[0] || "PARTICIPANT"}
-                  lastName={participant.fullName?.split(" ").slice(1).join(" ") || ""}
+                  firstName={
+                    participant.fullName?.split(" ")[0] || "PARTICIPANT"
+                  }
+                  lastName={
+                    participant.fullName?.split(" ").slice(1).join(" ") || ""
+                  }
                   role="HACKER"
                 />
                 <div className="absolute inset-0 scanlines pointer-events-none" />
@@ -288,11 +305,7 @@ Me emociona ser parte de este evento donde crearemos soluciones innovadoras con 
             </div>
 
             <div className="flex flex-col gap-3">
-              <PixelButton
-                onClick={downloadBadge}
-                size="lg"
-                className="w-full"
-              >
+              <PixelButton onClick={downloadBadge} size="lg" className="w-full">
                 <Download className="size-4" />
                 DOWNLOAD_BADGE
               </PixelButton>
@@ -322,13 +335,16 @@ Me emociona ser parte de este evento donde crearemos soluciones innovadoras con 
             <h3 className="font-bold text-sm uppercase">EVENT_DETAILS</h3>
             <div className="space-y-1 text-xs uppercase">
               <p>
-                <span className="text-muted-foreground">DATE:</span> 29-30_NOV_2025
+                <span className="text-muted-foreground">DATE:</span>{" "}
+                29-30_NOV_2025
               </p>
               <p>
-                <span className="text-muted-foreground">LOCATION:</span> UPCH_LA_MOLINA
+                <span className="text-muted-foreground">LOCATION:</span>{" "}
+                UPCH_LA_MOLINA
               </p>
               <p>
-                <span className="text-muted-foreground">CHECK_IN:</span> 08:00_AM
+                <span className="text-muted-foreground">CHECK_IN:</span>{" "}
+                08:00_AM
               </p>
             </div>
           </motion.div>
@@ -354,7 +370,8 @@ Me emociona ser parte de este evento donde crearemos soluciones innovadoras con 
                 <span className="text-terminal-green">✓</span> NOTEBOOK_+_PEN
               </li>
               <li className="flex items-center gap-2">
-                <span className="text-terminal-green">✓</span> COMFORTABLE_CLOTHES
+                <span className="text-terminal-green">✓</span>{" "}
+                COMFORTABLE_CLOTHES
               </li>
             </ul>
           </motion.div>
@@ -365,19 +382,25 @@ Me emociona ser parte de este evento donde crearemos soluciones innovadoras con 
             transition={{ delay: 0.8 }}
             className="border-2 border-terminal-green/50 bg-terminal-green/5 p-4 space-y-2 font-adelle-mono"
           >
-            <h3 className="font-bold text-sm uppercase text-terminal-green">IMPORTANT_REMINDERS</h3>
+            <h3 className="font-bold text-sm uppercase text-terminal-green">
+              IMPORTANT_REMINDERS
+            </h3>
             <ul className="space-y-1 text-xs uppercase">
               <li>
-                <span className="text-muted-foreground">•</span> ARRIVE_EARLY_FOR_CHECK_IN
+                <span className="text-muted-foreground">•</span>{" "}
+                ARRIVE_EARLY_FOR_CHECK_IN
               </li>
               <li>
-                <span className="text-muted-foreground">•</span> BRING_THIS_BADGE_(PRINTED_OR_PHONE)
+                <span className="text-muted-foreground">•</span>{" "}
+                BRING_THIS_BADGE_(PRINTED_OR_PHONE)
               </li>
               <li>
-                <span className="text-muted-foreground">•</span> FOOD_AND_DRINKS_PROVIDED
+                <span className="text-muted-foreground">•</span>{" "}
+                FOOD_AND_DRINKS_PROVIDED
               </li>
               <li>
-                <span className="text-muted-foreground">•</span> TEAMS_FORMED_ON_SITE
+                <span className="text-muted-foreground">•</span>{" "}
+                TEAMS_FORMED_ON_SITE
               </li>
             </ul>
           </motion.div>
@@ -388,12 +411,14 @@ Me emociona ser parte de este evento donde crearemos soluciones innovadoras con 
             transition={{ delay: 0.85 }}
             className="border-2 border-foreground/50 p-4 space-y-3"
           >
-            <h3 className="font-adelle-mono font-bold text-sm uppercase">SHARE_NEWS</h3>
-            
+            <h3 className="font-adelle-mono font-bold text-sm uppercase">
+              SHARE_NEWS
+            </h3>
+
             <div className="bg-black p-3 border border-terminal-green/50 font-adelle-mono text-xs text-terminal-green whitespace-pre-line">
               {shareText}
             </div>
-            
+
             <div className="flex flex-wrap gap-2">
               <PixelButton
                 variant="secondary"
@@ -406,12 +431,8 @@ Me emociona ser parte de este evento donde crearemos soluciones innovadoras con 
                 <Copy className="size-3" />
                 COPY
               </PixelButton>
-              
-              <PixelButton
-                variant="secondary"
-                size="sm"
-                asChild
-              >
+
+              <PixelButton variant="secondary" size="sm" asChild>
                 <a
                   href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent("https://iahackathon.pe")}`}
                   target="_blank"
@@ -420,12 +441,8 @@ Me emociona ser parte de este evento donde crearemos soluciones innovadoras con 
                   LINKEDIN
                 </a>
               </PixelButton>
-              
-              <PixelButton
-                variant="secondary"
-                size="sm"
-                asChild
-              >
+
+              <PixelButton variant="secondary" size="sm" asChild>
                 <a
                   href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`}
                   target="_blank"
@@ -434,12 +451,8 @@ Me emociona ser parte de este evento donde crearemos soluciones innovadoras con 
                   X_TWITTER
                 </a>
               </PixelButton>
-              
-              <PixelButton
-                variant="secondary"
-                size="sm"
-                asChild
-              >
+
+              <PixelButton variant="secondary" size="sm" asChild>
                 <a
                   href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
                   target="_blank"
@@ -450,6 +463,49 @@ Me emociona ser parte de este evento donde crearemos soluciones innovadoras con 
               </PixelButton>
             </div>
           </motion.div>
+
+          {participant.participantNumber && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.88 }}
+              className="border-2 border-terminal-green/50 bg-terminal-green/5 p-4 space-y-3"
+            >
+              <h3 className="font-adelle-mono font-bold text-sm uppercase text-terminal-green">
+                YOUR_PROFILE
+              </h3>
+              <p className="font-adelle-mono text-xs text-muted-foreground uppercase">
+                SHARE_YOUR_PROFILE_FOR_NETWORKING
+              </p>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <PixelButton
+                  asChild
+                  variant="terminal"
+                  size="sm"
+                  className="flex-1"
+                >
+                  <Link
+                    href={`/p/${participant.participantNumber}`}
+                    target="_blank"
+                  >
+                    <ExternalLink className="size-3" />
+                    VIEW_PROFILE
+                  </Link>
+                </PixelButton>
+                <PixelButton
+                  asChild
+                  variant="secondary"
+                  size="sm"
+                  className="flex-1"
+                >
+                  <Link href="/profile">
+                    <User className="size-3" />
+                    EDIT_PROFILE
+                  </Link>
+                </PixelButton>
+              </div>
+            </motion.div>
+          )}
 
           <motion.div
             initial={{ opacity: 0, y: 10 }}
