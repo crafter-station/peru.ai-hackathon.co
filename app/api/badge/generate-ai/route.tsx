@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { fal } from "@fal-ai/client";
 import path from "path";
+import fs from "fs/promises";
 import sharp from "sharp";
 import QRCode from "qrcode";
 import { db } from "@/lib/db";
@@ -8,6 +9,7 @@ import { participants } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 import { put } from "@vercel/blob";
 import * as falStorage from "@fal-ai/serverless-client";
+import satori from "satori";
 
 fal.config({
   credentials: process.env.FAL_API_KEY,
@@ -353,48 +355,133 @@ export async function POST(request: NextRequest) {
 
     const numberText = `${participantNumberFormatted.toUpperCase()} * ${participantNumberFormatted.toUpperCase()} * ${participantNumberFormatted.toUpperCase()}`;
 
-    const svgText = `
-      <svg width="1080" height="1440">
-        <style>
-          .number {
-            fill: rgba(246, 246, 246, 0.09);
-            font-size: 32px;
-            font-weight: 400;
-            font-family: monospace;
-            letter-spacing: 0.34em;
-            text-transform: uppercase;
-          }
-          .firstName {
-            fill: white;
-            font-size: 60px;
-            font-weight: 700;
-            font-family: sans-serif;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-          }
-          .lastName {
-            fill: white;
-            font-size: 60px;
-            font-weight: 700;
-            font-family: sans-serif;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-          }
-          .role {
-            fill: white;
-            font-size: 40px;
-            font-weight: 400;
-            font-family: monospace;
-            text-transform: uppercase;
-          }
-        </style>
-        <text x="${BADGE_CONFIG.participantNumber.x}" y="${BADGE_CONFIG.participantNumber.y}" text-anchor="middle" class="number">${numberText}</text>
-        <text x="${BADGE_CONFIG.participantNumber2.x}" y="${BADGE_CONFIG.participantNumber2.y}" text-anchor="middle" class="number">${numberText}</text>
-        <text x="${BADGE_CONFIG.firstName.x}" y="${BADGE_CONFIG.firstName.y}" text-anchor="middle" class="firstName">${firstName}</text>
-        <text x="${BADGE_CONFIG.lastName.x}" y="${BADGE_CONFIG.lastName.y}" text-anchor="middle" class="lastName">${lastName}</text>
-        <text x="${BADGE_CONFIG.role.x}" y="${BADGE_CONFIG.role.y}" text-anchor="middle" class="role">${participant.organization?.toUpperCase() || "HACKER"}</text>
-      </svg>
-    `;
+    const adelleMonoRegular = await fs.readFile(
+      path.join(process.cwd(), "app/fonts/Adelle Mono/AdelleMono-Regular.ttf")
+    );
+    const adelleMonoBold = await fs.readFile(
+      path.join(process.cwd(), "app/fonts/Adelle Mono/AdelleMono-Bold.ttf")
+    );
+
+    const textElement = (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          width: "1080px",
+          height: "1440px",
+          position: "relative",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            top: `${BADGE_CONFIG.participantNumber.y - 32}px`,
+            left: "0",
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            color: "rgba(246, 246, 246, 0.09)",
+            fontSize: "32px",
+            fontFamily: "Adelle Mono",
+            fontWeight: 400,
+            letterSpacing: "0.34em",
+            textTransform: "uppercase",
+          }}
+        >
+          {numberText}
+        </div>
+        <div
+          style={{
+            position: "absolute",
+            top: `${BADGE_CONFIG.participantNumber2.y - 32}px`,
+            left: "0",
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            color: "rgba(246, 246, 246, 0.09)",
+            fontSize: "32px",
+            fontFamily: "Adelle Mono",
+            fontWeight: 400,
+            letterSpacing: "0.34em",
+            textTransform: "uppercase",
+          }}
+        >
+          {numberText}
+        </div>
+        <div
+          style={{
+            position: "absolute",
+            top: `${BADGE_CONFIG.firstName.y - 60}px`,
+            left: "0",
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            color: "white",
+            fontSize: "60px",
+            fontFamily: "Adelle Mono",
+            fontWeight: 700,
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
+          }}
+        >
+          {firstName}
+        </div>
+        <div
+          style={{
+            position: "absolute",
+            top: `${BADGE_CONFIG.lastName.y - 60}px`,
+            left: "0",
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            color: "white",
+            fontSize: "60px",
+            fontFamily: "Adelle Mono",
+            fontWeight: 700,
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
+          }}
+        >
+          {lastName}
+        </div>
+        <div
+          style={{
+            position: "absolute",
+            top: `${BADGE_CONFIG.role.y - 40}px`,
+            left: "0",
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            color: "white",
+            fontSize: "40px",
+            fontFamily: "Adelle Mono",
+            fontWeight: 400,
+            textTransform: "uppercase",
+          }}
+        >
+          {participant.organization?.toUpperCase() || "HACKER"}
+        </div>
+      </div>
+    );
+
+    const svgText = await satori(textElement, {
+      width: 1080,
+      height: 1440,
+      fonts: [
+        {
+          name: "Adelle Mono",
+          data: adelleMonoRegular,
+          weight: 400,
+          style: "normal",
+        },
+        {
+          name: "Adelle Mono",
+          data: adelleMonoBold,
+          weight: 700,
+          style: "normal",
+        },
+      ],
+    });
 
     const badgeBuffer = await sharp(templatePath)
       .composite([
