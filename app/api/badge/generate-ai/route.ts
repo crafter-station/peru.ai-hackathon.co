@@ -21,7 +21,7 @@ const RATE_LIMIT_SECONDS = 10;
 
 const BADGE_CONFIG = {
   profilePicture: {
-    x: 125,
+    x: 130,
     y: 393,
     width: 574,
     height: 574,
@@ -69,8 +69,8 @@ const BADGE_CONFIG = {
     fontFamily: "'Adelle Mono'",
   },
   qrCode: {
-    x: 109.5300849661869,
-    y: 1137.0579656293544,
+    x: 115.5300849661869,
+    y: 1139.0579656293544,
     width: 179,
     height: 179,
   },
