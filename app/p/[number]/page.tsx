@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { Experience } from "@/components/profile/experience";
+import { Achievements } from "@/components/profile/achievements";
 import { Overview } from "@/components/profile/overview";
 import { ProfileCover } from "@/components/profile/profile-cover";
 import { ProfileHeader } from "@/components/profile/profile-header";
@@ -129,7 +129,10 @@ export default function PublicProfilePage() {
       />
       <Separator />
 
-      <Experience />
+      <Achievements
+        badgeBlobUrl={profile.badgeBlobUrl}
+        participantNumber={profile.participantNumber}
+      />
       <Separator />
 
       <TechStack techStack={profile.techStack} />

@@ -8,7 +8,10 @@ function Panel({ className, ...props }: React.ComponentProps<"section">) {
     <section
       data-slot="panel"
       className={cn(
-        "screen-line-before screen-line-after border-x border-edge",
+        "screen-line-before screen-line-after border-x border-edge border-x-[1.5px]",
+        "relative",
+        "before:bg-gradient-to-r before:from-transparent before:via-edge/70 before:to-transparent before:shadow-[0_1px_0_0_rgba(0,0,0,0.03)]",
+        "after:bg-gradient-to-r after:from-transparent after:via-edge/70 after:to-transparent after:shadow-[0_-1px_0_0_rgba(0,0,0,0.03)]",
         className
       )}
       {...props}
@@ -20,7 +23,12 @@ function PanelHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="panel-header"
-      className={cn("screen-line-after px-4", className)}
+      className={cn(
+        "screen-line-after px-4",
+        "after:bg-gradient-to-r after:from-transparent after:via-edge/80 after:to-transparent",
+        "after:shadow-[0_1px_0_0_rgba(0,0,0,0.05)]",
+        className
+      )}
       {...props}
     />
   );
