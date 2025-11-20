@@ -19,14 +19,16 @@ export function ProfileHeader({
       <div className="shrink-0 border-r border-edge border-r-[1.5px] relative after:absolute after:inset-y-0 after:right-0 after:w-px after:bg-gradient-to-b after:from-transparent after:via-edge/60 after:to-transparent">
         <div className="mx-[2px] my-[3px]">
           {avatar ? (
-            <Image
-              className="size-32 rounded-full ring-1 ring-border ring-offset-2 ring-offset-background select-none sm:size-40"
-              alt={`${displayName}'s avatar`}
-              src={avatar}
-              width={160}
-              height={160}
-              fetchPriority="high"
-            />
+            <div className="relative size-32 rounded-full ring-1 ring-border ring-offset-2 ring-offset-background select-none sm:size-40 overflow-hidden">
+              <Image
+                className="object-contain"
+                alt={`${displayName}'s avatar`}
+                src={avatar}
+                fill
+                sizes="(max-width: 640px) 128px, 160px"
+                fetchPriority="high"
+              />
+            </div>
           ) : (
             <div className="size-32 rounded-full ring-1 ring-border ring-offset-2 ring-offset-background select-none sm:size-40 bg-muted flex items-center justify-center">
               <span className="text-4xl text-muted-foreground">?</span>
