@@ -1,5 +1,4 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { fal } from "@fal-ai/client";
 import path from "path";
 import fs from "fs/promises";
 import sharp from "sharp";
@@ -11,15 +10,31 @@ import { put } from "@vercel/blob";
 import * as falStorage from "@fal-ai/serverless-client";
 import satori from "satori";
 
-fal.config({
-  credentials: process.env.FAL_API_KEY,
-});
-
 falStorage.config({
   credentials: process.env.FAL_API_KEY,
 });
 
 const RATE_LIMIT_SECONDS = 10;
+
+let fontsCache: { regular: Buffer; bold: Buffer } | null = null;
+
+async function getFonts() {
+  if (!fontsCache) {
+    const [regular, bold] = await Promise.all([
+      fs.readFile(
+        path.join(
+          process.cwd(),
+          "app/fonts/Adelle Mono/AdelleMono-Regular.ttf",
+        ),
+      ),
+      fs.readFile(
+        path.join(process.cwd(), "app/fonts/Adelle Mono/AdelleMono-Bold.ttf"),
+      ),
+    ]);
+    fontsCache = { regular, bold };
+  }
+  return fontsCache;
+}
 
 const BADGE_CONFIG = {
   profilePicture: {
@@ -29,46 +44,25 @@ const BADGE_CONFIG = {
     height: 574,
   },
   participantNumber: {
-    x: 407.8021863612701,
-    y: 343.34721499219154,
+    x: 150.8021863612701,
+    y: 313.34721499219154,
     fontSize: 32,
-    fontWeight: "400",
     color: "rgba(246, 246, 246, 0.09)",
-    fontFamily: "'Adelle Mono'",
   },
   participantNumber2: {
-    x: 411.5190005205624,
-    y: 1031.5543987506467,
+    x: 150.8021863612701,
+    y: 1001.5543987506467,
     fontSize: 32,
-    fontWeight: "400",
     color: "rgba(246, 246, 246, 0.09)",
-    fontFamily: "'Adelle Mono'",
   },
   firstName: {
-    x: 520,
     y: 1198.84882384131,
-    fontSize: 60,
-    fontWeight: "700",
-    color: "#FFFFFF",
-    fontFamily: "sans-serif",
-    letterSpacing: "0.08em",
   },
   lastName: {
-    x: 520,
     y: 1256.790067915308,
-    fontSize: 60,
-    fontWeight: "700",
-    color: "#FFFFFF",
-    fontFamily: "sans-serif",
-    letterSpacing: "0.08em",
   },
   role: {
-    x: 520,
     y: 1317.076218001156,
-    fontSize: 40,
-    fontWeight: "400",
-    color: "#FFFFFF",
-    fontFamily: "'Adelle Mono'",
   },
   qrCode: {
     x: 115.5300849661869,
@@ -77,26 +71,6 @@ const BADGE_CONFIG = {
     height: 179,
   },
 };
-
-function base64ToFile(base64String: string, filename = "upload.jpg"): File {
-  const matches = base64String.match(/^data:([A-Za-z-+/]+);base64,(.+)$/);
-
-  if (!matches || matches.length !== 3) {
-    throw new Error("Invalid base64 string");
-  }
-
-  const mimeType = matches[1];
-  const base64Data = matches[2];
-
-  const binaryString = atob(base64Data);
-  const bytes = new Uint8Array(binaryString.length);
-
-  for (let i = 0; i < binaryString.length; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
-  }
-
-  return new File([bytes], filename, { type: mimeType });
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -166,146 +140,140 @@ export async function POST(request: NextRequest) {
       participant.participantNumber,
     );
 
-    const participantNumberFormatted = `#${String(participant.participantNumber).padStart(3, "0")}`;
-    const firstName =
-      participant.fullName?.split(" ")[0]?.toUpperCase() || "PARTICIPANT";
-    const lastName =
-      participant.fullName?.split(" ").slice(1).join(" ")?.toUpperCase() || "";
-
     console.log("[badge-ai] STEP 1: Generating pixel art portrait");
 
-    const photoResponse = await fetch(participant.profilePhotoUrl);
-    const photoBuffer = Buffer.from(await photoResponse.arrayBuffer());
-    const photoBase64 = `data:image/jpeg;base64,${photoBuffer.toString("base64")}`;
+    let processedPixelArt: Buffer;
 
-    console.log(
-      "[badge-ai] Converting base64 to File and uploading to fal.storage",
-    );
-    const imageFile = base64ToFile(photoBase64, "profile-photo.jpg");
-    const uploadedImageUrl = await falStorage.storage.upload(imageFile);
-    console.log("[badge-ai] Image uploaded to fal.storage:", uploadedImageUrl);
+    const isDev = process.env.NODE_ENV === "development";
 
-    const prompt =
-      "8-bit pixel art portrait, chest-up view. Simple solid background for easy cutout. Flat grayscale shading with four tones. Printed, cartoonish, and cute. Preserve facial structure. The character should fit entirely within the frame, without labels or text.";
-
-    console.log("[badge-ai] Calling qwen-image-edit with uploaded image URL");
-    const pixelArtResult = (await falStorage.subscribe(
-      "fal-ai/qwen-image-edit",
-      {
-        input: {
-          prompt,
-          image_url: uploadedImageUrl,
-        },
-      },
-    )) as {
-      data?: { images?: Array<{ url: string }>; image?: { url: string } };
-      images?: Array<{ url: string }>;
-      image?: { url: string };
-    };
-
-    console.log("[badge-ai] FAL result received");
-
-    let pixelArtImageUrl: string | undefined;
-
-    if (
-      pixelArtResult.data?.images &&
-      Array.isArray(pixelArtResult.data.images) &&
-      pixelArtResult.data.images.length > 0
-    ) {
-      pixelArtImageUrl = pixelArtResult.data.images[0].url;
-    } else if (
-      pixelArtResult.images &&
-      Array.isArray(pixelArtResult.images) &&
-      pixelArtResult.images.length > 0
-    ) {
-      pixelArtImageUrl = pixelArtResult.images[0].url;
-    } else if (pixelArtResult.data?.image?.url) {
-      pixelArtImageUrl = pixelArtResult.data.image.url;
-    } else if (pixelArtResult.image?.url) {
-      pixelArtImageUrl = pixelArtResult.image.url;
-    }
-
-    if (!pixelArtImageUrl) {
-      console.error("[badge-ai] Could not find image URL in result");
-      throw new Error("No pixel art image generated by FAL AI");
-    }
-
-    console.log("[badge-ai] Pixel art generated:", pixelArtImageUrl);
-
-    console.log("[badge-ai] Removing background from pixel art");
-
-    interface QueueUpdate {
-      status: string;
-      logs?: Array<{ message: string }>;
-    }
-
-    const bgRemovalResult = (await falStorage.subscribe("fal-ai/birefnet/v2", {
-      input: {
-        image_url: pixelArtImageUrl,
-      },
-      logs: true,
-      onQueueUpdate: (update: QueueUpdate) => {
-        if (update.status === "IN_PROGRESS" && update.logs) {
-          update.logs.map((log) => log.message).forEach(console.log);
-        }
-      },
-    })) as { data?: { image?: { url: string } }; image?: { url: string } };
-
-    let transparentImageUrl: string | undefined;
-
-    if (bgRemovalResult.data?.image?.url) {
-      transparentImageUrl = bgRemovalResult.data.image.url;
+    if (isDev) {
       console.log(
-        "[badge-ai] Background removed successfully:",
-        transparentImageUrl,
+        "[badge-ai] DEV MODE: Using test image instead of AI generation",
       );
-    } else if (bgRemovalResult.image?.url) {
-      transparentImageUrl = bgRemovalResult.image.url;
-      console.log(
-        "[badge-ai] Background removed successfully:",
-        transparentImageUrl,
-      );
+      const testImagePath = path.join(process.cwd(), "public", "test-img.png");
+      const testImageBuffer = await fs.readFile(testImagePath);
+
+      processedPixelArt = await sharp(testImageBuffer)
+        .resize(
+          BADGE_CONFIG.profilePicture.width,
+          BADGE_CONFIG.profilePicture.height,
+          { fit: "cover" },
+        )
+        .grayscale()
+        .png()
+        .toBuffer();
+
+      console.log("[badge-ai] Using local test image");
     } else {
-      console.warn(
-        "[badge-ai] Could not remove background, using original image",
+      const prompt =
+        "8-bit pixel art portrait, chest-up view. Simple solid background for easy cutout. Flat grayscale shading with four tones. Printed, cartoonish, and cute. Preserve facial structure. The character should fit entirely within the frame, without labels or text.";
+
+      console.log(
+        "[badge-ai] Calling qwen-image-edit with profile photo URL directly",
       );
-      transparentImageUrl = pixelArtImageUrl;
+      const pixelArtResult = (await falStorage.subscribe(
+        "fal-ai/qwen-image-edit",
+        {
+          input: {
+            prompt,
+            image_url: participant.profilePhotoUrl,
+          },
+        },
+      )) as {
+        data?: { images?: Array<{ url: string }>; image?: { url: string } };
+        images?: Array<{ url: string }>;
+        image?: { url: string };
+      };
+
+      console.log("[badge-ai] FAL result received");
+
+      let pixelArtImageUrl: string | undefined;
+
+      if (
+        pixelArtResult.data?.images &&
+        Array.isArray(pixelArtResult.data.images) &&
+        pixelArtResult.data.images.length > 0
+      ) {
+        pixelArtImageUrl = pixelArtResult.data.images[0].url;
+      } else if (
+        pixelArtResult.images &&
+        Array.isArray(pixelArtResult.images) &&
+        pixelArtResult.images.length > 0
+      ) {
+        pixelArtImageUrl = pixelArtResult.images[0].url;
+      } else if (pixelArtResult.data?.image?.url) {
+        pixelArtImageUrl = pixelArtResult.data.image.url;
+      } else if (pixelArtResult.image?.url) {
+        pixelArtImageUrl = pixelArtResult.image.url;
+      }
+
+      if (!pixelArtImageUrl) {
+        console.error("[badge-ai] Could not find image URL in result");
+        throw new Error("No pixel art image generated by FAL AI");
+      }
+
+      console.log("[badge-ai] Pixel art generated:", pixelArtImageUrl);
+
+      console.log("[badge-ai] Removing background from pixel art");
+
+      interface QueueUpdate {
+        status: string;
+        logs?: Array<{ message: string }>;
+      }
+
+      const bgRemovalResult = (await falStorage.subscribe(
+        "fal-ai/birefnet/v2",
+        {
+          input: {
+            image_url: pixelArtImageUrl,
+          },
+          logs: true,
+          onQueueUpdate: (update: QueueUpdate) => {
+            if (update.status === "IN_PROGRESS" && update.logs) {
+              update.logs.map((log) => log.message).forEach(console.log);
+            }
+          },
+        },
+      )) as { data?: { image?: { url: string } }; image?: { url: string } };
+
+      let transparentImageUrl: string | undefined;
+
+      if (bgRemovalResult.data?.image?.url) {
+        transparentImageUrl = bgRemovalResult.data.image.url;
+        console.log(
+          "[badge-ai] Background removed successfully:",
+          transparentImageUrl,
+        );
+      } else if (bgRemovalResult.image?.url) {
+        transparentImageUrl = bgRemovalResult.image.url;
+        console.log(
+          "[badge-ai] Background removed successfully:",
+          transparentImageUrl,
+        );
+      } else {
+        console.warn(
+          "[badge-ai] Could not remove background, using original image",
+        );
+        transparentImageUrl = pixelArtImageUrl;
+      }
+
+      const finalPixelArtUrl = transparentImageUrl || pixelArtImageUrl;
+
+      const pixelArtResponse = await fetch(finalPixelArtUrl);
+      const pixelArtBuffer = Buffer.from(await pixelArtResponse.arrayBuffer());
+
+      processedPixelArt = await sharp(pixelArtBuffer)
+        .resize(
+          BADGE_CONFIG.profilePicture.width,
+          BADGE_CONFIG.profilePicture.height,
+          { fit: "cover" },
+        )
+        .grayscale()
+        .png()
+        .toBuffer();
     }
-
-    const finalPixelArtUrl = transparentImageUrl || pixelArtImageUrl;
-
-    const pixelArtResponse = await fetch(finalPixelArtUrl);
-    const pixelArtBuffer = Buffer.from(await pixelArtResponse.arrayBuffer());
-
-    const processedPixelArt = await sharp(pixelArtBuffer)
-      .resize(
-        BADGE_CONFIG.profilePicture.width,
-        BADGE_CONFIG.profilePicture.height,
-        { fit: "cover" },
-      )
-      .grayscale()
-      .png()
-      .toBuffer();
-
-    const pixelArtTimestamp = Date.now();
-    const pixelArtBlobResult = await put(
-      `ai-profile-photos/${participantId}-${pixelArtTimestamp}.png`,
-      processedPixelArt,
-      { access: "public", contentType: "image/png" },
-    );
-    console.log(
-      "[badge-ai] Pixel art uploaded to Vercel Blob:",
-      pixelArtBlobResult.url,
-    );
 
     console.log("[badge-ai] STEP 2: Composing badge with sharp");
-
-    const templatePath = path.join(
-      process.cwd(),
-      "public",
-      "onboarding",
-      "THC-IA HACK PE-ID-Participante.png",
-    );
 
     let domain = "peru.ai-hackathon.co";
 
@@ -324,45 +292,39 @@ export async function POST(request: NextRequest) {
 
     const profileUrl = `https://${domain}/p/${participant.participantNumber}`;
 
-    console.log("[badge-ai] Generating QR code for:", profileUrl);
+    console.log("[badge-ai] Loading fonts, generating QR code in parallel");
 
-    const qrCodeBuffer = await QRCode.toBuffer(profileUrl, {
-      errorCorrectionLevel: "M",
-      type: "png",
-      width: 60,
-      margin: 0,
-      color: {
-        dark: "#000000",
-        light: "#FFFFFF",
-      },
-    });
+    const templatePath = path.join(
+      process.cwd(),
+      "public/onboarding/THC-IA HACK PE-ID-Participante.png",
+    );
 
-    const borderSize = 8;
+    const [fonts, qrCodeBuffer] = await Promise.all([
+      getFonts(),
+      QRCode.toBuffer(profileUrl, {
+        errorCorrectionLevel: "M",
+        type: "png",
+        width: 60,
+        margin: 0,
+        color: {
+          dark: "#000000",
+          light: "#FFFFFF",
+        },
+      }),
+    ]);
+
+    const { regular: adelleMonoRegular, bold: adelleMonoBold } = fonts;
+
+    const numberText = `#${String(participant.participantNumber).padStart(3, "0")} * #${String(participant.participantNumber).padStart(3, "0")} * #${String(participant.participantNumber).padStart(3, "0")}`;
+    const nameParts = (participant.fullName || "").trim().split(" ");
+    const firstName = nameParts[0] || "";
+    const lastName = nameParts.slice(1).join(" ") || "";
 
     const qrCode = await sharp(qrCodeBuffer)
-      .extend({
-        top: borderSize,
-        bottom: borderSize,
-        left: borderSize,
-        right: borderSize,
-        background: { r: 255, g: 255, b: 255, alpha: 1 },
-      })
-      .resize(
-        Math.round(BADGE_CONFIG.qrCode.width),
-        Math.round(BADGE_CONFIG.qrCode.height),
-      )
+      .resize(BADGE_CONFIG.qrCode.width, BADGE_CONFIG.qrCode.height)
       .toBuffer();
 
-    const numberText = `${participantNumberFormatted.toUpperCase()} * ${participantNumberFormatted.toUpperCase()} * ${participantNumberFormatted.toUpperCase()}`;
-
-    const adelleMonoRegular = await fs.readFile(
-      path.join(process.cwd(), "app/fonts/Adelle Mono/AdelleMono-Regular.ttf")
-    );
-    const adelleMonoBold = await fs.readFile(
-      path.join(process.cwd(), "app/fonts/Adelle Mono/AdelleMono-Bold.ttf")
-    );
-
-    const textElement = (
+    const numbersElement = (
       <div
         style={{
           display: "flex",
@@ -375,13 +337,10 @@ export async function POST(request: NextRequest) {
         <div
           style={{
             position: "absolute",
-            top: `${BADGE_CONFIG.participantNumber.y - 32}px`,
-            left: "0",
-            width: "100%",
-            display: "flex",
-            justifyContent: "center",
-            color: "rgba(246, 246, 246, 0.09)",
-            fontSize: "32px",
+            top: `${BADGE_CONFIG.participantNumber.y}px`,
+            left: `${BADGE_CONFIG.participantNumber.x}px`,
+            color: BADGE_CONFIG.participantNumber.color,
+            fontSize: `${BADGE_CONFIG.participantNumber.fontSize}px`,
             fontFamily: "Adelle Mono",
             fontWeight: 400,
             letterSpacing: "0.34em",
@@ -393,13 +352,10 @@ export async function POST(request: NextRequest) {
         <div
           style={{
             position: "absolute",
-            top: `${BADGE_CONFIG.participantNumber2.y - 32}px`,
-            left: "0",
-            width: "100%",
-            display: "flex",
-            justifyContent: "center",
-            color: "rgba(246, 246, 246, 0.09)",
-            fontSize: "32px",
+            top: `${BADGE_CONFIG.participantNumber2.y}px`,
+            left: `${BADGE_CONFIG.participantNumber2.x}px`,
+            color: BADGE_CONFIG.participantNumber2.color,
+            fontSize: `${BADGE_CONFIG.participantNumber2.fontSize}px`,
             fontFamily: "Adelle Mono",
             fontWeight: 400,
             letterSpacing: "0.34em",
@@ -408,6 +364,19 @@ export async function POST(request: NextRequest) {
         >
           {numberText}
         </div>
+      </div>
+    );
+
+    const textElement = (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          width: "1080px",
+          height: "1440px",
+          position: "relative",
+        }}
+      >
         <div
           style={{
             position: "absolute",
@@ -464,6 +433,19 @@ export async function POST(request: NextRequest) {
       </div>
     );
 
+    const svgNumbers = await satori(numbersElement, {
+      width: 1080,
+      height: 1440,
+      fonts: [
+        {
+          name: "Adelle Mono",
+          data: adelleMonoRegular,
+          weight: 400,
+          style: "normal",
+        },
+      ],
+    });
+
     const svgText = await satori(textElement, {
       width: 1080,
       height: 1440,
@@ -484,11 +466,17 @@ export async function POST(request: NextRequest) {
     });
 
     const badgeBuffer = await sharp(templatePath)
+      .resize(1080, 1440, { fit: "fill" })
       .composite([
         {
           input: processedPixelArt,
           top: Math.round(BADGE_CONFIG.profilePicture.y),
           left: Math.round(BADGE_CONFIG.profilePicture.x),
+        },
+        {
+          input: Buffer.from(svgNumbers),
+          top: 0,
+          left: 0,
         },
         {
           input: Buffer.from(svgText),
@@ -504,22 +492,41 @@ export async function POST(request: NextRequest) {
       .png({ quality: 90 })
       .toBuffer();
 
-    console.log("[badge-ai] Badge composed, uploading to Vercel Blob");
-
-    const timestamp = Date.now();
-    const blobResult = await put(
-      `badges/${participantId}-${timestamp}.png`,
-      badgeBuffer,
-      { access: "public", contentType: "image/png" },
+    console.log(
+      "[badge-ai] Badge composed, uploading badge and pixel art to Vercel Blob in parallel",
     );
 
+    const timestamp = Date.now();
+
+    const uploadPromises: [Promise<{ url: string }>, Promise<{ url: string }>] =
+      [
+        put(`badges/${participantId}-${timestamp}.png`, badgeBuffer, {
+          access: "public",
+          contentType: "image/png",
+        }),
+        isDev
+          ? Promise.resolve({ url: "/test-img.png" })
+          : put(
+              `ai-profile-photos/${participantId}-${timestamp}.png`,
+              processedPixelArt,
+              { access: "public", contentType: "image/png" },
+            ),
+      ];
+
+    const [blobResult, pixelArtBlobResultFinal] =
+      await Promise.all(uploadPromises);
+
     console.log("[badge-ai] Uploaded to Vercel Blob:", blobResult.url);
+    console.log(
+      "[badge-ai] Pixel art uploaded to Vercel Blob:",
+      pixelArtBlobResultFinal.url,
+    );
 
     await db
       .update(participants)
       .set({
         badgeBlobUrl: blobResult.url,
-        profilePhotoAiUrl: pixelArtBlobResult.url,
+        profilePhotoAiUrl: pixelArtBlobResultFinal.url,
         badgeGeneratedAt: new Date(),
         lastBadgeGenerationAt: new Date(),
         updatedAt: new Date(),
@@ -531,7 +538,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       participantNumber: participant.participantNumber,
       badgeUrl: blobResult.url,
-      profilePhotoAiUrl: pixelArtBlobResult.url,
+      profilePhotoAiUrl: pixelArtBlobResultFinal.url,
     });
   } catch (error) {
     console.error("[badge-ai] Error generating badge:", error);
