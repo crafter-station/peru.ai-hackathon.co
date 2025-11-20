@@ -122,11 +122,11 @@ export default function CompletePage() {
     );
   }
 
-  const shareText = `🚀 ¡Ya estoy dentro! Acabo de registrarme para la IA Hackathon Peru 2025 y no puedo estar más emocionado/a.
+  const shareText = `🚀 ¡Ya estoy dentro! Me registré para la IA Hackathon Peru 2025 y no puedo estar más emocionado/a.
 
 Este 29 y 30 de noviembre estaré en la Universidad Peruana Cayetano Heredia junto a otros developers, diseñadores y entusiastas de la tecnología creando soluciones con inteligencia artificial. Van a ser 2 días intensos de código, creatividad y mucho café ☕
 
-Si todavía no te registraste, ¿qué estás esperando? 👀
+Gracias a The Hackathon Company, Makers, Crafter Station y AI Playgrounds por organizar este evento 🙌
 
 📅 29-30 de Noviembre
 📍 Universidad Peruana Cayetano Heredia, La Molina
