@@ -23,7 +23,7 @@ function RetroCardHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       className={cn(
-        "border-b border-brand-red px-6 py-4 bg-brand-red/10 text-white",
+        "border-b border-brand-red px-4 py-2 bg-brand-red/10 text-white",
         className
       )}
       {...props}
@@ -58,7 +58,7 @@ function RetroCardDescription({ className, ...props }: React.ComponentProps<"div
 function RetroCardContent({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
-      className={cn("p-6", className)}
+      className={cn("p-4", className)}
       {...props}
     />
   );

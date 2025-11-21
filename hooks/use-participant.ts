@@ -23,6 +23,22 @@ export function useParticipant() {
       if (!response.ok) throw new Error("Failed to update participant");
       return response.json();
     },
+    onMutate: async (newData) => {
+      await queryClient.cancelQueries({ queryKey: ["participant"] });
+      const previousParticipant = queryClient.getQueryData<Participant | null>(["participant"]);
+      
+      queryClient.setQueryData<Participant | null>(["participant"], (old) => {
+        if (!old) return old;
+        return { ...old, ...newData };
+      });
+      
+      return { previousParticipant };
+    },
+    onError: (_err, _newData, context) => {
+      if (context?.previousParticipant) {
+        queryClient.setQueryData(["participant"], context.previousParticipant);
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["participant"] });
     },

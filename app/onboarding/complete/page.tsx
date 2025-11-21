@@ -37,6 +37,8 @@ export default function CompletePage() {
     }
   }, [showConfetti, playSuccess]);
 
+  // Badge should already be generated before reaching this page
+  // Only generate if somehow it's missing (fallback)
   useEffect(() => {
     if (
       participant?.id &&
@@ -46,17 +48,24 @@ export default function CompletePage() {
       !isGenerating &&
       !isInitialGeneration
     ) {
-      setIsInitialGeneration(true);
-      generateBadge(participant.id)
-        .then(() => {
-          refetch();
-        })
-        .catch((err) => {
-          console.error("[complete] Initial badge generation failed:", err);
-        })
-        .finally(() => {
-          setIsInitialGeneration(false);
-        });
+      // Wait a bit to see if badge appears (might be generating)
+      const timeout = setTimeout(() => {
+        if (!participant.badgeBlobUrl) {
+          setIsInitialGeneration(true);
+          generateBadge(participant.id)
+            .then(() => {
+              refetch();
+            })
+            .catch((err) => {
+              console.error("[complete] Fallback badge generation failed:", err);
+            })
+            .finally(() => {
+              setIsInitialGeneration(false);
+            });
+        }
+      }, 2000); // Wait 2 seconds before fallback generation
+      
+      return () => clearTimeout(timeout);
     }
   }, [
     participant?.id,
@@ -108,10 +117,10 @@ export default function CompletePage() {
       <RetroCard className="max-w-2xl mx-auto">
         <RetroCardContent className="py-12 text-center">
           <p className="font-adelle-mono text-sm uppercase text-white/60">
-            REGISTRO_NO_COMPLETADO
+            ONBOARDING_NO_COMPLETADO
           </p>
           <PixelButton asChild className="mt-4">
-            <Link href="/onboarding">VOLVER_AL_REGISTRO</Link>
+            <Link href="/onboarding">VOLVER_AL_ONBOARDING</Link>
           </PixelButton>
         </RetroCardContent>
       </RetroCard>
@@ -177,7 +186,7 @@ export default function CompletePage() {
             className="text-center"
           >
           <p className="font-adelle-mono text-xs uppercase text-white/80">
-            REGISTRO_COMPLETO
+            ONBOARDING_COMPLETO
           </p>
           </motion.div>
 

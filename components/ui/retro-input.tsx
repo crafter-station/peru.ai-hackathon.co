@@ -9,7 +9,7 @@ interface RetroInputProps extends React.ComponentProps<"input"> {
 }
 
 const RetroInput = React.forwardRef<HTMLInputElement, RetroInputProps>(
-  ({ className, type, label, onKeyDown, onFocus, ...props }, ref) => {
+  ({ className, type, label, onKeyDown, onFocus, onBlur, ...props }, ref) => {
     const { playType, playClick } = useRetroSounds();
     const [isFocused, setIsFocused] = React.useState(false);
 
@@ -24,6 +24,11 @@ const RetroInput = React.forwardRef<HTMLInputElement, RetroInputProps>(
       setIsFocused(true);
       playClick();
       onFocus?.(e);
+    };
+
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+      setIsFocused(false);
+      onBlur?.(e);
     };
 
     return (
@@ -48,11 +53,11 @@ const RetroInput = React.forwardRef<HTMLInputElement, RetroInputProps>(
             ref={ref}
             onKeyDown={handleKeyDown}
             onFocus={handleFocus}
-            onBlur={() => setIsFocused(false)}
+            onBlur={handleBlur}
             {...props}
           />
           {isFocused && (
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-red blink font-adelle-mono">
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-red blink font-adelle-mono pointer-events-none">
               █
             </span>
           )}

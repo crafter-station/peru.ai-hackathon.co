@@ -4,14 +4,13 @@ import { useUser } from "@clerk/nextjs";
 import { useParticipant } from "@/hooks/use-participant";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Step1PersonalInfo } from "@/components/onboarding/step-1-personal-info";
-import { Step2Security } from "@/components/onboarding/step-2-security";
-import { Step3Preferences } from "@/components/onboarding/step-3-preferences";
+import { Step1Combined } from "@/components/onboarding/step-1-combined";
+// CONFIG step no longer needed - commented out
+// import { Step3Preferences } from "@/components/onboarding/step-3-preferences";
 import { Step4Legal } from "@/components/onboarding/step-4-legal";
 import { RetroCard, RetroCardContent } from "@/components/ui/retro-card";
 import { RetroProgressBar } from "@/components/ui/retro-progress-bar";
 import { GlitchText } from "@/components/ui/terminal-text";
-import { motion, AnimatePresence } from "framer-motion";
 
 function LoadingState() {
   return (
@@ -20,14 +19,12 @@ function LoadingState() {
         <div className="flex flex-col items-center justify-center gap-4">
           <div className="flex gap-1">
             {[0, 1, 2].map((i) => (
-              <motion.div
+              <div
                 key={i}
-                className="size-3 bg-brand-red"
-                animate={{ opacity: [0.3, 1, 0.3] }}
-                transition={{
-                  duration: 1,
-                  repeat: Infinity,
-                  delay: i * 0.2,
+                className="size-3 bg-brand-red animate-pulse"
+                style={{
+                  animationDelay: `${i * 0.2}s`,
+                  animationDuration: "1s",
                 }}
               />
             ))}
@@ -63,40 +60,32 @@ export default function OnboardingPage() {
   }
 
   const currentStep = participant.currentStep || 1;
-  const stepLabels = ["INFO", "SEGURIDAD", "CONFIG", "TÉRMINOS"];
+  const stepLabels = ["ONBOARDING", "TÉRMINOS"];
 
   return (
-    <div className="space-y-6">
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl md:text-4xl font-adelle-mono font-bold uppercase tracking-wider pixel-shadow text-white">
+    <div className="space-y-3">
+      <div className="text-center space-y-1">
+        <h1 className="text-2xl md:text-3xl font-adelle-mono font-bold uppercase tracking-wider pixel-shadow text-white">
           <GlitchText>IA_HACKATHON.exe</GlitchText>
         </h1>
-        <p className="font-adelle-mono text-sm text-white/60 uppercase tracking-wider">
-          {/* // */}PROTOCOLO_REGISTRO_v2025
+        <p className="font-adelle-mono text-xs text-white/60 uppercase tracking-wider">
+          PROTOCOLO_ONBOARDING_v2025
          ]</p>
       </div>
 
       <RetroProgressBar
         currentStep={currentStep}
-        totalSteps={4}
+        totalSteps={2}
         labels={stepLabels}
         className="max-w-md mx-auto"
       />
 
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={currentStep}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -20 }}
-          transition={{ duration: 0.3 }}
-        >
-          {currentStep === 1 && <Step1PersonalInfo />}
-          {currentStep === 2 && <Step2Security />}
-          {currentStep === 3 && <Step3Preferences />}
-          {currentStep === 4 && <Step4Legal />}
-        </motion.div>
-      </AnimatePresence>
+      <div>
+        {currentStep === 1 && <Step1Combined />}
+        {/* CONFIG step no longer needed - commented out */}
+        {/* {currentStep === 3 && <Step3Preferences />} */}
+        {currentStep === 2 && <Step4Legal />}
+      </div>
 
       <div className="text-center font-adelle-mono text-xs text-white/60 uppercase tracking-wider space-y-1">
         <p>FECHA_EVENTO: 29-30 NOV 2025 ]</p>
@@ -105,3 +94,4 @@ export default function OnboardingPage() {
     </div>
   );
 }
+

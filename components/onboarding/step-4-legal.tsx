@@ -30,7 +30,6 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
 import { useRetroSounds } from "@/hooks/use-click-sound";
 import {
   HACKATHON_RULES,
@@ -89,7 +88,7 @@ function LegalDialog({ title, content }: { title: string; content: string }) {
 }
 
 export function Step4Legal() {
-  const { participant, updateParticipant, isUpdating } = useParticipant();
+  const { participant, updateParticipant, isUpdating, refetch } = useParticipant();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { playSuccess, playError, playClick } = useRetroSounds();
@@ -97,22 +96,58 @@ export function Step4Legal() {
   const form = useForm<Step4Data>({
     resolver: zodResolver(step4Schema),
     defaultValues: {
-      rulesAccepted: participant?.rulesAccepted || false,
-      termsAccepted: participant?.termsAccepted || false,
-      dataConsentAccepted: participant?.dataConsentAccepted || false,
-      mediaReleaseAccepted: participant?.mediaReleaseAccepted || false,
-      ageVerified: participant?.ageVerified || false,
+      allTermsAccepted: 
+        participant?.rulesAccepted && 
+        participant?.termsAccepted && 
+        participant?.dataConsentAccepted && 
+        participant?.mediaReleaseAccepted && 
+        participant?.ageVerified || false,
     },
   });
 
   const onSubmit = async (data: Step4Data) => {
     setIsSubmitting(true);
     try {
+      // Update participant status
       updateParticipant({
-        ...data,
+        rulesAccepted: data.allTermsAccepted,
+        termsAccepted: data.allTermsAccepted,
+        dataConsentAccepted: data.allTermsAccepted,
+        mediaReleaseAccepted: data.allTermsAccepted,
+        ageVerified: data.allTermsAccepted,
         registrationStatus: "completed",
         completedAt: new Date(),
       });
+      
+      // Wait a moment for the update to process, then check for badge
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Poll for badge completion (max 8 seconds)
+      if (participant?.id && participant?.profilePhotoAiUrl) {
+        let attempts = 0;
+        const maxAttempts = 16; // 8 seconds max (500ms * 16)
+        
+        while (attempts < maxAttempts) {
+          await refetch();
+          const checkResponse = await fetch("/api/onboarding");
+          const updatedParticipant = await checkResponse.json();
+          
+          if (updatedParticipant.badgeBlobUrl) {
+            console.log("[onboarding] Badge ready, navigating to complete");
+            playSuccess();
+            router.push("/onboarding/complete");
+            return;
+          }
+          
+          await new Promise(resolve => setTimeout(resolve, 500));
+          attempts++;
+        }
+        
+        // If badge not ready after max attempts, navigate anyway
+        // Badge will generate in background
+        console.log("[onboarding] Badge not ready yet, navigating anyway");
+      }
+      
       playSuccess();
       router.push("/onboarding/complete");
     } catch {
@@ -124,46 +159,10 @@ export function Step4Legal() {
 
   const goBack = () => {
     playClick();
-    updateParticipant({ currentStep: 3 });
+    updateParticipant({ currentStep: 1 });
   };
 
-  const legalItems = [
-    {
-      name: "rulesAccepted" as const,
-      label: "REGLAS_DEL_HACKATHON",
-      description: "ACEPTO_LAS_REGLAS_DEL_EVENTO",
-      dialogTitle: "REGLAS_DEL_HACKATHON",
-      dialogContent: HACKATHON_RULES,
-    },
-    {
-      name: "termsAccepted" as const,
-      label: "TÉRMINOS_Y_CONDICIONES",
-      description: "ACEPTO_LOS_TÉRMINOS_DE_PARTICIPACIÓN",
-      dialogTitle: "TÉRMINOS_Y_CONDICIONES",
-      dialogContent: TERMS_AND_CONDITIONS,
-    },
-    {
-      name: "dataConsentAccepted" as const,
-      label: "CONSENTIMIENTO_DE_DATOS",
-      description: "AUTORIZO_COMPARTIR_DATOS_CON_PATROCINADORES",
-      dialogTitle: "CONSENTIMIENTO_DE_DATOS",
-      dialogContent: DATA_CONSENT,
-    },
-    {
-      name: "mediaReleaseAccepted" as const,
-      label: "AUTORIZACIÓN_MEDIOS",
-      description: "AUTORIZO_USO_DE_FOTOS_Y_VIDEOS",
-      dialogTitle: "AUTORIZACIÓN_MEDIOS",
-      dialogContent: MEDIA_RELEASE,
-    },
-    {
-      name: "ageVerified" as const,
-      label: "VERIFICACIÓN_DE_EDAD",
-      description: "CONFIRMO_TENER_18+_AÑOS",
-      dialogTitle: "VERIFICACIÓN_DE_EDAD",
-      dialogContent: AGE_VERIFICATION,
-    },
-  ];
+  const allTermsContent = `${HACKATHON_RULES}\n\n${TERMS_AND_CONDITIONS}\n\n${DATA_CONSENT}\n\n${MEDIA_RELEASE}\n\n${AGE_VERIFICATION}`;
 
   return (
     <RetroCard>
@@ -176,46 +175,33 @@ export function Step4Legal() {
       <RetroCardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {legalItems.map((item, index) => (
-              <motion.div
-                key={item.name}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
                 <FormField
                   control={form.control}
-                  name={item.name}
+              name="allTermsAccepted"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 border border-brand-red/30 p-3">
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 border border-brand-red/30 p-4">
                       <FormControl>
                         <PixelCheckbox
                           checked={field.value}
                           onCheckedChange={field.onChange}
                         />
                       </FormControl>
-                      <div className="space-y-1 leading-none font-adelle-mono flex-1">
-                        <label className="text-xs uppercase font-bold text-white">
-                          {item.label}
+                  <div className="space-y-2 leading-none font-adelle-mono flex-1">
+                    <label className="text-sm uppercase font-bold text-white block">
+                      ACEPTAR_TODOS_LOS_TÉRMINOS
                         </label>
-                        <p className="text-[10px] text-white/60 uppercase">
-                          {item.description}
+                    <p className="text-xs text-white/80 uppercase">
+                      Al marcar esta casilla, aceptas las reglas del hackathon, términos y condiciones, 
+                      consentimiento de datos, autorización de medios y verificas que tienes 18+ años.
                         </p>
-                        <LegalDialog title={item.dialogTitle} content={item.dialogContent} />
-                        <FormMessage className="font-adelle-mono text-xs uppercase" />
+                    <LegalDialog title="TÉRMINOS_Y_CONDICIONES_COMPLETOS" content={allTermsContent} />
+                    <FormMessage className="font-adelle-mono text-xs uppercase mt-2" />
                       </div>
                     </FormItem>
                   )}
                 />
-              </motion.div>
-            ))}
 
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="flex gap-3 pt-4"
-            >
+            <div className="flex gap-3 pt-4">
               <PixelButton
                 type="button"
                 variant="secondary"
@@ -232,7 +218,7 @@ export function Step4Legal() {
               >
                 &gt;&gt; COMPLETAR &lt;&lt;
               </PixelButton>
-            </motion.div>
+            </div>
           </form>
         </Form>
       </RetroCardContent>

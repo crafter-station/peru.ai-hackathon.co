@@ -44,9 +44,9 @@ export function Step1PersonalInfo() {
       dni: participant?.dni || "",
       ageRange: participant?.ageRange as Step1Data["ageRange"] || undefined,
       phoneNumber: participant?.phoneNumber || "",
-      emergencyContactName: participant?.emergencyContactName || "",
-      emergencyContactPhone: participant?.emergencyContactPhone || "",
-      emergencyContactRelationship: participant?.emergencyContactRelationship as Step1Data["emergencyContactRelationship"] || undefined,
+      profilePhotoUrl: participant?.profilePhotoUrl || "",
+      hasLaptop: participant?.hasLaptop || false,
+      laptopBrand: participant?.laptopBrand || "",
     },
   });
 
@@ -59,9 +59,9 @@ export function Step1PersonalInfo() {
         dni: data.dni,
         ageRange: data.ageRange,
         phoneNumber: data.phoneNumber,
-        emergencyContactName: data.emergencyContactName,
-        emergencyContactPhone: data.emergencyContactPhone,
-        emergencyContactRelationship: data.emergencyContactRelationship,
+        profilePhotoUrl: data.profilePhotoUrl,
+        hasLaptop: data.hasLaptop,
+        laptopBrand: data.laptopBrand,
         currentStep: 2,
       });
       playSuccess();
@@ -161,81 +161,6 @@ export function Step1PersonalInfo() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="pt-4 border-t border-brand-red/30"
-            >
-              <h3 className="font-adelle-mono font-bold text-sm uppercase tracking-wider mb-4">
-                CONTACTO_DE_EMERGENCIA
-              </h3>
-              
-              <div className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="emergencyContactName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <RetroInput
-                          label="NOMBRE_CONTACTO"
-                          placeholder="MARIA_GARCIA_LOPEZ"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage className="font-adelle-mono text-xs uppercase" />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="emergencyContactPhone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <RetroInput
-                          label="TELÉFONO_CONTACTO"
-                          placeholder="+51987654321, +1234567890"
-                          maxLength={20}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage className="font-adelle-mono text-xs uppercase" />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="emergencyContactRelationship"
-                  render={({ field }) => (
-                    <FormItem>
-                      <label className="block text-xs font-adelle-mono font-bold uppercase tracking-wider mb-1 text-white/80">
-                        RELACIÓN
-                      </label>
-                      <RetroSelect onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <RetroSelectTrigger>
-                            <RetroSelectValue placeholder="SELECCIONA_RELACIÓN" />
-                          </RetroSelectTrigger>
-                        </FormControl>
-                        <RetroSelectContent>
-                          <RetroSelectItem value="parent">PADRE/MADRE</RetroSelectItem>
-                          <RetroSelectItem value="sibling">HERMANO/A</RetroSelectItem>
-                          <RetroSelectItem value="spouse">CÓNYUGE</RetroSelectItem>
-                          <RetroSelectItem value="friend">AMIGO/A</RetroSelectItem>
-                          <RetroSelectItem value="other">OTRO</RetroSelectItem>
-                        </RetroSelectContent>
-                      </RetroSelect>
-                      <FormMessage className="font-adelle-mono text-xs uppercase" />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
               className="pt-4"
             >
               <PixelButton

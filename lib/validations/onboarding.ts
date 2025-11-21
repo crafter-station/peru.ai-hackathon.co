@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+// Combined schema for Step 1 (INFO + SEGURIDAD merged)
 export const step1Schema = z.object({
   fullName: z.string().min(3, "Ingresa tu nombre completo"),
   organization: z.string().min(2, "Ingresa tu organización"),
@@ -16,22 +17,7 @@ export const step1Schema = z.object({
     .min(8, "Número muy corto")
     .max(20, "Número muy largo")
     .regex(/^\+?[1-9]\d{1,14}$/, "Formato inválido. Ejemplo: +51987654321"),
-  emergencyContactName: z
-    .string()
-    .min(3, "Ingresa el nombre del contacto"),
-  emergencyContactPhone: z
-    .string()
-    .min(8, "Número muy corto")
-    .max(20, "Número muy largo")
-    .regex(/^\+?[1-9]\d{1,14}$/, "Formato inválido. Ejemplo: +51987654321"),
-  emergencyContactRelationship: z.enum(
-    ["parent", "sibling", "spouse", "friend", "other"],
-    { message: "Selecciona la relación" }
-  ),
-});
-
-export const step2Schema = z.object({
-  profilePhotoUrl: z.string().min(1, "Sube tu foto de perfil"),
+  profilePhotoUrl: z.string().min(1, "Sube tu foto para generar el avatar IA"),
   hasLaptop: z.boolean(),
   laptopBrand: z.string().optional(),
 }).refine(
@@ -47,32 +33,40 @@ export const step2Schema = z.object({
   }
 );
 
-export const step3Schema = z.object({
-  experienceLevel: z.enum(["beginner", "intermediate", "advanced"]),
-  gender: z.enum(["male", "female", "other", "prefer-not-to-say"]).optional(),
-  additionalNotes: z.string().optional(),
-  techStack: z.array(z.string()).optional(),
-});
+// Legacy step2Schema kept for backward compatibility (deprecated)
+export const step2Schema = z.object({
+  profilePhotoUrl: z.string().min(1, "Sube tu foto para generar el avatar IA"),
+  hasLaptop: z.boolean(),
+  laptopBrand: z.string().optional(),
+}).refine(
+  (data) => {
+    if (data.hasLaptop) {
+      return !!data.laptopBrand;
+    }
+    return true;
+  },
+  {
+    message: "Ingresa la marca de la laptop",
+    path: ["laptopBrand"],
+  }
+);
 
+// CONFIG step - no longer needed, commented out
+// export const step3Schema = z.object({
+//   experienceLevel: z.enum(["beginner", "intermediate", "advanced"]),
+//   gender: z.enum(["male", "female", "other", "prefer-not-to-say"]).optional(),
+//   additionalNotes: z.string().optional(),
+//   techStack: z.array(z.string()).optional(),
+// });
+
+// Simplified Step 4 - single accept all checkbox
 export const step4Schema = z.object({
-  rulesAccepted: z.boolean().refine((val) => val === true, {
-    message: "Acepta las reglas del hackathon",
-  }),
-  termsAccepted: z.boolean().refine((val) => val === true, {
-    message: "Acepta los términos y condiciones",
-  }),
-  dataConsentAccepted: z.boolean().refine((val) => val === true, {
-    message: "Autoriza el uso de datos",
-  }),
-  mediaReleaseAccepted: z.boolean().refine((val) => val === true, {
-    message: "Autoriza el uso de fotos y videos",
-  }),
-  ageVerified: z.boolean().refine((val) => val === true, {
-    message: "Confirma que tienes 18+ años",
+  allTermsAccepted: z.boolean().refine((val) => val === true, {
+    message: "Debes aceptar todos los términos para continuar",
   }),
 });
 
 export type Step1Data = z.infer<typeof step1Schema>;
 export type Step2Data = z.infer<typeof step2Schema>;
-export type Step3Data = z.infer<typeof step3Schema>;
+// export type Step3Data = z.infer<typeof step3Schema>;
 export type Step4Data = z.infer<typeof step4Schema>;
