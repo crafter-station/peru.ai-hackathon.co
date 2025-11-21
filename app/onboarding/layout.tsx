@@ -41,9 +41,9 @@ export default function OnboardingLayout({
         </div>
 
         <div className="fixed bottom-0 left-0 right-0 h-6 bg-foreground/5 backdrop-blur-sm border-t border-brand-red/20 flex items-center px-4 font-adelle-mono text-[10px] uppercase tracking-wider text-white/60 z-50">
-          <span>PRESS [ENTER] TO CONTINUE</span>
+          <span>PRESIONA [ENTER] PARA CONTINUAR</span>
           <span className="ml-auto">
-            <span className="text-brand-red">●</span> SYSTEM ONLINE
+            <span className="text-brand-red">●</span> SISTEMA EN LÍNEA
           </span>
         </div>
       </div>

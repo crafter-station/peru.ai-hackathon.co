@@ -64,9 +64,9 @@ export function Step3Preferences() {
   return (
     <RetroCard>
       <RetroCardHeader>
-        <RetroCardTitle>USER_CONFIG.set()</RetroCardTitle>
+        <RetroCardTitle>CONFIG_USUARIO.set()</RetroCardTitle>
         <RetroCardDescription>
-          OPTIONAL_INFORMATION
+          INFORMACIÓN_OPCIONAL
         </RetroCardDescription>
       </RetroCardHeader>
       <RetroCardContent>
@@ -82,7 +82,7 @@ export function Step3Preferences() {
                 render={({ field }) => (
                   <FormItem className="space-y-3">
                     <label className="block text-xs font-adelle-mono font-bold uppercase tracking-wider text-white/80">
-                      EXPERIENCE_LEVEL
+                      NIVEL_DE_EXPERIENCIA
                     </label>
                     <FormControl>
                       <RetroRadioGroup
@@ -95,7 +95,7 @@ export function Step3Preferences() {
                             <RetroRadioGroupItem value="beginner" />
                           </FormControl>
                           <Label className="font-adelle-mono text-sm uppercase text-white">
-                            LVL_1 - BEGINNER
+                            NIV_1 - PRINCIPIANTE
                           </Label>
                         </FormItem>
                         <FormItem className="flex items-center space-x-3 space-y-0">
@@ -103,7 +103,7 @@ export function Step3Preferences() {
                             <RetroRadioGroupItem value="intermediate" />
                           </FormControl>
                           <Label className="font-adelle-mono text-sm uppercase text-white">
-                            LVL_2 - INTERMEDIATE
+                            NIV_2 - INTERMEDIO
                           </Label>
                         </FormItem>
                         <FormItem className="flex items-center space-x-3 space-y-0">
@@ -111,7 +111,7 @@ export function Step3Preferences() {
                             <RetroRadioGroupItem value="advanced" />
                           </FormControl>
                           <Label className="font-adelle-mono text-sm uppercase text-white">
-                            LVL_3 - ADVANCED
+                            NIV_3 - AVANZADO
                           </Label>
                         </FormItem>
                       </RetroRadioGroup>
@@ -133,7 +133,7 @@ export function Step3Preferences() {
                 render={({ field }) => (
                   <FormItem className="space-y-3">
                     <label className="block text-xs font-adelle-mono font-bold uppercase tracking-wider text-white/80">
-                      GENDER [OPTIONAL]
+                      GÉNERO [OPCIONAL]
                     </label>
                     <FormControl>
                       <RetroRadioGroup
@@ -146,7 +146,7 @@ export function Step3Preferences() {
                             <RetroRadioGroupItem value="male" />
                           </FormControl>
                           <Label className="font-adelle-mono text-sm uppercase text-white">
-                            MALE
+                            MASCULINO
                           </Label>
                         </FormItem>
                         <FormItem className="flex items-center space-x-3 space-y-0">
@@ -154,7 +154,7 @@ export function Step3Preferences() {
                             <RetroRadioGroupItem value="female" />
                           </FormControl>
                           <Label className="font-adelle-mono text-sm uppercase text-white">
-                            FEMALE
+                            FEMENINO
                           </Label>
                         </FormItem>
                         <FormItem className="flex items-center space-x-3 space-y-0">
@@ -162,7 +162,7 @@ export function Step3Preferences() {
                             <RetroRadioGroupItem value="other" />
                           </FormControl>
                           <Label className="font-adelle-mono text-sm uppercase text-white">
-                            OTHER
+                            OTRO
                           </Label>
                         </FormItem>
                         <FormItem className="flex items-center space-x-3 space-y-0">
@@ -170,7 +170,7 @@ export function Step3Preferences() {
                             <RetroRadioGroupItem value="prefer-not-to-say" />
                           </FormControl>
                           <Label className="font-adelle-mono text-sm uppercase text-white">
-                            PREFER_NOT_TO_SAY
+                            PREFIERO_NO_DECIR
                           </Label>
                         </FormItem>
                       </RetroRadioGroup>
@@ -192,17 +192,17 @@ export function Step3Preferences() {
                 render={({ field }) => (
                   <FormItem>
                     <label className="block text-xs font-adelle-mono font-bold uppercase tracking-wider mb-1 text-white/80">
-                      ADDITIONAL_NOTES [OPTIONAL]
+                      NOTAS_ADICIONALES [OPCIONAL]
                     </label>
                     <FormControl>
                       <RetroTextarea
-                        placeholder="ANY_INFO_FOR_ORGANIZERS?"
+                        placeholder="¿ALGUNA_INFO_PARA_ORGANIZADORES?"
                         {...field}
                         rows={4}
                       />
                     </FormControl>
                     <p className="text-[10px] font-adelle-mono text-white/60 uppercase mt-1">
-                      DIETARY_RESTRICTIONS, ACCESSIBILITY_NEEDS, ETC
+                      RESTRICCIONES_ALIMENTARIAS, NECESIDADES_ACCESIBILIDAD, ETC
                     </p>
                     <FormMessage className="font-adelle-mono text-xs uppercase" />
                   </FormItem>
@@ -222,14 +222,14 @@ export function Step3Preferences() {
                 onClick={goBack}
                 className="flex-1"
               >
-                &lt;&lt; BACK
+                &lt;&lt; ATRÁS
               </PixelButton>
               <PixelButton
                 type="submit"
                 className="flex-1"
                 loading={isSubmitting || isUpdating}
               >
-                NEXT_LEVEL &gt;&gt;
+                SIGUIENTE_NIVEL &gt;&gt;
               </PixelButton>
             </motion.div>
           </form>

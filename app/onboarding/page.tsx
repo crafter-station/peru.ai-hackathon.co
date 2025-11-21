@@ -33,7 +33,7 @@ function LoadingState() {
             ))}
           </div>
           <p className="font-adelle-mono text-sm uppercase tracking-wider">
-            LOADING<span className="loading-dots"></span>
+            CARGANDO<span className="loading-dots"></span>
            ]</p>
         </div>
       </RetroCardContent>
@@ -63,7 +63,7 @@ export default function OnboardingPage() {
   }
 
   const currentStep = participant.currentStep || 1;
-  const stepLabels = ["INFO", "SECURITY", "CONFIG", "TERMS"];
+  const stepLabels = ["INFO", "SEGURIDAD", "CONFIG", "TÉRMINOS"];
 
   return (
     <div className="space-y-6">
@@ -72,7 +72,7 @@ export default function OnboardingPage() {
           <GlitchText>IA_HACKATHON.exe</GlitchText>
         </h1>
         <p className="font-adelle-mono text-sm text-white/60 uppercase tracking-wider">
-          {/* // */}REGISTRATION_PROTOCOL_v2025
+          {/* // */}PROTOCOLO_REGISTRO_v2025
          ]</p>
       </div>
 
@@ -99,8 +99,8 @@ export default function OnboardingPage() {
       </AnimatePresence>
 
       <div className="text-center font-adelle-mono text-xs text-white/60 uppercase tracking-wider space-y-1">
-        <p>EVENT_DATE: 29-30 NOV 2025 ]</p>
-        <p>LOCATION: UPCH_LA_MOLINA ]</p>
+        <p>FECHA_EVENTO: 29-30 NOV 2025 ]</p>
+        <p>UBICACIÓN: UPCH_LA_MOLINA ]</p>
       </div>
     </div>
   );

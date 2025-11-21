@@ -50,7 +50,7 @@ function LegalDialog({ title, content }: { title: string; content: string }) {
           onClick={() => playClick()}
           className="font-adelle-mono text-[10px] uppercase underline text-brand-red hover:text-brand-red/80"
         >
-          [READ_DOCUMENT]
+          [LEER_DOCUMENTO]
         </button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl border border-brand-red bg-black/95 backdrop-blur-sm text-white">
@@ -130,37 +130,37 @@ export function Step4Legal() {
   const legalItems = [
     {
       name: "rulesAccepted" as const,
-      label: "HACKATHON_RULES",
-      description: "ACCEPT_EVENT_RULES",
-      dialogTitle: "HACKATHON_RULES",
+      label: "REGLAS_DEL_HACKATHON",
+      description: "ACEPTO_LAS_REGLAS_DEL_EVENTO",
+      dialogTitle: "REGLAS_DEL_HACKATHON",
       dialogContent: HACKATHON_RULES,
     },
     {
       name: "termsAccepted" as const,
-      label: "TERMS_AND_CONDITIONS",
-      description: "ACCEPT_PARTICIPATION_TERMS",
-      dialogTitle: "TERMS_AND_CONDITIONS",
+      label: "TÉRMINOS_Y_CONDICIONES",
+      description: "ACEPTO_LOS_TÉRMINOS_DE_PARTICIPACIÓN",
+      dialogTitle: "TÉRMINOS_Y_CONDICIONES",
       dialogContent: TERMS_AND_CONDITIONS,
     },
     {
       name: "dataConsentAccepted" as const,
-      label: "DATA_CONSENT",
-      description: "ALLOW_DATA_SHARING_WITH_SPONSORS",
-      dialogTitle: "DATA_CONSENT",
+      label: "CONSENTIMIENTO_DE_DATOS",
+      description: "AUTORIZO_COMPARTIR_DATOS_CON_PATROCINADORES",
+      dialogTitle: "CONSENTIMIENTO_DE_DATOS",
       dialogContent: DATA_CONSENT,
     },
     {
       name: "mediaReleaseAccepted" as const,
-      label: "MEDIA_RELEASE",
-      description: "ALLOW_PHOTO_VIDEO_USAGE",
-      dialogTitle: "MEDIA_RELEASE",
+      label: "AUTORIZACIÓN_MEDIOS",
+      description: "AUTORIZO_USO_DE_FOTOS_Y_VIDEOS",
+      dialogTitle: "AUTORIZACIÓN_MEDIOS",
       dialogContent: MEDIA_RELEASE,
     },
     {
       name: "ageVerified" as const,
-      label: "AGE_VERIFICATION",
-      description: "CONFIRM_18+_YEARS_OLD",
-      dialogTitle: "AGE_VERIFICATION",
+      label: "VERIFICACIÓN_DE_EDAD",
+      description: "CONFIRMO_TENER_18+_AÑOS",
+      dialogTitle: "VERIFICACIÓN_DE_EDAD",
       dialogContent: AGE_VERIFICATION,
     },
   ];
@@ -168,9 +168,9 @@ export function Step4Legal() {
   return (
     <RetroCard>
       <RetroCardHeader>
-        <RetroCardTitle>TERMS.accept()</RetroCardTitle>
+        <RetroCardTitle>TÉRMINOS.accept()</RetroCardTitle>
         <RetroCardDescription>
-          FINAL_STEP_REQUIRED
+          PASO_FINAL_REQUERIDO
         </RetroCardDescription>
       </RetroCardHeader>
       <RetroCardContent>
@@ -222,7 +222,7 @@ export function Step4Legal() {
                 onClick={goBack}
                 className="flex-1"
               >
-                &lt;&lt; BACK
+                &lt;&lt; ATRÁS
               </PixelButton>
               <PixelButton
                 type="submit"
@@ -230,7 +230,7 @@ export function Step4Legal() {
                 variant="terminal"
                 loading={isSubmitting || isUpdating}
               >
-                &gt;&gt; COMPLETE &lt;&lt;
+                &gt;&gt; COMPLETAR &lt;&lt;
               </PixelButton>
             </motion.div>
           </form>

@@ -77,18 +77,18 @@ export function Step1PersonalInfo() {
   };
 
   const formFields = [
-    { name: "fullName", label: "FULL_NAME", placeholder: "JUAN_PEREZ_GARCIA", maxLength: undefined },
-    { name: "organization", label: "ORGANIZATION", placeholder: "EMPRESA_O_UNIVERSIDAD", maxLength: undefined },
-    { name: "dni", label: "DNI_NUMBER", placeholder: "DNI, PASAPORTE, OTRO", maxLength: 50 },
-    { name: "phoneNumber", label: "PHONE_WHATSAPP", placeholder: "+51987654321, +1234567890", maxLength: 20 },
+    { name: "fullName", label: "NOMBRE_COMPLETO", placeholder: "JUAN_PEREZ_GARCIA", maxLength: undefined },
+    { name: "organization", label: "ORGANIZACIÓN", placeholder: "EMPRESA_O_UNIVERSIDAD", maxLength: undefined },
+    { name: "dni", label: "NÚMERO_DNI", placeholder: "DNI, PASAPORTE, OTRO", maxLength: 50 },
+    { name: "phoneNumber", label: "TELÉFONO_WHATSAPP", placeholder: "+51987654321, +1234567890", maxLength: 20 },
   ];
 
   return (
     <RetroCard>
       <RetroCardHeader>
-        <RetroCardTitle>PLAYER_DATA.init()</RetroCardTitle>
+        <RetroCardTitle>DATOS_PARTICIPANTE.init()</RetroCardTitle>
         <RetroCardDescription>
-          INPUT_PERSONAL_INFORMATION
+          INGRESA_TU_INFORMACIÓN_PERSONAL
         </RetroCardDescription>
       </RetroCardHeader>
       <RetroCardContent>
@@ -133,23 +133,23 @@ export function Step1PersonalInfo() {
                 render={({ field }) => (
                   <FormItem>
                     <label className="block text-xs font-adelle-mono font-bold uppercase tracking-wider mb-1 text-white/80">
-                      AGE_RANGE
+                      RANGO_DE_EDAD
                     </label>
                     <RetroSelect onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <RetroSelectTrigger>
-                          <RetroSelectValue placeholder="SELECT_AGE_RANGE" />
+                          <RetroSelectValue placeholder="SELECCIONA_TU_EDAD" />
                         </RetroSelectTrigger>
                       </FormControl>
                       <RetroSelectContent>
-                        <RetroSelectItem value="18-24">18-24 YEARS</RetroSelectItem>
-                        <RetroSelectItem value="25-34">25-34 YEARS</RetroSelectItem>
-                        <RetroSelectItem value="35-44">35-44 YEARS</RetroSelectItem>
-                        <RetroSelectItem value="45+">45+ YEARS</RetroSelectItem>
+                        <RetroSelectItem value="18-24">18-24 AÑOS</RetroSelectItem>
+                        <RetroSelectItem value="25-34">25-34 AÑOS</RetroSelectItem>
+                        <RetroSelectItem value="35-44">35-44 AÑOS</RetroSelectItem>
+                        <RetroSelectItem value="45+">45+ AÑOS</RetroSelectItem>
                       </RetroSelectContent>
                     </RetroSelect>
                     <p className="text-[10px] font-adelle-mono text-white/60 uppercase mt-1">
-                      MUST_BE_18+_TO_PARTICIPATE
+                      DEBES_TENER_18+_AÑOS_PARA_PARTICIPAR
                     </p>
                     <FormMessage className="font-adelle-mono text-xs uppercase" />
                   </FormItem>
@@ -164,7 +164,7 @@ export function Step1PersonalInfo() {
               className="pt-4 border-t border-brand-red/30"
             >
               <h3 className="font-adelle-mono font-bold text-sm uppercase tracking-wider mb-4">
-                EMERGENCY_CONTACT
+                CONTACTO_DE_EMERGENCIA
               </h3>
               
               <div className="space-y-4">
@@ -175,7 +175,7 @@ export function Step1PersonalInfo() {
                     <FormItem>
                       <FormControl>
                         <RetroInput
-                          label="CONTACT_NAME"
+                          label="NOMBRE_CONTACTO"
                           placeholder="MARIA_GARCIA_LOPEZ"
                           {...field}
                         />
@@ -192,7 +192,7 @@ export function Step1PersonalInfo() {
                     <FormItem>
                       <FormControl>
                         <RetroInput
-                          label="CONTACT_PHONE"
+                          label="TELÉFONO_CONTACTO"
                           placeholder="+51987654321, +1234567890"
                           maxLength={20}
                           {...field}
@@ -209,20 +209,20 @@ export function Step1PersonalInfo() {
                   render={({ field }) => (
                     <FormItem>
                       <label className="block text-xs font-adelle-mono font-bold uppercase tracking-wider mb-1 text-white/80">
-                        RELATIONSHIP
+                        RELACIÓN
                       </label>
                       <RetroSelect onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <RetroSelectTrigger>
-                            <RetroSelectValue placeholder="SELECT_RELATIONSHIP" />
+                            <RetroSelectValue placeholder="SELECCIONA_RELACIÓN" />
                           </RetroSelectTrigger>
                         </FormControl>
                         <RetroSelectContent>
-                          <RetroSelectItem value="parent">PARENT</RetroSelectItem>
-                          <RetroSelectItem value="sibling">SIBLING</RetroSelectItem>
-                          <RetroSelectItem value="spouse">SPOUSE</RetroSelectItem>
-                          <RetroSelectItem value="friend">FRIEND</RetroSelectItem>
-                          <RetroSelectItem value="other">OTHER</RetroSelectItem>
+                          <RetroSelectItem value="parent">PADRE/MADRE</RetroSelectItem>
+                          <RetroSelectItem value="sibling">HERMANO/A</RetroSelectItem>
+                          <RetroSelectItem value="spouse">CÓNYUGE</RetroSelectItem>
+                          <RetroSelectItem value="friend">AMIGO/A</RetroSelectItem>
+                          <RetroSelectItem value="other">OTRO</RetroSelectItem>
                         </RetroSelectContent>
                       </RetroSelect>
                       <FormMessage className="font-adelle-mono text-xs uppercase" />
@@ -243,7 +243,7 @@ export function Step1PersonalInfo() {
                 className="w-full"
                 loading={isSubmitting || isUpdating}
               >
-                NEXT_LEVEL &gt;&gt;
+                SIGUIENTE_NIVEL &gt;&gt;
               </PixelButton>
             </motion.div>
           </form>

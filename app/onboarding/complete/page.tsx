@@ -19,15 +19,15 @@ import { motion } from "framer-motion";
 import { useRetroSounds } from "@/hooks/use-click-sound";
 
 export default function CompletePage() {
-  const { participant } = useParticipant();
+  const { participant, refetch } = useParticipant();
   const {
+    generateBadge,
     isGenerating,
     error: badgeError,
   } = useBadgeGeneration();
   const [showConfetti, setShowConfetti] = useState(true);
+  const [isInitialGeneration, setIsInitialGeneration] = useState(false);
   const { playSuccess, playClick } = useRetroSounds();
-  // Commented out: Not needed since badge generation is disabled
-  // const [isInitialGeneration, setIsInitialGeneration] = useState(false);
 
   useEffect(() => {
     if (showConfetti) {
@@ -37,34 +37,37 @@ export default function CompletePage() {
     }
   }, [showConfetti, playSuccess]);
 
-  // Commented out: Automatic badge generation not needed for now
-  // useEffect(() => {
-  //   if (
-  //     participant?.id &&
-  //     !participant.badgeBlobUrl &&
-  //     !isGenerating &&
-  //     !isInitialGeneration
-  //   ) {
-  //     setIsInitialGeneration(true);
-  //     generateBadge(participant.id)
-  //       .then(() => {
-  //         refetch();
-  //       })
-  //       .catch((err) => {
-  //         console.error("Initial badge generation failed:", err);
-  //       })
-  //       .finally(() => {
-  //         setIsInitialGeneration(false);
-  //       });
-  //   }
-  // }, [
-  //   participant?.id,
-  //   participant?.badgeBlobUrl,
-  //   isGenerating,
-  //   isInitialGeneration,
-  //   generateBadge,
-  //   refetch,
-  // ]);
+  useEffect(() => {
+    if (
+      participant?.id &&
+      participant.registrationStatus === "completed" &&
+      participant.profilePhotoAiUrl &&
+      !participant.badgeBlobUrl &&
+      !isGenerating &&
+      !isInitialGeneration
+    ) {
+      setIsInitialGeneration(true);
+      generateBadge(participant.id)
+        .then(() => {
+          refetch();
+        })
+        .catch((err) => {
+          console.error("[complete] Initial badge generation failed:", err);
+        })
+        .finally(() => {
+          setIsInitialGeneration(false);
+        });
+    }
+  }, [
+    participant?.id,
+    participant?.badgeBlobUrl,
+    participant?.registrationStatus,
+    participant?.profilePhotoAiUrl,
+    isGenerating,
+    isInitialGeneration,
+    generateBadge,
+    refetch,
+  ]);
 
   const downloadBadge = useCallback(async () => {
     if (!participant?.badgeBlobUrl) return;
@@ -87,20 +90,18 @@ export default function CompletePage() {
     }
   }, [participant, playClick]);
 
-  // Commented out: Credentials generation not needed for now
-  // const handleRegenerateBadge = useCallback(async () => {
-  //   if (!participant?.id) return;
+  const handleRegenerateBadge = useCallback(async () => {
+    if (!participant?.id) return;
 
-  //   playClick();
-  //   try {
-  //     await generateBadge(participant.id);
-  //     await refetch();
-  //     playSuccess();
-  //   } catch (err) {
-  //     console.error("Badge regeneration failed:", err);
-  //     playError();
-  //   }
-  // }, [participant?.id, generateBadge, refetch, playClick, playSuccess, playError]);
+    playClick();
+    try {
+      await generateBadge(participant.id);
+      await refetch();
+      playSuccess();
+    } catch (err) {
+      console.error("[complete] Badge regeneration failed:", err);
+    }
+  }, [participant?.id, generateBadge, refetch, playClick, playSuccess]);
 
   if (!participant || participant.registrationStatus !== "completed") {
     return (
@@ -190,7 +191,7 @@ export default function CompletePage() {
               <div className="relative w-full flex items-center justify-center">
                 <BadgePreview3D
                   badgeUrl={participant.badgeBlobUrl || null}
-                  isGenerating={isGenerating && !participant.badgeBlobUrl}
+                  isGenerating={(isGenerating || isInitialGeneration) && !participant.badgeBlobUrl}
                   participantNumber={participant.participantNumber?.toString() || null}
                 />
                 {badgeError && (
@@ -206,28 +207,27 @@ export default function CompletePage() {
               )}
             </div>
 
-            <PixelButton
-              onClick={downloadBadge}
-              size="lg"
-              className="w-full"
-              disabled={!participant.badgeBlobUrl}
-            >
-              <Download className="size-4" />
-              DESCARGAR_CREDENCIAL
-            </PixelButton>
-
-            {/* Commented out: Credentials generation not needed for now */}
-            {/* <PixelButton
-              onClick={handleRegenerateBadge}
-              variant="terminal"
-              size="lg"
-              className="w-full"
-              loading={isGenerating}
-              disabled={isGenerating || !participant?.id}
-            >
-              <RefreshCw className="size-4" />
-              REGENERAR_CREDENCIAL
-            </PixelButton> */}
+            {participant.badgeBlobUrl ? (
+              <PixelButton
+                onClick={downloadBadge}
+                size="lg"
+                className="w-full"
+              >
+                <Download className="size-4" />
+                DESCARGAR_CREDENCIAL
+              </PixelButton>
+            ) : (
+              <PixelButton
+                onClick={handleRegenerateBadge}
+                variant="terminal"
+                size="lg"
+                className="w-full"
+                loading={isGenerating || isInitialGeneration}
+                disabled={isGenerating || isInitialGeneration || !participant?.id || !participant?.profilePhotoAiUrl}
+              >
+                {isGenerating || isInitialGeneration ? "GENERANDO_CREDENCIAL..." : "GENERAR_CREDENCIAL"}
+              </PixelButton>
+            )}
 
             <motion.div
               initial={{ opacity: 0, y: 10 }}
