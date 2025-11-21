@@ -125,12 +125,12 @@ export default function HeroSection() {
               />
             </a>
           </div>
-          <div className="flex justify-center">
+          <div className="flex flex-wrap items-center justify-center gap-3 md:gap-4 opacity-90">
             <a
               href="https://makers.ngo/"
               target="_blank"
               rel="noopener noreferrer"
-              className="transition-opacity duration-300 hover:opacity-80"
+              className="transition-opacity duration-300 hover:opacity-100"
               style={{ pointerEvents: "auto" }}
             >
               <Image
@@ -138,7 +138,52 @@ export default function HeroSection() {
                 alt="In partnership with MAKERS"
                 width={180}
                 height={32}
-                className="h-6 md:h-8 w-auto"
+                className="h-6 md:h-7 w-auto"
+              />
+            </a>
+            <a
+              href="https://www.linkedin.com/company/ai-playgrounds-tech/posts/?feedView=all"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-opacity duration-300 hover:opacity-100"
+              style={{ pointerEvents: "auto" }}
+            >
+              <Image
+                src="/ai-playgrounds-logo.png"
+                alt="AI Playgrounds"
+                width={120}
+                height={40}
+                className="h-5 md:h-6 w-auto"
+              />
+            </a>
+            <a
+              href="https://crafterstation.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-opacity duration-300 hover:opacity-100"
+              style={{ pointerEvents: "auto" }}
+            >
+              <Image
+                src="/crafter-logotipo.svg"
+                alt="Crafter Station"
+                width={120}
+                height={40}
+                className="h-5 md:h-6 w-auto"
+              />
+            </a>
+            <a
+              href="https://kebo.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-opacity duration-300 hover:opacity-100 flex items-center -mt-2"
+              style={{ pointerEvents: "auto" }}
+            >
+              <Image
+                src="/KEBO-Brand-WhitePurple.svg"
+                alt="KEBO"
+                width={100}
+                height={32}
+                className="h-5 md:h-6 w-auto"
               />
             </a>
           </div>
