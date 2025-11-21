@@ -35,11 +35,10 @@ import Image from "next/image";
 import { useRetroSounds } from "@/hooks/use-click-sound";
 
 export function Step1Combined() {
-  const { participant, updateParticipant, isUpdating, refetch } = useParticipant();
+  const { participant, updateParticipant, isUpdating } = useParticipant();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isConverting, setIsConverting] = useState(false);
-  const [isGeneratingAi, setIsGeneratingAi] = useState(false);
   const [photoPreview, setPhotoPreview] = useState<string | null>(
     participant?.profilePhotoUrl || null
   );
@@ -123,57 +122,6 @@ export function Step1Combined() {
         profilePhotoUrl: url,
       });
       playSuccess();
-      
-      setIsGeneratingAi(true);
-      try {
-        const aiResponse = await fetch("/api/onboarding/generate-ai-avatar", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ profilePhotoUrl: url }),
-        });
-
-        if (!aiResponse.ok) {
-          throw new Error("Error al generar el avatar IA");
-        }
-
-        const { profilePhotoAiUrl } = await aiResponse.json();
-        
-        updateParticipant({
-          profilePhotoAiUrl,
-        });
-        playSuccess();
-        
-        // Refetch to get updated participant data (with participantNumber if assigned)
-        await refetch();
-        
-        // Trigger badge generation immediately after AI avatar is ready
-        // This ensures badge is ready before user completes onboarding
-        const updatedParticipant = await fetch("/api/onboarding").then(r => r.json());
-        if (updatedParticipant?.fullName && updatedParticipant?.dni && updatedParticipant?.profilePhotoAiUrl) {
-          console.log("[onboarding] Triggering badge generation after AI avatar");
-          fetch("/api/badge/generate-ai", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ participantId: updatedParticipant.id }),
-          }).catch((error) => {
-            console.error("[onboarding] Badge generation failed:", error);
-          });
-        }
-      } catch (aiError) {
-        console.error("Error generating AI avatar:", aiError);
-        playError();
-        alert("Error generando el avatar IA. Intenta subir la foto nuevamente.");
-        form.setValue("profilePhotoUrl", "");
-        setPhotoPreview(null);
-        updateParticipant({
-          profilePhotoUrl: null,
-          profilePhotoAiUrl: null,
-        });
-      } finally {
-        setIsGeneratingAi(false);
-      }
     } catch (error) {
       console.error("Error uploading photo:", error);
       playError();
@@ -184,7 +132,7 @@ export function Step1Combined() {
     } finally {
       setIsUploading(false);
     }
-  }, [form, updateParticipant, convertToWebFormat, playSuccess, playError, refetch]);
+  }, [form, updateParticipant, convertToWebFormat, playSuccess, playError]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -201,17 +149,10 @@ export function Step1Combined() {
     setPhotoPreview(null);
     updateParticipant({
       profilePhotoUrl: null,
-      profilePhotoAiUrl: null,
     });
   };
 
   const onSubmit = async (data: Step1Data) => {
-    if (!participant?.profilePhotoAiUrl) {
-      playError();
-      alert("Espera a que se genere tu avatar IA antes de continuar.");
-      return;
-    }
-
     setIsSubmitting(true);
     try {
       updateParticipant({
@@ -270,62 +211,20 @@ export function Step1Combined() {
                     ) : (
                       <div className="space-y-2">
                         <div className="space-y-1">
-                          {isGeneratingAi ? (
-                            <>
-                              <p className="text-xs font-adelle-mono text-brand-red uppercase text-center animate-pulse">
-                                GENERANDO_AVATAR_IA...
-                              </p>
-                              <div className="relative w-full max-w-xs h-48 mx-auto border-2 border-brand-red overflow-hidden shadow-lg">
-                                <Image
-                                  src={photoPreview}
-                                  alt="Processing"
-                                  fill
-                                  className="object-cover opacity-50"
-                                />
-                                <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                                  <div className="w-10 h-10 border-4 border-brand-red border-t-transparent rounded-full animate-spin" />
-                                </div>
-                              </div>
-                              <p className="text-[10px] font-adelle-mono text-white/60 uppercase text-center">
-                                CREANDO_TU_AVATAR_PIXEL_ART
-                              </p>
-                            </>
-                          ) : (
-                            <>
-                              <p className="text-xs font-adelle-mono text-brand-red uppercase text-center">
-                                {participant?.profilePhotoAiUrl ? "AVATAR_IA_LISTO" : "FOTO_SUBIDA"}
-                              </p>
-                              {participant?.profilePhotoAiUrl ? (
-                                <div className="space-y-1">
-                                  <div className="relative w-full max-w-xs h-48 mx-auto border-2 border-brand-red overflow-hidden shadow-lg ring-2 ring-brand-red/30 ring-offset-2 ring-offset-black">
-                                    <Image
-                                      src={participant.profilePhotoAiUrl}
-                                      alt="AI Avatar"
-                                      fill
-                                      className="object-contain"
-                                    />
-                                  </div>
-                                  <p className="text-[10px] font-adelle-mono text-brand-red uppercase text-center">
-                                    ✓ AVATAR_IA_GENERADO
-                                  </p>
-                                </div>
-                              ) : (
-                                <>
-                                  <div className="relative w-full max-w-xs h-48 mx-auto border-2 border-brand-red/50 overflow-hidden shadow-lg">
-                                    <Image
-                                      src={photoPreview}
-                                      alt="Preview"
-                                      fill
-                                      className="object-cover opacity-60"
-                                    />
-                                  </div>
-                                  <p className="text-[10px] font-adelle-mono text-brand-red uppercase text-center animate-pulse">
-                                    ESPERANDO_GENERACION_AVATAR_AI...
-                                  </p>
-                                </>
-                              )}
-                            </>
-                          )}
+                          <p className="text-xs font-adelle-mono text-brand-red uppercase text-center">
+                            FOTO_SUBIDA
+                          </p>
+                          <div className="relative w-full max-w-xs h-48 mx-auto border-2 border-brand-red overflow-hidden shadow-lg">
+                            <Image
+                              src={photoPreview}
+                              alt="Preview"
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                          <p className="text-[10px] font-adelle-mono text-white/60 uppercase text-center">
+                            TU_AVATAR_IA_SE_GENERARÁ_EN_SEGUNDO_PLANO
+                          </p>
                         </div>
                         
                         <div className="flex justify-center">
@@ -334,7 +233,6 @@ export function Step1Combined() {
                             variant="destructive"
                             size="sm"
                             onClick={removePhoto}
-                            disabled={isGeneratingAi}
                           >
                             <X className="size-3 mr-1" />
                             ELIMINAR_FOTO
@@ -516,14 +414,10 @@ export function Step1Combined() {
               <PixelButton
                 type="submit"
                 className="w-full"
-                loading={isSubmitting || isUpdating || isGeneratingAi}
-                disabled={!participant?.profilePhotoAiUrl || isGeneratingAi}
+                loading={isSubmitting || isUpdating}
+                disabled={!photoPreview}
               >
-                {isGeneratingAi 
-                  ? "GENERANDO_AVATAR..." 
-                  : !participant?.profilePhotoAiUrl 
-                    ? "ESPERA_AVATAR_IA" 
-                    : "SIGUIENTE_NIVEL &gt;&gt;"}
+                SIGUIENTE_NIVEL &gt;&gt;
               </PixelButton>
             </div>
           </form>

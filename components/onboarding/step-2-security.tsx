@@ -33,7 +33,6 @@ export function Step2Security() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isConverting, setIsConverting] = useState(false);
-  const [isGeneratingAi, setIsGeneratingAi] = useState(false);
   const [photoPreview, setPhotoPreview] = useState<string | null>(
     participant?.profilePhotoUrl || null
   );
@@ -109,40 +108,6 @@ export function Step2Security() {
         profilePhotoUrl: url,
       });
       playSuccess();
-      
-      setIsGeneratingAi(true);
-      try {
-        const aiResponse = await fetch("/api/onboarding/generate-ai-avatar", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ profilePhotoUrl: url }),
-        });
-
-        if (!aiResponse.ok) {
-          throw new Error("Error al generar el avatar IA");
-        }
-
-        const { profilePhotoAiUrl } = await aiResponse.json();
-        
-        updateParticipant({
-          profilePhotoAiUrl,
-        });
-        playSuccess();
-      } catch (aiError) {
-        console.error("Error generating AI avatar:", aiError);
-        playError();
-        alert("Error generando el avatar IA. Intenta subir la foto nuevamente.");
-        form.setValue("profilePhotoUrl", "");
-        setPhotoPreview(null);
-        updateParticipant({
-          profilePhotoUrl: null,
-          profilePhotoAiUrl: null,
-        });
-      } finally {
-        setIsGeneratingAi(false);
-      }
     } catch (error) {
       console.error("Error uploading photo:", error);
       playError();
@@ -170,17 +135,10 @@ export function Step2Security() {
     setPhotoPreview(null);
     updateParticipant({
       profilePhotoUrl: null,
-      profilePhotoAiUrl: null,
     });
   };
 
   const onSubmit = async (data: Step2Data) => {
-    if (!participant?.profilePhotoAiUrl) {
-      playError();
-      alert("Espera a que se genere tu avatar IA antes de continuar.");
-      return;
-    }
-
     setIsSubmitting(true);
     try {
       updateParticipant({
@@ -254,69 +212,20 @@ export function Step2Security() {
                         className="space-y-3"
                       >
                         <div className="space-y-2">
-                          {isGeneratingAi ? (
-                            <>
-                              <p className="text-xs font-adelle-mono text-brand-red uppercase text-center animate-pulse">
-                                GENERANDO_AVATAR_IA...
-                              </p>
-                              <div className="relative w-64 h-64 mx-auto border-2 border-brand-red overflow-hidden shadow-lg">
-                                <Image
-                                  src={photoPreview}
-                                  alt="Processing"
-                                  fill
-                                  className="object-cover opacity-50"
-                                />
-                                <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                                  <motion.div
-                                    animate={{ rotate: 360 }}
-                                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                                    className="w-12 h-12 border-4 border-brand-red border-t-transparent rounded-full"
-                                  />
-                                </div>
-                              </div>
-                              <p className="text-[10px] font-adelle-mono text-white/60 uppercase text-center">
-                                CREANDO_TU_AVATAR_PIXEL_ART
-                              </p>
-                            </>
-                          ) : (
-                            <>
-                              <p className="text-xs font-adelle-mono text-brand-red uppercase text-center">
-                                {participant?.profilePhotoAiUrl ? "AVATAR_IA_LISTO" : "FOTO_SUBIDA"}
-                              </p>
-                              {participant?.profilePhotoAiUrl ? (
-                                <div className="space-y-2">
-                                  <div className="relative w-64 h-64 mx-auto border-2 border-brand-red overflow-hidden shadow-lg ring-2 ring-brand-red/30 ring-offset-2 ring-offset-black">
-                                    <Image
-                                      src={participant.profilePhotoAiUrl}
-                                      alt="AI Avatar"
-                                      fill
-                                      className="object-contain"
-                                    />
-                                  </div>
-                                  <p className="text-[10px] font-adelle-mono text-brand-red uppercase text-center">
-                                    ✓ AVATAR_IA_GENERADO
-                                  </p>
-                                </div>
-                              ) : (
-                                <>
-                                  <div className="relative w-64 h-64 mx-auto border-2 border-brand-red/50 overflow-hidden shadow-lg">
-                                    <Image
-                                      src={photoPreview}
-                                      alt="Preview"
-                                      fill
-                                      className="object-cover opacity-60"
-                                    />
-                                  </div>
-                                  <p className="text-[10px] font-adelle-mono text-brand-red uppercase text-center animate-pulse">
-                                    ESPERANDO_GENERACION_AVATAR_AI...
-                                  </p>
-                                  <p className="text-[10px] font-adelle-mono text-white/60 uppercase text-center mt-1">
-                                    NO_PUEDES_CONTINUAR_SIN_AVATAR
-                                  </p>
-                                </>
-                              )}
-                            </>
-                          )}
+                          <p className="text-xs font-adelle-mono text-brand-red uppercase text-center">
+                            FOTO_SUBIDA
+                          </p>
+                          <div className="relative w-64 h-64 mx-auto border-2 border-brand-red overflow-hidden shadow-lg">
+                            <Image
+                              src={photoPreview}
+                              alt="Preview"
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                          <p className="text-[10px] font-adelle-mono text-white/60 uppercase text-center">
+                            TU_AVATAR_IA_SE_GENERARÁ_EN_SEGUNDO_PLANO
+                          </p>
                         </div>
                         
                         <div className="flex justify-center">
@@ -325,7 +234,6 @@ export function Step2Security() {
                             variant="destructive"
                             size="sm"
                             onClick={removePhoto}
-                            disabled={isGeneratingAi}
                           >
                             <X className="size-3 mr-1" />
                             ELIMINAR_FOTO
@@ -413,14 +321,10 @@ export function Step2Security() {
               <PixelButton
                 type="submit"
                 className="flex-1"
-                loading={isSubmitting || isUpdating || isGeneratingAi}
-                disabled={!participant?.profilePhotoAiUrl || isGeneratingAi}
+                loading={isSubmitting || isUpdating}
+                disabled={!photoPreview}
               >
-                {isGeneratingAi 
-                  ? "GENERANDO_AVATAR..." 
-                  : !participant?.profilePhotoAiUrl 
-                    ? "ESPERA_AVATAR_IA" 
-                    : "SIGUIENTE_NIVEL &gt;&gt;"}
+                SIGUIENTE_NIVEL &gt;&gt;
               </PixelButton>
             </motion.div>
           </form>
