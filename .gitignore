@@ -42,3 +42,4 @@ next-env.d.ts
 .cursor/plans
 .cursor/commands
 .cursor/mcp.json
+.clerk
