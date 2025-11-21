@@ -45,8 +45,6 @@ export function Step2Security() {
       profilePhotoUrl: participant?.profilePhotoUrl || "",
       hasLaptop: participant?.hasLaptop || false,
       laptopBrand: participant?.laptopBrand || "",
-      laptopModel: participant?.laptopModel || "",
-      laptopSerialNumber: participant?.laptopSerialNumber || "",
     },
   });
 
@@ -390,43 +388,6 @@ export function Step2Security() {
                             {...field}
                           />
                         </FormControl>
-                        <FormMessage className="font-adelle-mono text-xs uppercase" />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="laptopModel"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <RetroInput
-                            label="LAPTOP_MODEL"
-                            placeholder="MACBOOK_PRO, ELITEBOOK_840"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage className="font-adelle-mono text-xs uppercase" />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="laptopSerialNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <RetroInput
-                            label="SERIAL_NUMBER"
-                            placeholder="ABC123XYZ"
-                            {...field}
-                          />
-                        </FormControl>
-                        <p className="text-[10px] font-adelle-mono text-white/60 uppercase mt-1">
-                          REQUIRED_FOR_SECURITY_CHECK
-                        </p>
                         <FormMessage className="font-adelle-mono text-xs uppercase" />
                       </FormItem>
                     )}

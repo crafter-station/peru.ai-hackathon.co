@@ -34,17 +34,15 @@ export const step2Schema = z.object({
   profilePhotoUrl: z.string().min(1, "Sube tu foto de perfil"),
   hasLaptop: z.boolean(),
   laptopBrand: z.string().optional(),
-  laptopModel: z.string().optional(),
-  laptopSerialNumber: z.string().optional(),
 }).refine(
   (data) => {
     if (data.hasLaptop) {
-      return !!(data.laptopBrand && data.laptopModel && data.laptopSerialNumber);
+      return !!data.laptopBrand;
     }
     return true;
   },
   {
-    message: "Completa todos los datos de la laptop",
+    message: "Ingresa la marca de la laptop",
     path: ["laptopBrand"],
   }
 );
