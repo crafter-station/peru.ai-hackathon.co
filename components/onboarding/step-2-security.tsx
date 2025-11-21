@@ -99,7 +99,7 @@ export function Step2Security() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to upload photo");
+        throw new Error("Error al subir la foto");
       }
 
       const { url } = await response.json();
@@ -123,7 +123,7 @@ export function Step2Security() {
         });
 
         if (!aiResponse.ok) {
-          throw new Error("Failed to generate AI avatar");
+          throw new Error("Error al generar el avatar IA");
         }
 
         const { profilePhotoAiUrl } = await aiResponse.json();
@@ -135,7 +135,7 @@ export function Step2Security() {
       } catch (aiError) {
         console.error("Error generating AI avatar:", aiError);
         playError();
-        alert("Error generando el avatar AI. Intenta subir la foto nuevamente.");
+        alert("Error generando el avatar IA. Intenta subir la foto nuevamente.");
         form.setValue("profilePhotoUrl", "");
         setPhotoPreview(null);
         updateParticipant({
@@ -179,7 +179,7 @@ export function Step2Security() {
   const onSubmit = async (data: Step2Data) => {
     if (!participant?.profilePhotoAiUrl) {
       playError();
-      alert("Espera a que se genere tu avatar AI antes de continuar.");
+      alert("Espera a que se genere tu avatar IA antes de continuar.");
       return;
     }
 
@@ -205,9 +205,9 @@ export function Step2Security() {
   return (
     <RetroCard>
       <RetroCardHeader>
-        <RetroCardTitle>SECURITY_CHECK.run()</RetroCardTitle>
+        <RetroCardTitle>VERIFICACIÓN_SEGURIDAD.run()</RetroCardTitle>
         <RetroCardDescription>
-          VENUE_REQUIRED_DATA
+          DATOS_REQUERIDOS_POR_EL_VENUE
         </RetroCardDescription>
       </RetroCardHeader>
       <RetroCardContent>
@@ -224,10 +224,10 @@ export function Step2Security() {
                     className="space-y-2"
                   >
                     <label className="block text-xs font-adelle-mono font-bold uppercase tracking-wider text-white/80">
-                      PROFILE_PHOTO
+                      FOTO_DE_PERFIL
                     </label>
                     <p className="text-[10px] font-adelle-mono text-white/60 uppercase">
-                      WILL_APPEAR_ON_BADGE
+                      APARECERÁ_EN_LA_CREDENCIAL
                     </p>
                     
                     {!photoPreview ? (
@@ -243,10 +243,10 @@ export function Step2Security() {
                         <input {...getInputProps()} disabled={isUploading} />
                         <Upload className="size-8 mx-auto mb-3 text-white/60" />
                         <p className="text-xs uppercase text-white">
-                          {isConverting ? "CONVERTING_IMAGE..." : isUploading ? "UPLOADING..." : isDragActive ? "DROP_FILE_HERE" : "DRAG_FILE.exe"}
+                          {isConverting ? "CONVIRTIENDO_IMAGEN..." : isUploading ? "SUBIENDO..." : isDragActive ? "SUELTA_ARCHIVO_AQUÍ" : "ARRastra_ARCHIVO.exe"}
                         </p>
                         <p className="text-[10px] text-white/60 mt-2 uppercase">
-                          PNG, JPG, WEBP, HEIC (MAX 5MB)
+                          PNG, JPG, WEBP, HEIC (MÁX 5MB)
                         </p>
                       </div>
                     ) : (
@@ -259,7 +259,7 @@ export function Step2Security() {
                           {isGeneratingAi ? (
                             <>
                               <p className="text-xs font-adelle-mono text-brand-red uppercase text-center animate-pulse">
-                                GENERATING_AI_AVATAR...
+                                GENERANDO_AVATAR_IA...
                               </p>
                               <div className="relative w-64 h-64 mx-auto border-2 border-brand-red overflow-hidden shadow-lg">
                                 <Image
@@ -277,13 +277,13 @@ export function Step2Security() {
                                 </div>
                               </div>
                               <p className="text-[10px] font-adelle-mono text-white/60 uppercase text-center">
-                                CREATING_YOUR_PIXEL_ART_AVATAR
+                                CREANDO_TU_AVATAR_PIXEL_ART
                               </p>
                             </>
                           ) : (
                             <>
                               <p className="text-xs font-adelle-mono text-brand-red uppercase text-center">
-                                {participant?.profilePhotoAiUrl ? "AI_AVATAR_READY" : "PHOTO_UPLOADED"}
+                                {participant?.profilePhotoAiUrl ? "AVATAR_IA_LISTO" : "FOTO_SUBIDA"}
                               </p>
                               {participant?.profilePhotoAiUrl ? (
                                 <div className="space-y-2">
@@ -296,7 +296,7 @@ export function Step2Security() {
                                     />
                                   </div>
                                   <p className="text-[10px] font-adelle-mono text-brand-red uppercase text-center">
-                                    ✓ AI_AVATAR_GENERATED
+                                    ✓ AVATAR_IA_GENERADO
                                   </p>
                                 </div>
                               ) : (
@@ -330,7 +330,7 @@ export function Step2Security() {
                             disabled={isGeneratingAi}
                           >
                             <X className="size-3 mr-1" />
-                            REMOVE_PHOTO
+                            ELIMINAR_FOTO
                           </PixelButton>
                         </div>
                       </motion.div>
@@ -359,10 +359,10 @@ export function Step2Security() {
                     </FormControl>
                     <div className="space-y-1 leading-none font-adelle-mono">
                       <label className="text-sm uppercase font-bold text-white">
-                        BRINGING_LAPTOP
+                        TRAERÉ_LAPTOP
                       </label>
                       <p className="text-[10px] text-white/60 uppercase">
-                        REQUIRED_BY_VENUE_SECURITY
+                        REQUERIDO_POR_SEGURIDAD_DEL_VENUE
                       </p>
                     </div>
                   </FormItem>
@@ -385,7 +385,7 @@ export function Step2Security() {
                       <FormItem>
                         <FormControl>
                           <RetroInput
-                            label="LAPTOP_BRAND"
+                            label="MARCA_LAPTOP"
                             placeholder="HP, DELL, APPLE, ETC"
                             {...field}
                           />
@@ -402,7 +402,7 @@ export function Step2Security() {
                       <FormItem>
                         <FormControl>
                           <RetroInput
-                            label="LAPTOP_MODEL"
+                            label="MODELO_LAPTOP"
                             placeholder="MACBOOK_PRO, ELITEBOOK_840"
                             {...field}
                           />
@@ -419,13 +419,13 @@ export function Step2Security() {
                       <FormItem>
                         <FormControl>
                           <RetroInput
-                            label="SERIAL_NUMBER"
+                            label="NÚMERO_SERIE"
                             placeholder="ABC123XYZ"
                             {...field}
                           />
                         </FormControl>
                         <p className="text-[10px] font-adelle-mono text-white/60 uppercase mt-1">
-                          REQUIRED_FOR_SECURITY_CHECK
+                          REQUERIDO_PARA_VERIFICACIÓN_SEGURIDAD
                         </p>
                         <FormMessage className="font-adelle-mono text-xs uppercase" />
                       </FormItem>
@@ -447,7 +447,7 @@ export function Step2Security() {
                 onClick={goBack}
                 className="flex-1"
               >
-                &lt;&lt; BACK
+                &lt;&lt; ATRÁS
               </PixelButton>
               <PixelButton
                 type="submit"
@@ -458,8 +458,8 @@ export function Step2Security() {
                 {isGeneratingAi 
                   ? "GENERANDO_AVATAR..." 
                   : !participant?.profilePhotoAiUrl 
-                    ? "ESPERA_AVATAR_AI" 
-                    : "NEXT_LEVEL &gt;&gt;"}
+                    ? "ESPERA_AVATAR_IA" 
+                    : "SIGUIENTE_NIVEL &gt;&gt;"}
               </PixelButton>
             </motion.div>
           </form>

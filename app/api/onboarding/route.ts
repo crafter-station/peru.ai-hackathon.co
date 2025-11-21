@@ -128,16 +128,24 @@ export async function PATCH(request: NextRequest) {
 
   if (
     updated[0].registrationStatus === "completed" &&
-    updated[0].participantNumber
+    updated[0].participantNumber &&
+    updated[0].profilePhotoAiUrl
   ) {
     try {
-      await fetch(new URL("/api/badge/generate", request.url).toString(), {
+      const badgeResponse = await fetch(new URL("/api/badge/generate-ai", request.url).toString(), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ participantId: updated[0].id }),
       });
+      
+      if (!badgeResponse.ok) {
+        const errorData = await badgeResponse.json().catch(() => ({}));
+        console.error("[onboarding] Badge generation failed:", errorData);
+      } else {
+        console.log("[onboarding] Badge generation triggered successfully");
+      }
     } catch (error) {
-      console.error("Failed to trigger badge generation:", error);
+      console.error("[onboarding] Failed to trigger badge generation:", error);
     }
   }
 
