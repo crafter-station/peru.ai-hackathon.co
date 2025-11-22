@@ -25,7 +25,7 @@ export default function JudgesSection() {
     {
       name: "Sebastian Ruiz",
       image: "/sebastian-ruiz.png",
-      title: "Program Lead at UTech Ventures",
+      title: "Program Lead at UTEC Ventures",
       linkedin: "https://www.linkedin.com/in/sruizdecastillam/",
     },
     {
