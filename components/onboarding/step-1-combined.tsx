@@ -186,7 +186,7 @@ export function Step1Combined() {
                 <FormItem>
                   <div className="space-y-1">
                     <label className="block text-xs font-adelle-mono font-bold uppercase tracking-wider text-white/80">
-                      AI_AVATAR
+                      {/* AI_AVATAR */}
                     </label>
                     
                     {!photoPreview ? (
@@ -223,7 +223,7 @@ export function Step1Combined() {
                             />
                           </div>
                           <p className="text-[10px] font-adelle-mono text-white/60 uppercase text-center">
-                            TU_AVATAR_IA_SE_GENERARÁ_EN_SEGUNDO_PLANO
+                            {/* TU_AVATAR_IA_SE_GENERARÁ_EN_SEGUNDO_PLANO */}
                           </p>
                         </div>
                         

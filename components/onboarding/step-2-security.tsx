@@ -224,7 +224,7 @@ export function Step2Security() {
                             />
                           </div>
                           <p className="text-[10px] font-adelle-mono text-white/60 uppercase text-center">
-                            TU_AVATAR_IA_SE_GENERARÁ_EN_SEGUNDO_PLANO
+                            {/* TU_AVATAR_IA_SE_GENERARÁ_EN_SEGUNDO_PLANO */}
                           </p>
                         </div>
                         
