@@ -251,10 +251,8 @@ export default function HeroSection() {
             className="w-full px-8 py-4 bg-brand-red text-white font-bold text-lg border-0 rounded-none hover:bg-brand-red/90"
             style={{ pointerEvents: "auto" }}
           >
-            <a
-              href="https://luma.com/slqfykte"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/onboarding"
               className="flex items-center justify-center gap-3"
             >
               <div className="flex items-center justify-center w-6 h-6 bg-white/10 rounded-sm">
@@ -269,9 +267,9 @@ export default function HeroSection() {
                 </svg>
               </div>
               <span className="tracking-wide uppercase text-sm font-black">
-                INSCRÍBETE AQUÍ
+                ONBOARDING DE PARTICIPANTES
               </span>
-            </a>
+            </Link>
           </Button>
 
           <Button
