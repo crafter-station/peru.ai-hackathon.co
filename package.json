@@ -11,7 +11,7 @@
   "dependencies": {
     "@ai-sdk/groq": "^2.0.22",
     "@ai-sdk/openai": "^2.0.41",
-    "@clerk/nextjs": "^6.35.2",
+    "@clerk/nextjs": "^6.35.4",
     "@fal-ai/client": "^1.6.2",
     "@fal-ai/serverless-client": "^0.15.0",
     "@hookform/resolvers": "^5.2.2",
