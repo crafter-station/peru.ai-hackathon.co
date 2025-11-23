@@ -340,7 +340,7 @@ export default function HeroSection() {
             </Link>
           </Button>
 
-          <Button
+          {/* <Button
             asChild
             size="lg"
             onClick={() => play()}
@@ -373,7 +373,7 @@ export default function HeroSection() {
                 Genera tu Alpaca
               </span>
             </Link>
-          </Button>
+          </Button> */}
 
           <Button
             size="lg"
