@@ -18,7 +18,7 @@ export default function WorkshopsListSection() {
     {
       name: "Cómo implementar un chatbot de atención al cliente en tu empresa, sin servidores, en AWS",
       date: "23 de Noviembre • 19:00",
-      eventId: "evt-afar70gw",
+      eventId: "evt-eCHtn8JzvB54Siu",
       url: "https://luma.com/afar70gw",
     },
     {
@@ -56,7 +56,7 @@ export default function WorkshopsListSection() {
     {
       name: "De idea a Demo",
       date: "27 de Noviembre • 18:00",
-      eventId: "evt-5vt6xzqu",
+      eventId: "vent/evt-JE3YbK7fVuPwnoh",
       url: "https://luma.com/5vt6xzqu",
     },
     {

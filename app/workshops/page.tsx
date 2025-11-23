@@ -64,7 +64,7 @@ export default function WorkshopsPage() {
     {
       name: "Cómo implementar un chatbot de atención al cliente en tu empresa, sin servidores, en AWS",
       startDate: "2025-11-23T19:00:00-05:00",
-      url: "https://luma.com/afar70gw",
+      url: "https://luma.com/embed/event/evt-eCHtn8JzvB54Siu/simple",
     },
     {
       name: "Lovable",
@@ -99,7 +99,7 @@ export default function WorkshopsPage() {
     {
       name: "De idea a Demo",
       startDate: "2025-11-27T19:00:00-05:00",
-      url: "https://luma.com/5vt6xzqu",
+      url: "https://luma.com/embed/event/evt-JE3YbK7fVuPwnoh",
     },
     {
       name: "Creando un unicornio",
