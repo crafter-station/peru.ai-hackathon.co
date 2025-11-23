@@ -16,6 +16,12 @@ export default function WorkshopsListSection() {
       url: "https://luma.com/a7z7af8a",
     },
     {
+      name: "Cómo implementar un chatbot de atención al cliente en tu empresa, sin servidores, en AWS",
+      date: "23 de Noviembre • 19:00",
+      eventId: "evt-afar70gw",
+      url: "https://luma.com/afar70gw",
+    },
+    {
       title: "Lovable",
       date: "24 de Noviembre • 10:00",
       eventId: "evt-bKIYraV1WFuAtat",
@@ -46,6 +52,12 @@ export default function WorkshopsListSection() {
       date: "26 de Noviembre • 19:00",
       eventId: "evt-GLmGu1OMFy4C88k",
       url: "https://luma.com/8gixx4h6",
+    },
+    {
+      name: "De idea a Demo",
+      date: "27 de Noviembre • 18:00",
+      eventId: "evt-5vt6xzqu",
+      url: "https://luma.com/5vt6xzqu",
     },
     {
       title: "Build MCP's in minutes with Vercel AI SDK and Lupa",
@@ -119,7 +131,7 @@ export default function WorkshopsListSection() {
                       window.open(
                         workshop.url,
                         "_blank",
-                        "noopener,noreferrer",
+                        "noopener,noreferrer"
                       );
                     }
                   }}
