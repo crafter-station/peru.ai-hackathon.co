@@ -7,6 +7,7 @@ export const profileSchema = z.object({
   twitterUrl: z.string().url("Invalid Twitter/X URL").optional().or(z.literal("")),
   githubUrl: z.string().url("Invalid GitHub URL").optional().or(z.literal("")),
   websiteUrl: z.string().url("Invalid website URL").optional().or(z.literal("")),
+  profilePhotoAiUrl: z.string().url("Invalid image URL").optional().or(z.literal("")),
 });
 
 export type ProfileData = z.infer<typeof profileSchema>;

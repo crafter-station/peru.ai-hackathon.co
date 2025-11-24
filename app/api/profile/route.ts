@@ -40,6 +40,7 @@ export async function GET() {
     githubUrl: participant.githubUrl,
     websiteUrl: participant.websiteUrl,
     registrationStatus: participant.registrationStatus,
+    generatedProfileImages: participant.generatedProfileImages,
   });
 }
 
@@ -87,6 +88,9 @@ export async function PATCH(request: NextRequest) {
   }
   if (data.websiteUrl !== undefined) {
     updateData.websiteUrl = data.websiteUrl || null;
+  }
+  if (data.profilePhotoAiUrl !== undefined) {
+    updateData.profilePhotoAiUrl = data.profilePhotoAiUrl || null;
   }
 
   const updated = await db

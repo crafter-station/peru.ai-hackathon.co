@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useGallery } from "./use-gallery";
 import { useAnonymousUser } from "./use-anonymous-user";
 
-interface GeneratedImage {
+export interface GeneratedImage {
   url: string;
   prompt: string;
   description: string;
@@ -29,8 +29,9 @@ export const useImageGeneration = () => {
     });
   };
 
-  const generateImage = async (prompt: string, onSuccess?: () => void) => {
-    if (!prompt.trim()) return;
+  const generateImage = async (input: string | File, onSuccess?: (image: GeneratedImage) => void, endpoint: string = "/api/generate-image") => {
+    if (typeof input === 'string' && !input.trim()) return;
+    if (input instanceof File && !input) return;
 
     setIsCheckingContent(true);
     setIsLoading(true);
@@ -59,9 +60,13 @@ export const useImageGeneration = () => {
 
     try {
       const formData = new FormData();
-      formData.append("prompt", prompt);
+      if (typeof input === 'string') {
+        formData.append("prompt", input);
+      } else {
+        formData.append("file", input);
+      }
 
-      const response = await fetch("/api/generate-image", {
+      const response = await fetch(endpoint, {
         method: "POST",
         body: formData,
       });
@@ -79,6 +84,15 @@ export const useImageGeneration = () => {
           // Set the fun Spanish message in state for UI display
           setUnsafeMessage(errorData.message);
           return;
+        }
+
+        if (errorData.error === 'Limit reached') {
+           clearInterval(progressInterval);
+           setProgress(0);
+           setIsCheckingContent(false);
+           setIsLoading(false);
+           setUnsafeMessage(errorData.message); // Reuse unsafe message for limit message or add a new state
+           return;
         }
         
         // Handle other errors
@@ -124,7 +138,10 @@ export const useImageGeneration = () => {
       setIsLoading(false);
       setProgress(0);
       
-      onSuccess?.();
+      onSuccess?.({
+        ...data,
+        savedImageId,
+      });
     } catch (error) {
       clearInterval(progressInterval);
       setProgress(0);

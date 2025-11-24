@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { useForm } from "react-hook-form";
@@ -28,6 +28,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useRetroSounds } from "@/hooks/use-click-sound";
+import { useImageGeneration } from "@/hooks/use-image-generation";
 import {
   Linkedin,
   Instagram,
@@ -37,6 +38,10 @@ import {
   ExternalLink,
   Save,
   ArrowLeft,
+  Wand2,
+  Check,
+  RefreshCw,
+  Upload,
 } from "lucide-react";
 
 interface ProfileResponse {
@@ -55,6 +60,7 @@ interface ProfileResponse {
   githubUrl: string | null;
   websiteUrl: string | null;
   registrationStatus: string | null;
+  generatedProfileImages: string[] | null;
 }
 
 export default function ProfileEditPage() {
@@ -65,6 +71,11 @@ export default function ProfileEditPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const { playSuccess, playError } = useRetroSounds();
+  
+  // Image generation state
+  const [generatedImages, setGeneratedImages] = useState<string[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { generateImage, isLoading: isGenerating, progress, unsafeMessage } = useImageGeneration();
 
   const form = useForm<ProfileData>({
     resolver: zodResolver(profileSchema),
@@ -75,6 +86,7 @@ export default function ProfileEditPage() {
       twitterUrl: "",
       githubUrl: "",
       websiteUrl: "",
+      profilePhotoAiUrl: "",
     },
   });
 
@@ -104,7 +116,16 @@ export default function ProfileEditPage() {
           twitterUrl: data.twitterUrl || "",
           githubUrl: data.githubUrl || "",
           websiteUrl: data.websiteUrl || "",
+          profilePhotoAiUrl: data.profilePhotoAiUrl || "",
         });
+        
+        // Initialize generated images from backend
+        if (data.generatedProfileImages && data.generatedProfileImages.length > 0) {
+          setGeneratedImages(data.generatedProfileImages);
+        } else if (data.profilePhotoAiUrl) {
+          // Fallback if no list but has one image
+          setGeneratedImages([data.profilePhotoAiUrl]);
+        }
       } catch (error) {
         console.error("Error fetching profile:", error);
       } finally {
@@ -116,6 +137,33 @@ export default function ProfileEditPage() {
       fetchProfile();
     }
   }, [isLoaded, isSignedIn, router, form]);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleGenerateImage(file);
+    }
+  };
+
+  const handleGenerateImage = async (file: File) => {
+    await generateImage(file, (image) => {
+      setGeneratedImages((prev) => {
+        const newImages = [...prev, image.url];
+        // Keep only the last 3 images
+        return newImages.slice(-3);
+      });
+      playSuccess();
+    }, "/api/profile/generate-avatar");
+  };
+
+  const handleSelectImage = (url: string) => {
+    form.setValue("profilePhotoAiUrl", url, { shouldDirty: true });
+    // Update local profile state for preview
+    if (profile) {
+      setProfile({ ...profile, profilePhotoAiUrl: url });
+    }
+    playSuccess();
+  };
 
   const onSubmit = async (data: ProfileData) => {
     setIsSaving(true);
@@ -310,6 +358,116 @@ export default function ProfileEditPage() {
                 )}
               </div>
             </div>
+          </RetroCardContent>
+        </RetroCard>
+
+        <RetroCard>
+          <RetroCardHeader>
+            <RetroCardTitle>AI_AVATAR_GENERATOR</RetroCardTitle>
+            <RetroCardDescription>
+              GENERATE_UNIQUE_AVATARS_WITH_AI (MAX 3 ATTEMPTS)
+            </RetroCardDescription>
+          </RetroCardHeader>
+          <RetroCardContent className="space-y-6">
+            <div className="space-y-4">
+              <div className="flex gap-2 items-center justify-center">
+                <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  className="hidden" 
+                  accept="image/*" 
+                  onChange={handleFileSelect} 
+                />
+                <PixelButton
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isGenerating || generatedImages.length >= 3}
+                  loading={isGenerating}
+                  className="w-full md:w-auto"
+                >
+                  <Upload className="size-4 mr-2" />
+                  UPLOAD_PHOTO_&_GENERATE
+                </PixelButton>
+              </div>
+
+              {generatedImages.length >= 3 && (
+                <p className="font-adelle-mono text-xs text-destructive uppercase text-center">
+                  MAX_ATTEMPTS_REACHED. PLEASE_SELECT_ONE.
+                </p>
+              )}
+
+              {unsafeMessage && (
+                <div className="p-4 border-2 border-destructive bg-destructive/10 text-destructive font-adelle-mono text-sm">
+                  {unsafeMessage}
+                </div>
+              )}
+
+              {isGenerating && (
+                <div className="space-y-2">
+                  <div className="h-2 bg-muted overflow-hidden">
+                    <motion.div
+                      className="h-full bg-terminal-green"
+                      initial={{ width: "0%" }}
+                      animate={{ width: `${progress}%` }}
+                    />
+                  </div>
+                  <p className="font-adelle-mono text-xs text-center uppercase text-muted-foreground">
+                    GENERATING_PIXELS... {Math.round(progress)}%
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {generatedImages.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {generatedImages.map((url, index) => (
+                  <div
+                    key={index}
+                    className={`relative aspect-square border-2 cursor-pointer transition-all group ${
+                      form.getValues("profilePhotoAiUrl") === url
+                        ? "border-terminal-green shadow-[0_0_10px_rgba(0,255,0,0.5)]"
+                        : "border-muted-foreground hover:border-foreground"
+                    }`}
+                    onClick={() => handleSelectImage(url)}
+                  >
+                    <Image
+                      src={url}
+                      alt={`Generated Avatar ${index + 1}`}
+                      fill
+                      className="object-cover"
+                      unoptimized
+                    />
+                    {form.getValues("profilePhotoAiUrl") === url && (
+                      <div className="absolute top-2 right-2 bg-terminal-green text-black p-1">
+                        <Check className="size-4" />
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <span className="font-adelle-mono text-xs text-white uppercase">
+                        SELECT
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            {generatedImages.length > 0 && (
+               <div className="flex justify-end">
+                 <PixelButton 
+                   variant="secondary" 
+                   size="sm"
+                   onClick={() => {
+                     setGeneratedImages([]);
+                     if (fileInputRef.current) {
+                       fileInputRef.current.value = "";
+                     }
+                   }}
+                 >
+                   <RefreshCw className="size-3 mr-2" />
+                   RESET_GENERATOR
+                 </PixelButton>
+               </div>
+            )}
           </RetroCardContent>
         </RetroCard>
 
