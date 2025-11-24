@@ -86,7 +86,7 @@ export async function GET(
 
     console.log("[og-share] OG image generated, size:", ogImage.length, "bytes");
 
-    return new NextResponse(ogImage, {
+    return new NextResponse(new Uint8Array(ogImage), {
       headers: {
         "Content-Type": "image/png",
         "Cache-Control": "public, max-age=31536000, immutable",
