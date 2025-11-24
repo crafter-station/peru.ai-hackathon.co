@@ -6,6 +6,31 @@ import sharp from "sharp";
 import path from "path";
 import QRCode from "qrcode";
 
+function getBadgeTemplatePath(role: string | null | undefined, extension: "png" | "svg" = "svg"): string {
+  const roleMap: Record<string, string> = {
+    STAFF: "THC-IA HACK PE-ID-Staff",
+    ORGANIZATION: "THC-IA HACK PE-ID-Organizacion",
+    MENTOR: "THC-IA HACK PE-ID-Mentor",
+    JURADO: "THC-IA HACK PE-ID-Jurado",
+    PARTICIPANTE: "THC-IA HACK PE-ID-Participante",
+  };
+
+  const templateName = roleMap[role || "PARTICIPANTE"] || roleMap.PARTICIPANTE;
+  return path.join(process.cwd(), "public/onboarding", `${templateName}.${extension}`);
+}
+
+function getRoleDisplayText(role: string | null | undefined, organization: string | null | undefined): string {
+  const roleTextMap: Record<string, string> = {
+    STAFF: "STAFF",
+    ORGANIZATION: organization?.toUpperCase() || "ORGANIZACIÓN",
+    MENTOR: "MENTOR",
+    JURADO: "JURADO",
+    PARTICIPANTE: "HACKER",
+  };
+
+  return roleTextMap[role || "PARTICIPANTE"] || roleTextMap.PARTICIPANTE;
+}
+
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ participantId: string }> }
@@ -20,12 +45,7 @@ export async function GET(
       return new Response("Participant not found", { status: 404 });
     }
 
-    const bgPath = path.join(
-      process.cwd(),
-      "public",
-      "onboarding",
-      "THC-IA HACK PE-ID-Participante.svg"
-    );
+    const bgPath = getBadgeTemplatePath(participant.role, "svg");
 
     const badge = sharp(bgPath).resize(1080, 1440);
 
@@ -85,7 +105,7 @@ export async function GET(
         <text x="467.92609730627487" y="1317.076218001156" text-anchor="middle" 
               font-size="40" font-weight="400" fill="#FFFFFF" 
               font-family="'Adelle Mono'">
-          HACKER
+          ${getRoleDisplayText(participant.role, participant.organization)}
         </text>
         <image href="${qrCodeDataUrl}" x="107.5300849661869" y="1152.0579656293544" width="179" height="169.05"/>
       </svg>

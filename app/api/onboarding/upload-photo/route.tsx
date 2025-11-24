@@ -76,6 +76,31 @@ const BADGE_CONFIG = {
   },
 };
 
+function getBadgeTemplatePath(role: string | null | undefined, extension: "png" | "svg" = "png"): string {
+  const roleMap: Record<string, string> = {
+    STAFF: "THC-IA HACK PE-ID-Staff",
+    ORGANIZATION: "THC-IA HACK PE-ID-Organizacion",
+    MENTOR: "THC-IA HACK PE-ID-Mentor",
+    JURADO: "THC-IA HACK PE-ID-Jurado",
+    PARTICIPANTE: "THC-IA HACK PE-ID-Participante",
+  };
+
+  const templateName = roleMap[role || "PARTICIPANTE"] || roleMap.PARTICIPANTE;
+  return path.join(process.cwd(), "public/onboarding", `${templateName}.${extension}`);
+}
+
+function getRoleDisplayText(role: string | null | undefined, organization: string | null | undefined): string {
+  const roleTextMap: Record<string, string> = {
+    STAFF: "STAFF",
+    ORGANIZATION: organization?.toUpperCase() || "ORGANIZACIÓN",
+    MENTOR: "MENTOR",
+    JURADO: "JURADO",
+    PARTICIPANTE: "HACKER",
+  };
+
+  return roleTextMap[role || "PARTICIPANTE"] || roleTextMap.PARTICIPANTE;
+}
+
 async function generateAiAvatarAndBadge(
   participantId: string,
   profilePhotoUrl: string,
@@ -258,10 +283,7 @@ async function generateAiAvatarAndBadge(
 
     const profileUrl = `https://${domain}/p/${participantNumber}`;
 
-    const templatePath = path.join(
-      process.cwd(),
-      "public/onboarding/THC-IA HACK PE-ID-Participante.png",
-    );
+    const templatePath = getBadgeTemplatePath(participant.role, "png");
 
     const [fonts, qrCodeBuffer] = await Promise.all([
       getFonts(),
@@ -366,7 +388,7 @@ async function generateAiAvatarAndBadge(
     const lastNameFontSize = lastNameResult.fontSize;
     const finalLastName = lastNameResult.text;
     
-    const roleText = participant.organization?.toUpperCase() || "HACKER";
+    const roleText = getRoleDisplayText(participant.role, participant.organization);
     const roleResult = calculateOptimalFontSizeAndText(
       roleText,
       baseRoleFontSize,
