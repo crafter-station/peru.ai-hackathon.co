@@ -1,0 +1,1 @@
+ALTER TABLE "participants" ADD COLUMN "last_pixel_art_generation_at" timestamp;
