@@ -612,7 +612,7 @@ export async function PATCH(request: NextRequest) {
 
     if (!participant?.participantNumber && !processedData.participantNumber) {
       const data = await db.execute<{ participant_number: number }>(
-        sql`SELECT MAX(COALESCE(participant_number, 0)) FROM participants`,
+        sql`SELECT MAX(COALESCE("participant_number", 0)) FROM participants`,
       );
 
       processedData.participantNumber = data.rows[0].participant_number + 1;
@@ -650,7 +650,7 @@ export async function PATCH(request: NextRequest) {
 
   if (allFieldsComplete && !updatedParticipant.participantNumber) {
     const data = await db.execute<{ participant_number: number }>(
-      sql`SELECT MAX(COALESCE(participant_number, 0)) FROM participants`,
+      sql`SELECT MAX(COALESCE("participant_number", 0)) FROM participants`,
     );
 
     const newParticipantNumber = data.rows[0].participant_number + 1;
