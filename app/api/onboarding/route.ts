@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
 import { participants } from "@/lib/schema";
-import { eq, sql } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 
 export async function GET() {
   const { userId } = await auth();
@@ -101,12 +101,12 @@ export async function PATCH(request: NextRequest) {
 
     // Only assign participant number if not already assigned
     if (!participant?.participantNumber && !processedData.participantNumber) {
-      const completedCount = await db
-        .select({ count: sql<number>`count(*)::int` })
-        .from(participants)
-        .where(sql`${participants.participantNumber} IS NOT NULL`);
+      const lastParticipant = await db.query.participants.findFirst({
+        orderBy: desc(participants.participantNumber),
+      });
 
-      processedData.participantNumber = (completedCount[0]?.count || 0) + 1;
+      processedData.participantNumber =
+        (lastParticipant?.participantNumber || 0) + 1;
       console.log(
         "[onboarding] Assigning participant number on completion:",
         processedData.participantNumber,
@@ -135,9 +135,9 @@ export async function PATCH(request: NextRequest) {
     updatedParticipant.dni,
     updatedParticipant.profilePhotoAiUrl,
   ];
-  
+
   const allFieldsComplete = requiredFieldsForBadge.every(
-    (field) => field && field.trim() !== ""
+    (field) => field && field.trim() !== "",
   );
 
   // Assign participant number early if all required fields are complete
@@ -149,16 +149,16 @@ export async function PATCH(request: NextRequest) {
       .where(sql`${participants.participantNumber} IS NOT NULL`);
 
     const newParticipantNumber = (completedCount[0]?.count || 0) + 1;
-    
+
     const reUpdated = await db
       .update(participants)
-      .set({ 
+      .set({
         participantNumber: newParticipantNumber,
-        updatedAt: new Date() 
+        updatedAt: new Date(),
       })
       .where(eq(participants.clerkUserId, userId))
       .returning();
-    
+
     if (reUpdated.length > 0) {
       updatedParticipant = reUpdated[0];
       console.log(
@@ -170,7 +170,11 @@ export async function PATCH(request: NextRequest) {
 
   // Trigger badge generation in background when required fields are complete
   // Don't wait for registrationStatus === "completed"
-  if (allFieldsComplete && updatedParticipant.participantNumber && !updatedParticipant.badgeBlobUrl) {
+  if (
+    allFieldsComplete &&
+    updatedParticipant.participantNumber &&
+    !updatedParticipant.badgeBlobUrl
+  ) {
     // Fire-and-forget badge generation (don't block response)
     fetch(new URL("/api/badge/generate-ai", request.url).toString(), {
       method: "POST",
@@ -179,7 +183,7 @@ export async function PATCH(request: NextRequest) {
     }).catch((error) => {
       console.error("[onboarding] Background badge generation failed:", error);
     });
-    
+
     console.log("[onboarding] Background badge generation triggered");
   }
 
@@ -191,12 +195,15 @@ export async function PATCH(request: NextRequest) {
     !updatedParticipant.badgeBlobUrl
   ) {
     try {
-      const badgeResponse = await fetch(new URL("/api/badge/generate-ai", request.url).toString(), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ participantId: updatedParticipant.id }),
-      });
-      
+      const badgeResponse = await fetch(
+        new URL("/api/badge/generate-ai", request.url).toString(),
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ participantId: updatedParticipant.id }),
+        },
+      );
+
       if (!badgeResponse.ok) {
         const errorData = await badgeResponse.json().catch(() => ({}));
         console.error("[onboarding] Badge generation failed:", errorData);

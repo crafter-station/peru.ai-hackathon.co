@@ -51,7 +51,6 @@ export function Step1Combined() {
       organization: participant?.organization || "",
       dni: participant?.dni || "",
       ageRange: (participant?.ageRange as Step1Data["ageRange"]) || undefined,
-      phoneNumber: participant?.phoneNumber || "",
       profilePhotoUrl: participant?.profilePhotoUrl || "",
       hasLaptop: participant?.hasLaptop || false,
       laptopBrand: participant?.laptopBrand || "",
