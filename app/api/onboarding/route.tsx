@@ -121,13 +121,13 @@ async function generateBadge(participantId: string) {
       return;
     }
 
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < 30; i++) {
       if (!participant?.profilePhotoAiUrl) {
         console.log(
           "[badge] Waiting for AI profile photo for participant:",
           participantId,
         );
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+        await new Promise((resolve) => setTimeout(resolve, 2000));
 
         participant = await db.query.participants.findFirst({
           where: eq(participants.id, participantId),
