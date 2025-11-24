@@ -1,5 +1,10 @@
 "use client";
 
+function getYouTubeEmbedUrl(url: string): string {
+  const videoId = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/)?.[1];
+  return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
+}
+
 export default function WorkshopsListSection() {
   const workshops = [
     {
@@ -8,6 +13,7 @@ export default function WorkshopsListSection() {
       date: "18 de Noviembre • 19:00",
       eventId: "evt-JH2aVEI18JkBa6O",
       url: "https://luma.com/jgmm8k4t",
+      recording: "https://www.youtube.com/watch?v=KvK3LSu4zfQ",
     },
     {
       title: "Expo",
@@ -16,16 +22,18 @@ export default function WorkshopsListSection() {
       url: "https://luma.com/a7z7af8a",
     },
     {
-      name: "Cómo implementar un chatbot de atención al cliente en tu empresa, sin servidores, en AWS",
+      title: "Cómo implementar un chatbot de atención al cliente en tu empresa, sin servidores, en AWS",
       date: "23 de Noviembre • 19:00",
       eventId: "evt-eCHtn8JzvB54Siu",
       url: "https://luma.com/afar70gw",
+      recording: "https://www.youtube.com/watch?v=gUCBvjm4wII",
     },
     {
       title: "Lovable",
       date: "24 de Noviembre • 10:00",
       eventId: "evt-bKIYraV1WFuAtat",
       url: "https://luma.com/ajzg8pzg",
+      recording: "https://www.youtube.com/watch?v=ZDgkSYpo5yI",
     },
     {
       title: "Serverless para el despliegue de tus prototipos",
@@ -54,9 +62,9 @@ export default function WorkshopsListSection() {
       url: "https://luma.com/8gixx4h6",
     },
     {
-      name: "De idea a Demo",
+      title: "De idea a Demo",
       date: "27 de Noviembre • 18:00",
-      eventId: "vent/evt-JE3YbK7fVuPwnoh",
+      eventId: "evt-JE3YbK7fVuPwnoh",
       url: "https://luma.com/5vt6xzqu",
     },
     {
@@ -96,47 +104,60 @@ export default function WorkshopsListSection() {
                 </div>
               </div>
 
-              {/* Luma Embed with Clickable Card Overlay */}
-              <div className="w-full relative overflow-hidden h-[800px] md:h-[460px]">
-                <div
-                  className="w-full h-full"
-                  style={{
-                    transform: "scale(1.1) translateY(40px)",
-                    transformOrigin: "center center",
-                  }}
-                >
+              {/* Show recording if available, otherwise show Luma embed */}
+              {workshop.recording ? (
+                <div className="w-full relative overflow-hidden rounded-sm" style={{ aspectRatio: "16/9" }}>
                   <iframe
-                    className="w-full h-[800px] md:h-[460px]"
-                    src={`https://lu.ma/embed/event/${workshop.eventId}/simple`}
+                    className="w-full h-full"
+                    src={getYouTubeEmbedUrl(workshop.recording)}
                     frameBorder="0"
-                    allow="fullscreen; payment"
-                    aria-hidden="true"
-                    tabIndex={-1}
-                    style={{
-                      backgroundColor: "rgb(0, 0, 0)",
-                    }}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    title={`Grabación: ${workshop.title}`}
                   ></iframe>
                 </div>
-                <div
-                  onClick={() =>
-                    window.open(workshop.url, "_blank", "noopener,noreferrer")
-                  }
-                  className="absolute inset-0 w-full h-full cursor-pointer z-10 bg-transparent hover:bg-black/5 transition-colors"
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`Abrir evento: ${workshop.title}`}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      window.open(
-                        workshop.url,
-                        "_blank",
-                        "noopener,noreferrer"
-                      );
+              ) : (
+                <div className="w-full relative overflow-hidden h-[800px] md:h-[460px]">
+                  <div
+                    className="w-full h-full"
+                    style={{
+                      transform: "scale(1.1) translateY(40px)",
+                      transformOrigin: "center center",
+                    }}
+                  >
+                    <iframe
+                      className="w-full h-[800px] md:h-[460px]"
+                      src={`https://lu.ma/embed/event/${workshop.eventId}/simple`}
+                      frameBorder="0"
+                      allow="fullscreen; payment"
+                      aria-hidden="true"
+                      tabIndex={-1}
+                      style={{
+                        backgroundColor: "rgb(0, 0, 0)",
+                      }}
+                    ></iframe>
+                  </div>
+                  <div
+                    onClick={() =>
+                      window.open(workshop.url, "_blank", "noopener,noreferrer")
                     }
-                  }}
-                />
-              </div>
+                    className="absolute inset-0 w-full h-full cursor-pointer z-10 bg-transparent hover:bg-black/5 transition-colors"
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Abrir evento: ${workshop.title}`}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        window.open(
+                          workshop.url,
+                          "_blank",
+                          "noopener,noreferrer"
+                        );
+                      }
+                    }}
+                  />
+                </div>
+              )}
             </div>
           ))}
         </div>
