@@ -40,7 +40,7 @@ export function Step1Combined() {
   const [isUploading, setIsUploading] = useState(false);
   const [isConverting, setIsConverting] = useState(false);
   const [photoPreview, setPhotoPreview] = useState<string | null>(
-    participant?.profilePhotoUrl || null
+    participant?.profilePhotoUrl || null,
   );
   const { playSuccess, playError, playClick } = useRetroSounds();
 
@@ -50,7 +50,7 @@ export function Step1Combined() {
       fullName: participant?.fullName || "",
       organization: participant?.organization || "",
       dni: participant?.dni || "",
-      ageRange: participant?.ageRange as Step1Data["ageRange"] || undefined,
+      ageRange: (participant?.ageRange as Step1Data["ageRange"]) || undefined,
       phoneNumber: participant?.phoneNumber || "",
       profilePhotoUrl: participant?.profilePhotoUrl || "",
       hasLaptop: participant?.hasLaptop || false,
@@ -77,11 +77,13 @@ export function Step1Combined() {
         quality: 0.9,
       });
 
-      const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
+      const blob = Array.isArray(convertedBlob)
+        ? convertedBlob[0]
+        : convertedBlob;
       const convertedFile = new File(
         [blob],
         file.name.replace(/\.(heic|heif)$/i, ".png"),
-        { type: "image/png" }
+        { type: "image/png" },
       );
 
       return convertedFile;
@@ -93,46 +95,50 @@ export function Step1Combined() {
     }
   }, []);
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    const file = acceptedFiles[0];
-    if (!file) return;
+  const onDrop = useCallback(
+    async (acceptedFiles: File[]) => {
+      const file = acceptedFiles[0];
+      if (!file) return;
 
-    setIsUploading(true);
-    try {
-      const processedFile = await convertToWebFormat(file);
-      
-      const formData = new FormData();
-      formData.append("file", processedFile);
+      setIsUploading(true);
+      try {
+        const processedFile = await convertToWebFormat(file);
 
-      const response = await fetch("/api/onboarding/upload-photo", {
-        method: "POST",
-        body: formData,
-      });
+        const formData = new FormData();
+        formData.append("file", processedFile);
 
-      if (!response.ok) {
-        throw new Error("Error al subir la foto");
+        const response = await fetch("/api/onboarding/upload-photo", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error("Error al subir la foto");
+        }
+
+        const { url } = await response.json();
+
+        form.setValue("profilePhotoUrl", url);
+        setPhotoPreview(url);
+
+        updateParticipant({
+          profilePhotoUrl: url,
+        });
+        playSuccess();
+      } catch (error) {
+        console.error("Error uploading photo:", error);
+        playError();
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "Error al subir la foto. Por favor intenta de nuevo.";
+        alert(errorMessage);
+      } finally {
+        setIsUploading(false);
       }
-
-      const { url } = await response.json();
-      
-      form.setValue("profilePhotoUrl", url);
-      setPhotoPreview(url);
-      
-      updateParticipant({
-        profilePhotoUrl: url,
-      });
-      playSuccess();
-    } catch (error) {
-      console.error("Error uploading photo:", error);
-      playError();
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : "Error al subir la foto. Por favor intenta de nuevo.";
-      alert(errorMessage);
-    } finally {
-      setIsUploading(false);
-    }
-  }, [form, updateParticipant, convertToWebFormat, playSuccess, playError]);
+    },
+    [form, updateParticipant, convertToWebFormat, playSuccess, playError],
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -188,7 +194,7 @@ export function Step1Combined() {
                     <label className="block text-xs font-adelle-mono font-bold uppercase tracking-wider text-white/80">
                       {/* AI_AVATAR */}
                     </label>
-                    
+
                     {!photoPreview ? (
                       <div
                         {...getRootProps()}
@@ -202,7 +208,13 @@ export function Step1Combined() {
                         <input {...getInputProps()} disabled={isUploading} />
                         <Upload className="size-8 mx-auto mb-3 text-white/60" />
                         <p className="text-xs uppercase text-white">
-                          {isConverting ? "CONVIRTIENDO_IMAGEN..." : isUploading ? "SUBIENDO..." : isDragActive ? "SUELTA_ARCHIVO_AQUÍ" : "ARRastra_ARCHIVO.exe"}
+                          {isConverting
+                            ? "CONVIRTIENDO_IMAGEN..."
+                            : isUploading
+                              ? "SUBIENDO..."
+                              : isDragActive
+                                ? "SUELTA_ARCHIVO_AQUÍ"
+                                : "ARRastra_ARCHIVO.exe"}
                         </p>
                         <p className="text-[10px] text-white/60 mt-2 uppercase">
                           PNG, JPG, WEBP, HEIC (MÁX 5MB)
@@ -226,7 +238,7 @@ export function Step1Combined() {
                             {/* TU_AVATAR_IA_SE_GENERARÁ_EN_SEGUNDO_PLANO */}
                           </p>
                         </div>
-                        
+
                         <div className="flex justify-center">
                           <PixelButton
                             type="button"
@@ -288,26 +300,6 @@ export function Step1Combined() {
                     </FormItem>
                   )}
                 />
-
-                <FormField
-                  control={form.control}
-                  name="phoneNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <RetroInput
-                          label="TELÉFONO_WHATSAPP"
-                          placeholder="+51987654321, +1234567890"
-                          maxLength={20}
-                          tabIndex={5}
-                          {...field}
-                          value={field.value as string}
-                        />
-                      </FormControl>
-                      <FormMessage className="font-adelle-mono text-xs uppercase" />
-                    </FormItem>
-                  )}
-                />
               </div>
 
               {/* Right Column */}
@@ -339,17 +331,28 @@ export function Step1Combined() {
                       <label className="block text-xs font-adelle-mono font-bold uppercase tracking-wider mb-1 text-white/80">
                         RANGO_DE_EDAD
                       </label>
-                      <RetroSelect onValueChange={field.onChange} defaultValue={field.value}>
+                      <RetroSelect
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
                           <RetroSelectTrigger tabIndex={4}>
                             <RetroSelectValue placeholder="SELECCIONA_TU_EDAD" />
                           </RetroSelectTrigger>
                         </FormControl>
                         <RetroSelectContent>
-                          <RetroSelectItem value="18-24">18-24 AÑOS</RetroSelectItem>
-                          <RetroSelectItem value="25-34">25-34 AÑOS</RetroSelectItem>
-                          <RetroSelectItem value="35-44">35-44 AÑOS</RetroSelectItem>
-                          <RetroSelectItem value="45+">45+ AÑOS</RetroSelectItem>
+                          <RetroSelectItem value="18-24">
+                            18-24 AÑOS
+                          </RetroSelectItem>
+                          <RetroSelectItem value="25-34">
+                            25-34 AÑOS
+                          </RetroSelectItem>
+                          <RetroSelectItem value="35-44">
+                            35-44 AÑOS
+                          </RetroSelectItem>
+                          <RetroSelectItem value="45+">
+                            45+ AÑOS
+                          </RetroSelectItem>
                         </RetroSelectContent>
                       </RetroSelect>
                       <p className="text-[10px] font-adelle-mono text-white/60 uppercase mt-1">
@@ -426,4 +429,3 @@ export function Step1Combined() {
     </RetroCard>
   );
 }
-
