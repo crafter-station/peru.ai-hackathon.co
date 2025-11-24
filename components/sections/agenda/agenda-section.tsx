@@ -1,38 +1,59 @@
 "use client";
 
-/**
- * Agenda section displaying hackathon schedule
- */
 export default function AgendaSection() {
   const agenda = [
     {
       day: "Sábado 29 Nov",
       events: [
-        { time: "8:00", title: "Check-in", desc: "Registro y bienvenida" },
         {
-          time: "9:00",
+          time: "8:00 - 9:00",
+          title: "Check-in",
+          desc: "Registro y bienvenida de participantes",
+        },
+        {
+          time: "9:00 - 10:00",
           title: "Conoce a los Patrocinadores",
           desc: "Presentación de sponsors",
         },
         {
           time: "10:30",
           title: "Inicio de la Hackathon",
-          desc: "¡Empieza el cronómetro!",
+          desc: "Empieza el cronometro!",
         },
-        { time: "14:00", title: "Almuerzo", desc: "Recarga de energías" },
-        { time: "19:00", title: "Cena", desc: "Seguimos construyendo" },
+        {
+          time: "14:00",
+          title: "Almuerzo",
+          desc: "Recargamos energías para que las ideas sigan fluyendo",
+        },
+        {
+          time: "19:00",
+          title: "Cena",
+          desc: "Un respiro merecido para seguir construyendo",
+        },
       ],
     },
     {
       day: "Domingo 30 Nov",
       events: [
-        { time: "7:00", title: "Desayuno", desc: "Último impulso de energía" },
-        { time: "8:30", title: "Cierre de Entregas", desc: "Deadline final" },
-        { time: "11:00", title: "Demos", desc: "Presentación de proyectos" },
         {
-          time: "12:00",
+          time: "7:00",
+          title: "Desayuno",
+          desc: "Un último impulso de energía para darlo todo en estas horas finales",
+        },
+        {
+          time: "8:30",
+          title: "Cierre de Entregas",
+          desc: "Deadline final para subir proyectos",
+        },
+        {
+          time: "11:00 - 12:00",
+          title: "Demos",
+          desc: "Presentación de proyectos finalistas",
+        },
+        {
+          time: "12:00 - 12:30",
           title: "Anuncio de Ganadores",
-          desc: "Premiación y cierre",
+          desc: "Premiación y cierre del evento",
         },
       ],
     },
