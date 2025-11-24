@@ -8,6 +8,8 @@ const isPublicRoute = createRouteMatcher([
   "/api/generate-image(.*)",
   "/api/guardrail(.*)",
   "/api/profile/(.*)",
+  "/api/badge/og-share/(.*)",
+  "/api/badge/og/(.*)",
   "/i/(.*)",
   "/p/(.*)",
   "/sign-in(.*)",
