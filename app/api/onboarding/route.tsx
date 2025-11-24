@@ -611,11 +611,13 @@ export async function PATCH(request: NextRequest) {
     }
 
     if (!participant?.participantNumber && !processedData.participantNumber) {
-      const data = await db.execute<{ participant_number: number }>(
+      const data = await db.execute<{ max: number }>(
         sql`SELECT MAX(COALESCE("participant_number", 0)) FROM participants`,
       );
 
-      processedData.participantNumber = data.rows[0].participant_number + 1;
+      console.log(JSON.stringify(data, null, 2));
+
+      processedData.participantNumber = data.rows[0].max + 1;
       console.log(
         "[onboarding] Assigning participant number on completion:",
         processedData.participantNumber,
@@ -649,11 +651,13 @@ export async function PATCH(request: NextRequest) {
   );
 
   if (allFieldsComplete && !updatedParticipant.participantNumber) {
-    const data = await db.execute<{ participant_number: number }>(
+    const data = await db.execute<{ max: number }>(
       sql`SELECT MAX(COALESCE("participant_number", 0)) FROM participants`,
     );
 
-    const newParticipantNumber = data.rows[0].participant_number + 1;
+    console.log(JSON.stringify(data, null, 2));
+
+    const newParticipantNumber = data.rows[0].max + 1;
 
     const reUpdated = await db
       .update(participants)
