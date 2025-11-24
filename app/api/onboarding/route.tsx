@@ -9,7 +9,7 @@ import QRCode from "qrcode";
 import satori from "satori";
 import { db } from "@/lib/db";
 import { participants } from "@/lib/schema";
-import { desc, eq, sql } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 
 let fontsCache: { regular: Buffer; bold: Buffer } | null = null;
 
