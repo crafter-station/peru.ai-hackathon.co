@@ -143,7 +143,6 @@ export default function CompletePage() {
               <div className="relative w-full flex items-center justify-center">
                 <BadgePreview3D
                   badgeUrl={participant.badgeBlobUrl || null}
-                  isGenerating={!participant.badgeBlobUrl}
                   participantNumber={
                     participant.participantNumber?.toString() || null
                   }
