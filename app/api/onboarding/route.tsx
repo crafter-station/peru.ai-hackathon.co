@@ -650,12 +650,11 @@ export async function PATCH(request: NextRequest) {
   );
 
   if (allFieldsComplete && !updatedParticipant.participantNumber) {
-    const completedCount = await db
-      .select({ count: sql<number>`count(*)::int` })
-      .from(participants)
-      .where(sql`${participants.participantNumber} IS NOT NULL`);
+    const lastParticipant = await db.query.participants.findFirst({
+      orderBy: desc(participants.participantNumber),
+    });
 
-    const newParticipantNumber = (completedCount[0]?.count || 0) + 1;
+    const newParticipantNumber = (lastParticipant?.participantNumber ?? 0) + 1;
 
     const reUpdated = await db
       .update(participants)
