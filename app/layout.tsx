@@ -6,6 +6,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { ChatBubble } from "@/components/chat/chat-bubble";
+import { GithubBadge } from "@/components/github-badge";
 import { PostHogProvider } from "@/providers/posthog";
 
 const geistSans = Geist({
@@ -165,6 +166,7 @@ export default function RootLayout({
             <Providers>
               {children}
               <ChatBubble />
+              <GithubBadge />
               <Analytics />
             </Providers>
           </PostHogProvider>
