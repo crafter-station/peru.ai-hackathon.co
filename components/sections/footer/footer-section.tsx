@@ -85,13 +85,13 @@ export default function FooterSection() {
           <div className="text-center mb-6">
             <p className="text-sm text-muted-foreground mb-6">Apoyados por:</p>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3 items-center justify-items-center max-w-4xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 items-center justify-items-center max-w-5xl mx-auto">
               {/* Partner 1 - IEEE USIL */}
               <a
                 href="https://edu.ieee.org/pe-usil/ieee-usil-nosotros/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative px-2 py-1.5 rounded-md bg-gradient-to-br from-white/[0.01] to-transparent hover:from-white/[0.02] transition-all duration-300 w-full flex items-center justify-center"
+                className="group relative px-3 py-2.5 rounded-md bg-gradient-to-br from-white/[0.01] to-transparent hover:from-white/[0.02] transition-all duration-300 w-full flex items-center justify-center"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-brand-red/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md"></div>
                 <Image
@@ -100,7 +100,7 @@ export default function FooterSection() {
                   width={150}
                   height={60}
                   quality={100}
-                  className="w-full h-8 md:h-10 object-contain relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
+                  className="w-full h-10 md:h-12 object-contain relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
                 />
               </a>
 
@@ -109,7 +109,7 @@ export default function FooterSection() {
                 href="https://hackeandoproductos.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative px-2 py-1.5 rounded-md bg-gradient-to-br from-white/[0.01] to-transparent hover:from-white/[0.02] transition-all duration-300 w-full flex items-center justify-center"
+                className="group relative px-3 py-2.5 rounded-md bg-gradient-to-br from-white/[0.01] to-transparent hover:from-white/[0.02] transition-all duration-300 w-full flex items-center justify-center"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-brand-red/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md"></div>
                 <Image
@@ -118,7 +118,7 @@ export default function FooterSection() {
                   width={150}
                   height={75}
                   quality={100}
-                  className="w-full h-8 md:h-10 object-contain relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
+                  className="w-full h-10 md:h-12 object-contain relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
                 />
               </a>
 
@@ -127,7 +127,7 @@ export default function FooterSection() {
                 href="https://utecventures.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative px-2 py-1.5 rounded-md bg-gradient-to-br from-white/[0.01] to-transparent hover:from-white/[0.02] transition-all duration-300 w-full flex items-center justify-center"
+                className="group relative px-3 py-2.5 rounded-md bg-gradient-to-br from-white/[0.01] to-transparent hover:from-white/[0.02] transition-all duration-300 w-full flex items-center justify-center"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-brand-red/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md"></div>
                 <Image
@@ -136,7 +136,7 @@ export default function FooterSection() {
                   width={150}
                   height={60}
                   quality={100}
-                  className="w-full h-8 md:h-10 object-contain relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
+                  className="w-full h-10 md:h-12 object-contain relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
                 />
               </a>
 
@@ -145,7 +145,7 @@ export default function FooterSection() {
                 href="https://www.linkedin.com/company/ai-playgrounds-tech/posts/?feedView=all"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative px-2 py-1.5 rounded-md bg-gradient-to-br from-white/[0.01] to-transparent hover:from-white/[0.02] transition-all duration-300 w-full flex items-center justify-center"
+                className="group relative px-3 py-2.5 rounded-md bg-gradient-to-br from-white/[0.01] to-transparent hover:from-white/[0.02] transition-all duration-300 w-full flex items-center justify-center"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-brand-red/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md"></div>
                 <Image
@@ -154,7 +154,7 @@ export default function FooterSection() {
                   width={150}
                   height={60}
                   quality={95}
-                  className="w-full h-7 md:h-9 object-contain relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
+                  className="w-full h-9 md:h-11 object-contain relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
                 />
               </a>
 
@@ -163,7 +163,7 @@ export default function FooterSection() {
                 href="https://crafterstation.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative px-2 py-1.5 rounded-md bg-gradient-to-br from-white/[0.01] to-transparent hover:from-white/[0.02] transition-all duration-300 w-full flex items-center justify-center"
+                className="group relative px-3 py-2.5 rounded-md bg-gradient-to-br from-white/[0.01] to-transparent hover:from-white/[0.02] transition-all duration-300 w-full flex items-center justify-center"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-brand-red/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md"></div>
                 <Image
@@ -172,7 +172,7 @@ export default function FooterSection() {
                   width={150}
                   height={60}
                   quality={100}
-                  className="w-full h-7 md:h-9 object-contain relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
+                  className="w-full h-9 md:h-11 object-contain relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
                 />
               </a>
 
@@ -181,7 +181,7 @@ export default function FooterSection() {
                 href="https://kebo.app/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative px-2 py-1.5 rounded-md bg-gradient-to-br from-white/[0.01] to-transparent hover:from-white/[0.02] transition-all duration-300 w-full flex items-center justify-center"
+                className="group relative px-3 py-2.5 rounded-md bg-gradient-to-br from-white/[0.01] to-transparent hover:from-white/[0.02] transition-all duration-300 w-full flex items-center justify-center"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-brand-red/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md"></div>
                 <Image
@@ -190,7 +190,7 @@ export default function FooterSection() {
                   width={150}
                   height={60}
                   quality={100}
-                  className="w-full h-7 md:h-9 object-contain relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
+                  className="w-full h-9 md:h-11 object-contain relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
                 />
               </a>
 
@@ -199,7 +199,7 @@ export default function FooterSection() {
                 href="https://www.linkedin.com/company/start-lima/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative px-2 py-1.5 rounded-md bg-gradient-to-br from-white/[0.01] to-transparent hover:from-white/[0.02] transition-all duration-300 w-full flex items-center justify-center md:col-start-2"
+                className="group relative px-3 py-2.5 rounded-md bg-gradient-to-br from-white/[0.01] to-transparent hover:from-white/[0.02] transition-all duration-300 w-full flex items-center justify-center"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-brand-red/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md"></div>
                 <Image
@@ -208,13 +208,30 @@ export default function FooterSection() {
                   width={150}
                   height={60}
                   quality={95}
-                  className="w-full h-8 md:h-10 object-contain relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
+                  className="w-full h-10 md:h-12 object-contain relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
+                />
+              </a>
+
+              {/* Partner 8 - Spin */}
+              <a
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative px-3 py-2.5 rounded-md bg-gradient-to-br from-white/[0.01] to-transparent hover:from-white/[0.02] transition-all duration-300 w-full flex items-center justify-center"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-brand-red/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md"></div>
+                <Image
+                  src="/spin.png"
+                  alt="Spin"
+                  width={150}
+                  height={60}
+                  quality={95}
+                  className="w-full h-10 md:h-12 object-contain relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
                 />
               </a>
             </div>
           </div>
         </div>
-
 
         {/* Copyright */}
         <div className="border-t pt-8 text-center mb-8">
