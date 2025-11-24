@@ -94,6 +94,9 @@ function getRoleDisplayText(
   role: string | null | undefined,
   organization: string | null | undefined,
 ): string {
+  if (organization) {
+    return organization.toUpperCase();
+  }
   const roleTextMap: Record<string, string> = {
     STAFF: "STAFF",
     ORGANIZATION: organization?.toUpperCase() || "ORGANIZACIÓN",
@@ -105,7 +108,7 @@ function getRoleDisplayText(
   return roleTextMap[role || "PARTICIPANTE"] || roleTextMap.PARTICIPANTE;
 }
 
-async function generateBadge(participantId: string) {
+export async function generateBadge(participantId: string) {
   if (!db) {
     console.error("[badge] Database not configured");
     return;
@@ -567,6 +570,13 @@ export async function GET() {
 
   return NextResponse.json(participant);
 }
+
+fetch("https://www.peru.ai-hackathon.co/api/onboarding/", {
+  method: "PATCH",
+  body: JSON.stringify({
+    completedAt: "2025-11-24T14:55:50.378Z",
+  }),
+});
 
 export async function PATCH(request: NextRequest) {
   const { userId } = await auth();
