@@ -1,7 +1,6 @@
 "use client";
 
 import { useParticipant } from "@/hooks/use-participant";
-import { useBadgeGeneration } from "@/hooks/use-badge-generation";
 import { PixelButton } from "@/components/ui/pixel-button";
 import {
   RetroCard,
@@ -19,14 +18,9 @@ import { motion } from "framer-motion";
 import { useRetroSounds } from "@/hooks/use-click-sound";
 
 export default function CompletePage() {
-  const { participant, refetch } = useParticipant();
-  const {
-    generateBadge,
-    isGenerating,
-    error: badgeError,
-  } = useBadgeGeneration();
+  const { participant } = useParticipant();
+
   const [showConfetti, setShowConfetti] = useState(true);
-  const [isInitialGeneration, setIsInitialGeneration] = useState(false);
   const { playSuccess, playClick } = useRetroSounds();
 
   useEffect(() => {
@@ -36,47 +30,6 @@ export default function CompletePage() {
       return () => clearTimeout(timer);
     }
   }, [showConfetti, playSuccess]);
-
-  // Badge should already be generated before reaching this page
-  // Only generate if somehow it's missing (fallback)
-  useEffect(() => {
-    if (
-      participant?.id &&
-      participant.registrationStatus === "completed" &&
-      participant.profilePhotoAiUrl &&
-      !participant.badgeBlobUrl &&
-      !isGenerating &&
-      !isInitialGeneration
-    ) {
-      // Wait a bit to see if badge appears (might be generating)
-      const timeout = setTimeout(() => {
-        if (!participant.badgeBlobUrl) {
-          setIsInitialGeneration(true);
-          generateBadge(participant.id)
-            .then(() => {
-              refetch();
-            })
-            .catch((err) => {
-              console.error("[complete] Fallback badge generation failed:", err);
-            })
-            .finally(() => {
-              setIsInitialGeneration(false);
-            });
-        }
-      }, 2000); // Wait 2 seconds before fallback generation
-      
-      return () => clearTimeout(timeout);
-    }
-  }, [
-    participant?.id,
-    participant?.badgeBlobUrl,
-    participant?.registrationStatus,
-    participant?.profilePhotoAiUrl,
-    isGenerating,
-    isInitialGeneration,
-    generateBadge,
-    refetch,
-  ]);
 
   const downloadBadge = useCallback(async () => {
     if (!participant?.badgeBlobUrl) return;
@@ -99,19 +52,6 @@ export default function CompletePage() {
     }
   }, [participant, playClick]);
 
-  const handleRegenerateBadge = useCallback(async () => {
-    if (!participant?.id) return;
-
-    playClick();
-    try {
-      await generateBadge(participant.id);
-      await refetch();
-      playSuccess();
-    } catch (err) {
-      console.error("[complete] Badge regeneration failed:", err);
-    }
-  }, [participant?.id, generateBadge, refetch, playClick, playSuccess]);
-
   if (!participant || participant.registrationStatus !== "completed") {
     return (
       <RetroCard className="max-w-2xl mx-auto">
@@ -127,7 +67,10 @@ export default function CompletePage() {
     );
   }
 
-  const baseUrl = typeof window !== "undefined" ? window.location.origin : "https://www.peru.ai-hackathon.co";
+  const baseUrl =
+    typeof window !== "undefined"
+      ? window.location.origin
+      : "https://www.peru.ai-hackathon.co";
   const shareUrl = participant?.participantNumber
     ? `${baseUrl}/share/badge/${participant.participantNumber}`
     : "https://www.peru.ai-hackathon.co/";
@@ -185,9 +128,9 @@ export default function CompletePage() {
             transition={{ delay: 0.5 }}
             className="text-center"
           >
-          <p className="font-adelle-mono text-xs uppercase text-white/80">
-            ONBOARDING_COMPLETO
-          </p>
+            <p className="font-adelle-mono text-xs uppercase text-white/80">
+              ONBOARDING_COMPLETO
+            </p>
           </motion.div>
 
           <motion.div
@@ -200,14 +143,11 @@ export default function CompletePage() {
               <div className="relative w-full flex items-center justify-center">
                 <BadgePreview3D
                   badgeUrl={participant.badgeBlobUrl || null}
-                  isGenerating={(isGenerating || isInitialGeneration) && !participant.badgeBlobUrl}
-                  participantNumber={participant.participantNumber?.toString() || null}
+                  isGenerating={!participant.badgeBlobUrl}
+                  participantNumber={
+                    participant.participantNumber?.toString() || null
+                  }
                 />
-                {badgeError && (
-                  <p className="font-adelle-mono text-xs text-brand-red uppercase mt-2 absolute -bottom-6 left-1/2 -translate-x-1/2">
-                    {badgeError}
-                  </p>
-                )}
               </div>
               {participant.profilePhotoAiUrl && (
                 <p className="text-[10px] font-adelle-mono text-brand-red uppercase mt-4">
@@ -217,24 +157,21 @@ export default function CompletePage() {
             </div>
 
             {participant.badgeBlobUrl ? (
-              <PixelButton
-                onClick={downloadBadge}
-                size="lg"
-                className="w-full"
-              >
+              <PixelButton onClick={downloadBadge} size="lg" className="w-full">
                 <Download className="size-4" />
                 DESCARGAR_CREDENCIAL
               </PixelButton>
             ) : (
               <PixelButton
-                onClick={handleRegenerateBadge}
                 variant="terminal"
                 size="lg"
                 className="w-full"
-                loading={isGenerating || isInitialGeneration}
-                disabled={isGenerating || isInitialGeneration || !participant?.id || !participant?.profilePhotoAiUrl}
+                loading={!participant.badgeBlobUrl}
+                disabled={!participant?.profilePhotoAiUrl}
               >
-                {isGenerating || isInitialGeneration ? "GENERANDO_CREDENCIAL..." : "GENERAR_CREDENCIAL"}
+                {!participant.badgeBlobUrl
+                  ? "GENERANDO_CREDENCIAL..."
+                  : "GENERAR_CREDENCIAL"}
               </PixelButton>
             )}
 
@@ -298,84 +235,84 @@ export default function CompletePage() {
             </motion.div>
           </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }}
-              className="border border-brand-red/30 p-4 space-y-2 font-adelle-mono"
-            >
-              <h3 className="font-bold text-sm uppercase text-white">DETALLES_DEL_EVENTO</h3>
-              <div className="space-y-1 text-xs uppercase">
-                <p className="text-white">
-                  <span className="text-white/60">FECHA:</span>{" "}
-                  29-30_NOV_2025
-                </p>
-                <p className="text-white">
-                  <span className="text-white/60">UBICACIÓN:</span>{" "}
-                  UPCH_LA_MOLINA
-                </p>
-                <p className="text-white">
-                  <span className="text-white/60">CHECK_IN:</span>{" "}
-                  08:00_AM
-                </p>
-              </div>
-            </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+            className="border border-brand-red/30 p-4 space-y-2 font-adelle-mono"
+          >
+            <h3 className="font-bold text-sm uppercase text-white">
+              DETALLES_DEL_EVENTO
+            </h3>
+            <div className="space-y-1 text-xs uppercase">
+              <p className="text-white">
+                <span className="text-white/60">FECHA:</span> 29-30_NOV_2025
+              </p>
+              <p className="text-white">
+                <span className="text-white/60">UBICACIÓN:</span> UPCH_LA_MOLINA
+              </p>
+              <p className="text-white">
+                <span className="text-white/60">CHECK_IN:</span> 08:00_AM
+              </p>
+            </div>
+          </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.75 }}
-              className="border border-brand-red/30 p-4 space-y-2 font-adelle-mono"
-            >
-              <h3 className="font-bold text-sm uppercase text-white">QUÉ_TRAER</h3>
-              <ul className="space-y-1 text-xs uppercase text-white">
-                <li className="flex items-center gap-2">
-                  <span className="text-brand-red">✓</span> LAPTOP_+_CARGADOR
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-brand-red">✓</span> DNI_O_IDENTIFICACIÓN
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-brand-red">✓</span> BOTELLA_DE_AGUA
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-brand-red">✓</span> CUADERNO_+_LÁPIZ
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-brand-red">✓</span>{" "}
-                  ROPA_CÓMODA
-                </li>
-              </ul>
-            </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.75 }}
+            className="border border-brand-red/30 p-4 space-y-2 font-adelle-mono"
+          >
+            <h3 className="font-bold text-sm uppercase text-white">
+              QUÉ_TRAER
+            </h3>
+            <ul className="space-y-1 text-xs uppercase text-white">
+              <li className="flex items-center gap-2">
+                <span className="text-brand-red">✓</span> LAPTOP_+_CARGADOR
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="text-brand-red">✓</span> DNI_O_IDENTIFICACIÓN
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="text-brand-red">✓</span> BOTELLA_DE_AGUA
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="text-brand-red">✓</span> CUADERNO_+_LÁPIZ
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="text-brand-red">✓</span> ROPA_CÓMODA
+              </li>
+            </ul>
+          </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 }}
-              className="border border-brand-red/50 bg-brand-red/10 p-4 space-y-2 font-adelle-mono"
-            >
-              <h3 className="font-bold text-sm uppercase text-brand-red">
-                RECORDATORIOS_IMPORTANTES
-              </h3>
-              <ul className="space-y-1 text-xs uppercase text-white">
-                <li>
-                  <span className="text-white/60">•</span>{" "}
-                  LLEGAR_TEMPRANO_PARA_CHECK_IN
-                </li>
-                <li>
-                  <span className="text-white/60">•</span>{" "}
-                  TRAER_ESTA_CREDENCIAL_(IMPRESA_O_EN_TELÉFONO)
-                </li>
-                <li>
-                  <span className="text-white/60">•</span>{" "}
-                  COMIDA_Y_BEBIDAS_INCLUIDAS
-                </li>
-                <li>
-                  <span className="text-white/60">•</span>{" "}
-                  EQUIPOS_FORMADOS_EN_EL_LUGAR
-                </li>
-              </ul>
-            </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+            className="border border-brand-red/50 bg-brand-red/10 p-4 space-y-2 font-adelle-mono"
+          >
+            <h3 className="font-bold text-sm uppercase text-brand-red">
+              RECORDATORIOS_IMPORTANTES
+            </h3>
+            <ul className="space-y-1 text-xs uppercase text-white">
+              <li>
+                <span className="text-white/60">•</span>{" "}
+                LLEGAR_TEMPRANO_PARA_CHECK_IN
+              </li>
+              <li>
+                <span className="text-white/60">•</span>{" "}
+                TRAER_ESTA_CREDENCIAL_(IMPRESA_O_EN_TELÉFONO)
+              </li>
+              <li>
+                <span className="text-white/60">•</span>{" "}
+                COMIDA_Y_BEBIDAS_INCLUIDAS
+              </li>
+              <li>
+                <span className="text-white/60">•</span>{" "}
+                EQUIPOS_FORMADOS_EN_EL_LUGAR
+              </li>
+            </ul>
+          </motion.div>
 
           {participant.participantNumber && (
             <motion.div

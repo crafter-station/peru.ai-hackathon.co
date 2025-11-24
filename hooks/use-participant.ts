@@ -4,13 +4,18 @@ import type { Participant } from "@/lib/schema";
 export function useParticipant() {
   const queryClient = useQueryClient();
 
-  const { data: participant, isLoading, refetch } = useQuery<Participant | null>({
+  const {
+    data: participant,
+    isLoading,
+    refetch,
+  } = useQuery<Participant | null>({
     queryKey: ["participant"],
     queryFn: async () => {
       const response = await fetch("/api/onboarding");
       if (!response.ok) return null;
       return response.json();
     },
+    refetchInterval: 3000,
   });
 
   const updateMutation = useMutation({
@@ -25,13 +30,15 @@ export function useParticipant() {
     },
     onMutate: async (newData) => {
       await queryClient.cancelQueries({ queryKey: ["participant"] });
-      const previousParticipant = queryClient.getQueryData<Participant | null>(["participant"]);
-      
+      const previousParticipant = queryClient.getQueryData<Participant | null>([
+        "participant",
+      ]);
+
       queryClient.setQueryData<Participant | null>(["participant"], (old) => {
         if (!old) return old;
         return { ...old, ...newData };
       });
-      
+
       return { previousParticipant };
     },
     onError: (_err, _newData, context) => {

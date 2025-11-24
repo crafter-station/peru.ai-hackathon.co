@@ -30,8 +30,8 @@ function LoadingState() {
             ))}
           </div>
           <p className="font-adelle-mono text-sm uppercase tracking-wider">
-            CARGANDO<span className="loading-dots"></span>
-           ]</p>
+            CARGANDO<span className="loading-dots"></span>]
+          </p>
         </div>
       </RetroCardContent>
     </RetroCard>
@@ -69,8 +69,8 @@ export default function OnboardingPage() {
           <GlitchText>IA_HACKATHON.exe</GlitchText>
         </h1>
         <p className="font-adelle-mono text-xs text-white/60 uppercase tracking-wider">
-          PROTOCOLO_ONBOARDING_v2025
-         ]</p>
+          PROTOCOLO_ONBOARDING_v2025 ]
+        </p>
       </div>
 
       <RetroProgressBar
@@ -88,10 +88,10 @@ export default function OnboardingPage() {
       </div>
 
       <div className="text-center font-adelle-mono text-xs text-white/60 uppercase tracking-wider space-y-1">
+        <p>DATOS REQUERIDOS POR LA UPCH</p>
         <p>FECHA_EVENTO: 29-30 NOV 2025 ]</p>
         <p>UBICACIÓN: UPCH_LA_MOLINA ]</p>
       </div>
     </div>
   );
 }
-
