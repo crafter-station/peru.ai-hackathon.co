@@ -43,3 +43,6 @@ next-env.d.ts
 .cursor/commands
 .cursor/mcp.json
 .clerk
+.env.local
+.env
+.cursor/

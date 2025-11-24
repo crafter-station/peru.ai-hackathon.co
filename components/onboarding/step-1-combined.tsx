@@ -191,7 +191,7 @@ export function Step1Combined() {
                 <FormItem>
                   <div className="space-y-1">
                     <label className="block text-xs font-adelle-mono font-bold uppercase tracking-wider text-white/80">
-                      {/* AI_AVATAR */}
+                      FOTO DE PERFIL
                     </label>
 
                     {!photoPreview ? (
@@ -213,7 +213,7 @@ export function Step1Combined() {
                               ? "SUBIENDO..."
                               : isDragActive
                                 ? "SUELTA_ARCHIVO_AQUÍ"
-                                : "ARRastra_ARCHIVO.exe"}
+                                : "SUBE_TU_FOTO.exe"}
                         </p>
                         <p className="text-[10px] text-white/60 mt-2 uppercase">
                           PNG, JPG, WEBP, HEIC (MÁX 5MB)

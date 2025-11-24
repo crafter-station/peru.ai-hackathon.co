@@ -31,10 +31,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://www.peru.ai-hackathon.co";
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL || "https://www.peru.ai-hackathon.co";
   const shareUrl = `${baseUrl}/share/badge/${participantNum}`;
   const ogImageUrl = `${baseUrl}/api/badge/og-share/${participantNum}`;
-  const participantName = participant.fullName || `Participante #${participantNum}`;
+  const participantName =
+    participant.fullName || `Participante #${participantNum}`;
 
   return {
     title: `${participantName} - Credencial IA Hackathon Perú 2025`,
@@ -100,4 +102,3 @@ export default async function ShareBadgePage({ params }: Props) {
     </div>
   );
 }
-

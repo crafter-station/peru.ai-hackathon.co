@@ -1,4 +1,11 @@
-import { pgTable, text, timestamp, integer, unique, boolean } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  timestamp,
+  integer,
+  unique,
+  boolean,
+} from "drizzle-orm/pg-core";
 import { nanoid } from "nanoid";
 
 const defaultUserId = "user_anonymous";
@@ -14,7 +21,9 @@ export const anonymousUsers = pgTable("anonymous_users", {
 });
 
 export const galleryImages = pgTable("gallery_images", {
-  id: text("id").primaryKey().$defaultFn(() => nanoid()),
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => nanoid()),
   userId: text("user_id").notNull().default(defaultUserId),
   imageUrl: text("image_url").notNull(),
   blobUrl: text("blob_url"),
@@ -27,15 +36,23 @@ export const galleryImages = pgTable("gallery_images", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const imageLikes = pgTable("image_likes", {
-  id: text("id").primaryKey().$defaultFn(() => nanoid()),
-  imageId: text("image_id").notNull().references(() => galleryImages.id, { onDelete: "cascade" }),
-  userId: text("user_id").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-}, (table) => ({
-  // Ensure one like per user per image
-  uniqueUserImage: unique().on(table.userId, table.imageId),
-}));
+export const imageLikes = pgTable(
+  "image_likes",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => nanoid()),
+    imageId: text("image_id")
+      .notNull()
+      .references(() => galleryImages.id, { onDelete: "cascade" }),
+    userId: text("user_id").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    // Ensure one like per user per image
+    uniqueUserImage: unique().on(table.userId, table.imageId),
+  }),
+);
 
 export const ipRateLimits = pgTable("ip_rate_limits", {
   ipAddress: text("ip_address").primaryKey(),
@@ -47,21 +64,24 @@ export const ipRateLimits = pgTable("ip_rate_limits", {
 });
 
 export const participants = pgTable("participants", {
-  id: text("id").primaryKey().$defaultFn(() => nanoid()),
-  
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => nanoid()),
+
   clerkUserId: text("clerk_user_id").notNull().unique(),
   email: text("email").notNull().unique(),
   fullName: text("full_name"),
   organization: text("organization"),
-  
+  role: text("role").default("PARTICIPANTE"),
+
   dni: text("dni").unique(),
   ageRange: text("age_range"),
   phoneNumber: text("phone_number"),
-  
+
   emergencyContactName: text("emergency_contact_name"),
   emergencyContactPhone: text("emergency_contact_phone"),
   emergencyContactRelationship: text("emergency_contact_relationship"),
-  
+
   profilePhotoUrl: text("profile_photo_url"),
   profilePhotoAiUrl: text("profile_photo_ai_url"),
   badgeBlobUrl: text("badge_blob_url"),
@@ -69,41 +89,45 @@ export const participants = pgTable("participants", {
   laptopBrand: text("laptop_brand"),
   laptopModel: text("laptop_model"),
   laptopSerialNumber: text("laptop_serial_number"),
-  
+
   gender: text("gender"),
   techStack: text("tech_stack").array(),
   experienceLevel: text("experience_level"),
   additionalNotes: text("additional_notes"),
-  
+
   rulesAccepted: boolean("rules_accepted").default(false),
   termsAccepted: boolean("terms_accepted").default(false),
   dataConsentAccepted: boolean("data_consent_accepted").default(false),
   mediaReleaseAccepted: boolean("media_release_accepted").default(false),
   ageVerified: boolean("age_verified").default(false),
   parentalConsent: boolean("parental_consent"),
-  
+
   registrationStatus: text("registration_status").default("in_progress"),
   currentStep: integer("current_step").default(1),
-  
+
   participantNumber: integer("participant_number").unique(),
   badgeGeneratedAt: timestamp("badge_generated_at"),
   lastBadgeGenerationAt: timestamp("last_badge_generation_at"),
-  
+
   bio: text("bio"),
   linkedinUrl: text("linkedin_url"),
   instagramUrl: text("instagram_url"),
   twitterUrl: text("twitter_url"),
   githubUrl: text("github_url"),
   websiteUrl: text("website_url"),
-  
+
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   completedAt: timestamp("completed_at"),
 });
 
 export const participantAvatars = pgTable("participant_avatars", {
-  id: text("id").primaryKey().$defaultFn(() => nanoid()),
-  participantId: text("participant_id").notNull().references(() => participants.id, { onDelete: "cascade" }),
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => nanoid()),
+  participantId: text("participant_id")
+    .notNull()
+    .references(() => participants.id, { onDelete: "cascade" }),
   style: text("style").notNull(),
   imageUrl: text("image_url").notNull(),
   blobUrl: text("blob_url"),
@@ -111,15 +135,17 @@ export const participantAvatars = pgTable("participant_avatars", {
 });
 
 export const socialPosts = pgTable("social_posts", {
-  id: text("id").primaryKey().$defaultFn(() => nanoid()),
-  participantId: text("participant_id").notNull().references(() => participants.id, { onDelete: "cascade" }),
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => nanoid()),
+  participantId: text("participant_id")
+    .notNull()
+    .references(() => participants.id, { onDelete: "cascade" }),
   platform: text("platform").notNull(),
   content: text("content").notNull(),
   imageUrl: text("image_url"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
-
-
 
 export type AnonymousUser = typeof anonymousUsers.$inferSelect;
 export type NewAnonymousUser = typeof anonymousUsers.$inferInsert;

@@ -11,7 +11,20 @@ interface BadgePreviewProps {
   firstName: string;
   lastName: string;
   role: string;
+  badgeRole?: string | null;
   className?: string;
+}
+
+function getBadgeTemplateSrc(role: string | null | undefined): string {
+  const roleMap: Record<string, string> = {
+    STAFF: "/onboarding/THC-IA HACK PE-ID-Staff.svg",
+    ORGANIZATION: "/onboarding/THC-IA HACK PE-ID-Organizacion.svg",
+    MENTOR: "/onboarding/THC-IA HACK PE-ID-Mentor.svg",
+    JURADO: "/onboarding/THC-IA HACK PE-ID-Jurado.svg",
+    PARTICIPANTE: "/onboarding/THC-IA HACK PE-ID-Participante.svg",
+  };
+
+  return roleMap[role || "PARTICIPANTE"] || roleMap.PARTICIPANTE;
 }
 
 const BADGE_CONFIG = {
@@ -79,10 +92,12 @@ export const BadgePreview = forwardRef<SVGSVGElement, BadgePreviewProps>(
       firstName,
       lastName,
       role,
+      badgeRole,
       className,
     },
     ref
   ) {
+    const badgeTemplateSrc = getBadgeTemplateSrc(badgeRole);
     const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
 
     useEffect(() => {
@@ -115,7 +130,7 @@ export const BadgePreview = forwardRef<SVGSVGElement, BadgePreviewProps>(
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="relative w-full h-full">
               <Image
-                src="/onboarding/THC-IA HACK PE-ID-Participante.svg"
+                src={badgeTemplateSrc}
                 alt="Badge Base"
                 fill
                 className="object-contain pointer-events-none"

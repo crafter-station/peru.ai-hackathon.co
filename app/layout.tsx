@@ -6,6 +6,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { ChatBubble } from "@/components/chat/chat-bubble";
+import { PostHogProvider } from "@/providers/posthog";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -117,15 +118,13 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "IA Hackathon Peru 2025 | 29-30 Noviembre",
     description: "Únete al evento de inteligencia artificial más importante del Perú. Innovación, tecnología y futuro. 29-30 de noviembre 2025.",
-    images: ["/og-image.jpg"], // Same image for Twitter
+    images: ["/og-image.jpg"],
   },
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   const eventSchema = {
     "@context": "https://schema.org",
     "@type": "Event",
@@ -162,11 +161,13 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} ${adelleMonoFont.variable} ${adelleMonoFlexFont.variable} antialiased`}
         >
-          <Providers>
-            {children}
-            <ChatBubble />
-            <Analytics />
-          </Providers>
+          <PostHogProvider>
+            <Providers>
+              {children}
+              <ChatBubble />
+              <Analytics />
+            </Providers>
+          </PostHogProvider>
         </body>
       </html>
     </ClerkProvider>
