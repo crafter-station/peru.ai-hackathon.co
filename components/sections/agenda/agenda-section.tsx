@@ -177,7 +177,7 @@ export default function AgendaSection({
 													<div className="flex-1 min-w-0">
 														<p className="text-white font-mono font-medium leading-relaxed text-base mb-0.5 uppercase">
 															{item.title}
-															{hasDuration && (
+															{hasDuration && item.duration && (
 																<span className="text-xs text-red-400/80 ml-2 normal-case">
 																	({item.duration.replace(/Duración:\s*/i, "")})
 																</span>

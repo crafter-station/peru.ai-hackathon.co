@@ -56,7 +56,6 @@ export default function HackathonCalendar() {
           {calendarDays.map((day, index) => {
             const isHackathonDay = day && hackathonDays.includes(day);
             const isSaturday = day === 29;
-            const isSunday = day === 30;
 
             return (
               <div
