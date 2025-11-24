@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { generateBadge } from "../app/api/onboarding/route";
+import { generateBadge } from "@/lib/generate-badge";
 import * as schema from "@/lib/schema";
 
 async function regenerateBadges() {
