@@ -142,6 +142,21 @@ export default function HeroSection() {
               />
             </a>
             <a
+              href="https://www.linkedin.com/company/start-lima/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-opacity duration-300 hover:opacity-100"
+              style={{ pointerEvents: "auto" }}
+            >
+              <Image
+                src="/START-lima.png"
+                alt="START Lima"
+                width={150}
+                height={60}
+                className="h-8 md:h-9 w-auto"
+              />
+            </a>
+            <a
               href="https://www.linkedin.com/company/ai-playgrounds-tech/posts/?feedView=all"
               target="_blank"
               rel="noopener noreferrer"
