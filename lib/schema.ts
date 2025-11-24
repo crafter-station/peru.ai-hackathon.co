@@ -53,6 +53,7 @@ export const participants = pgTable("participants", {
   email: text("email").notNull().unique(),
   fullName: text("full_name"),
   organization: text("organization"),
+  role: text("role").default("PARTICIPANTE"),
   
   dni: text("dni").unique(),
   ageRange: text("age_range"),
