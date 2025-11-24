@@ -9,7 +9,7 @@ import QRCode from "qrcode";
 import satori from "satori";
 import { db } from "@/lib/db";
 import { participants } from "@/lib/schema";
-import { desc, eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 let fontsCache: { regular: Buffer; bold: Buffer } | null = null;
 
@@ -611,12 +611,11 @@ export async function PATCH(request: NextRequest) {
     }
 
     if (!participant?.participantNumber && !processedData.participantNumber) {
-      const lastParticipant = await db.query.participants.findFirst({
-        orderBy: desc(participants.participantNumber),
-      });
+      const data = await db.execute<{ participant_number: number }>(
+        sql`SELECT MAX(COALESCE(participant_number, 0)) FROM participants`,
+      );
 
-      processedData.participantNumber =
-        (lastParticipant?.participantNumber || 0) + 1;
+      processedData.participantNumber = data.rows[0].participant_number + 1;
       console.log(
         "[onboarding] Assigning participant number on completion:",
         processedData.participantNumber,
@@ -650,11 +649,11 @@ export async function PATCH(request: NextRequest) {
   );
 
   if (allFieldsComplete && !updatedParticipant.participantNumber) {
-    const lastParticipant = await db.query.participants.findFirst({
-      orderBy: desc(participants.participantNumber),
-    });
+    const data = await db.execute<{ participant_number: number }>(
+      sql`SELECT MAX(COALESCE(participant_number, 0)) FROM participants`,
+    );
 
-    const newParticipantNumber = (lastParticipant?.participantNumber ?? 0) + 1;
+    const newParticipantNumber = data.rows[0].participant_number + 1;
 
     const reUpdated = await db
       .update(participants)
