@@ -4,73 +4,105 @@
  * Evaluation criteria section
  */
 export default function EvaluationSection() {
-  const criteria = [
-    {
-      title: "Innovation & Impact",
-      description: "¿Resuelve un problema real de forma diferente?",
-      percentage: "35%",
-    },
-    {
-      title: "Technical Execution",
-      description: "Código limpio, demo reproducible y excelencia técnica",
-      percentage: "30%",
-    },
-    {
-      title: "Viability",
-      description: "¿Puede esto convertirse en un producto?",
-      percentage: "20%",
-    },
-    {
-      title: "Pitch & UX",
-      description: "Mensaje claro y efectivo. ¿Vende?",
-      percentage: "15%",
-    },
-  ];
+	const criteria = [
+		{
+			icon: "💡",
+			title: "Innovation & Impact",
+			percentage: "35%",
+			description: "¿Resuelve un problema real de forma diferente?",
+			highlighted: true,
+		},
+		{
+			icon: "⚙️",
+			title: "Technical Execution",
+			percentage: "30%",
+			description: "Código limpio, demo reproducible y excelencia técnica",
+			highlighted: true,
+		},
+		{
+			icon: "📈",
+			title: "Viability",
+			percentage: "20%",
+			description: "¿Puede esto convertirse en un producto?",
+			highlighted: false,
+		},
+		{
+			icon: "🎤",
+			title: "Pitch & UX",
+			percentage: "15%",
+			description: "Mensaje claro y efectivo. ¿Vende?",
+			highlighted: false,
+		},
+	];
 
-  return (
-    <section className="bg-muted/20 border-t py-6 md:py-8 px-4 md:px-6">
-      <div className="max-w-6xl mx-auto">
-        {/* Section Title */}
-        <div className="text-center mb-2">
-          <h2 className="text-2xl md:text-3xl font-black mb-3 tracking-tight uppercase">
-            CRITERIOS DE EVALUACIÓN
-          </h2>
-          <p className="text-muted-foreground text-sm leading-relaxed max-w-2xl mx-auto">
-            Cómo evaluamos los proyectos para seleccionar a los ganadores
-          </p>
-        </div>
+	return (
+		<section className="bg-background dither-bg border-t min-h-screen px-4 md:px-6 relative overflow-hidden flex items-center">
+			<div className="max-w-7xl mx-auto relative z-10 w-full py-12 md:py-20">
+				{/* Section Title */}
+				<div className="text-center mb-12 md:mb-16">
+					<div className="inline-flex items-center gap-3 mb-6">
+						<div className="h-px bg-brand-red/40 w-16 md:w-24"></div>
+						<span className="text-brand-red text-xs md:text-sm font-bold uppercase tracking-[0.2em]">
+							¿CÓMO SE EVALÚA?
+						</span>
+						<div className="h-px bg-brand-red/40 w-16 md:w-24"></div>
+					</div>
+					<h2 className="text-xl md:text-3xl lg:text-4xl font-black tracking-tight leading-none uppercase text-white">
+						Criterios de Evaluación
+					</h2>
+				</div>
 
-        {/* Main Content */}
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-6">
-            <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">
-              Se asigna un{" "}
-              <span className="font-medium text-foreground">
-                puntaje del 1 al 5
-              </span>{" "}
-              para cada criterio y se calcula un promedio ponderado para cada
-              equipo.
-            </p>
-          </div>
+				{/* Criteria Grid */}
+				<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+					{criteria.map((criterion, index) => (
+						<div
+							key={index}
+							className={`group relative overflow-hidden ${
+								criterion.highlighted
+									? "bg-gradient-to-br from-red-950/20 to-zinc-900/30 border-2 border-red-500/30"
+									: "bg-gradient-to-br from-zinc-900/60 to-zinc-900/30 border-2 border-zinc-800/50"
+							} backdrop-blur-sm p-6 md:p-8 hover:border-red-500/50 transition-all duration-300`}
+						>
+							<div className="absolute inset-0 bg-gradient-to-r from-red-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-          {/* Criteria Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {criteria.map((criterion, index) => (
-              <div key={index} className="text-center">
-                <div className="mb-2">
-                  <span className="inline-block px-3 py-1 bg-brand-red text-white text-xs font-bold rounded-full">
-                    {criterion.percentage}
-                  </span>
-                </div>
-                <h3 className="font-medium mb-1">{criterion.title}</h3>
-                <p className="text-muted-foreground text-xs">
-                  {criterion.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
+							<div className="relative z-10">
+								{/* Icon and Percentage */}
+								<div className="flex items-start justify-between mb-6">
+									<div className="w-12 h-12 bg-red-500/10 border-2 border-red-500/20 flex items-center justify-center">
+										<span className="text-2xl">{criterion.icon}</span>
+									</div>
+									<div className="bg-red-500/10 border-2 border-red-500/30 px-3 py-1">
+										<span className="text-xl font-black text-red-400 font-mono">
+											{criterion.percentage}
+										</span>
+									</div>
+								</div>
+
+								{/* Title */}
+								<h3 className="text-xl md:text-2xl font-black uppercase text-white mb-3 tracking-tight">
+									{criterion.title}
+								</h3>
+
+								{/* Decorative line */}
+								<div className="h-px w-16 bg-red-500/30 mb-4"></div>
+
+								{/* Description */}
+								<p className="text-zinc-300 text-sm md:text-base leading-relaxed">
+									{criterion.description}
+								</p>
+							</div>
+						</div>
+					))}
+				</div>
+
+				{/* Additional Info */}
+				<div className="mt-8 text-center">
+					<p className="text-zinc-400 text-sm md:text-base max-w-2xl mx-auto">
+						Se asigna un puntaje del 1 al 5 para cada criterio y se calcula un
+						promedio ponderado para cada equipo.
+					</p>
+				</div>
+			</div>
+		</section>
+	);
 }
