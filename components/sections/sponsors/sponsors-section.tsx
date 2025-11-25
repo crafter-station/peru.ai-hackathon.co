@@ -164,6 +164,24 @@ export default function SponsorsSection() {
             />
           </a>
 
+          {/* Sponsor 9 - Leasy */}
+          <a
+            href="https://v0.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative px-4 py-3 rounded-xl border border-white/5 bg-gradient-to-br from-white/[0.02] to-transparent hover:border-white/10 hover:from-white/[0.04] transition-all duration-300 w-full flex items-center justify-center"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-brand-red/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
+            <Image
+              src="/v0-logo-dark.png"
+              alt="v0"
+              width={150}
+              height={150}
+              quality={100}
+              className="w-3/4 h-20 md:h-24 object-contain relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300"
+            />
+          </a>
+
           {/* Sponsor 6 - Repensar */}
           <a
             href="https://bento.me/repensarok"
@@ -290,15 +308,12 @@ export default function SponsorsSection() {
             />
           </a>
 
-          {/* Empty placeholder for symmetry - hidden on mobile */}
-          <div className="hidden md:block"></div>
-
           {/* Sponsor 13 - Huawei */}
           <a
             href="https://www.huawei.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="group relative px-4 py-3 rounded-xl border border-white/5 bg-gradient-to-br from-white/[0.02] to-transparent hover:border-white/10 hover:from-white/[0.04] transition-all duration-300 w-full flex items-center justify-center"
+            className="group relative px-4 py-3 rounded-xl border border-white/5 bg-gradient-to-br from-white/[0.02] to-transparent hover:border-white/10 hover:from-white/[0.04] transition-all duration-300 w-full flex items-center justify-center md:col-start-2"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-brand-red/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
             <Image
@@ -329,8 +344,23 @@ export default function SponsorsSection() {
             />
           </a>
 
-          {/* Empty placeholder for symmetry - hidden on mobile */}
-          <div className="hidden md:block"></div>
+          {/* Sponsor 9 - Leasy */}
+          <a
+            href="https://leasyauto.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative px-4 py-3 rounded-xl border border-white/5 bg-gradient-to-br from-white/[0.02] to-transparent hover:border-white/10 hover:from-white/[0.04] transition-all duration-300 w-full flex items-center justify-center"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-brand-red/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
+            <Image
+              src="/logo-little-caesars.png"
+              alt="Little Caesars"
+              width={250}
+              height={250}
+              quality={100}
+              className="w-full h-20 md:h-24 object-contain relative z-10 brightness-90 group-hover:brightness-100 transition-all duration-300 invert-100"
+            />
+          </a>
         </div>
       </div>
     </section>
