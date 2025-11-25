@@ -143,7 +143,7 @@ export async function generateBadge(participantId: string) {
       return;
     }
 
-    if (!participant.participantNumber) {
+    if (typeof participant.participantNumber !== "number") {
       console.error("[badge] No participant number for:", participantId);
       return;
     }

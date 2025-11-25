@@ -115,13 +115,21 @@ export async function PATCH(request: NextRequest) {
     }
 
     if (!participant?.participantNumber && !processedData.participantNumber) {
-      const data = await db.execute<{ max: number }>(
-        sql`SELECT MAX(COALESCE("participant_number", 0)) FROM participants`,
+      const data = await db.execute<{ min_available: number }>(
+        sql`SELECT COALESCE(
+          (SELECT MIN(n)
+           FROM generate_series(0, (SELECT COALESCE(MAX("participant_number"), -1) FROM participants)) AS n
+           WHERE NOT EXISTS (
+             SELECT 1 FROM participants WHERE "participant_number" = n
+           )
+          ),
+          COALESCE((SELECT MAX("participant_number") + 1 FROM participants), 0)
+        ) as min_available`,
       );
 
       console.log(JSON.stringify(data, null, 2));
 
-      processedData.participantNumber = data.rows[0].max + 1;
+      processedData.participantNumber = data.rows[0].min_available;
       console.log(
         "[onboarding] Assigning participant number on completion:",
         processedData.participantNumber,
@@ -155,13 +163,21 @@ export async function PATCH(request: NextRequest) {
   );
 
   if (allFieldsComplete && !updatedParticipant.participantNumber) {
-    const data = await db.execute<{ max: number }>(
-      sql`SELECT MAX(COALESCE("participant_number", 0)) FROM participants`,
+    const data = await db.execute<{ min_available: number }>(
+      sql`SELECT COALESCE(
+        (SELECT MIN(n)
+         FROM generate_series(0, (SELECT COALESCE(MAX("participant_number"), -1) FROM participants)) AS n
+         WHERE NOT EXISTS (
+           SELECT 1 FROM participants WHERE "participant_number" = n
+         )
+        ),
+        COALESCE((SELECT MAX("participant_number") + 1 FROM participants), 0)
+      ) as min_available`,
     );
 
     console.log(JSON.stringify(data, null, 2));
 
-    const newParticipantNumber = data.rows[0].max + 1;
+    const newParticipantNumber = data.rows[0].min_available;
 
     const reUpdated = await db
       .update(participants)
