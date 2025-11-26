@@ -235,7 +235,10 @@ export default function ProfileEditPage() {
   return (
     <div className="min-h-screen bg-background retro-grid">
       <div className="fixed top-0 left-0 right-0 h-8 bg-foreground text-background flex items-center px-4 font-adelle-mono text-xs uppercase tracking-wider z-50">
-        <Link href="/onboarding/complete" className="flex items-center gap-2 hover:text-terminal-green transition-colors">
+        <Link
+          href="/onboarding/complete"
+          className="flex items-center gap-2 hover:text-terminal-green transition-colors"
+        >
           <ArrowLeft className="size-3" />
           <span>BACK</span>
         </Link>
@@ -285,7 +288,9 @@ export default function ProfileEditPage() {
                 </div>
               ) : (
                 <div className="w-24 h-24 border-2 border-foreground bg-muted flex items-center justify-center flex-shrink-0">
-                  <span className="font-adelle-mono text-2xl text-muted-foreground">?</span>
+                  <span className="font-adelle-mono text-2xl text-muted-foreground">
+                    ?
+                  </span>
                 </div>
               )}
               <div className="text-center md:text-left">
@@ -302,7 +307,10 @@ export default function ProfileEditPage() {
                     asChild
                     className="mt-2"
                   >
-                    <Link href={`/p/${profile.participantNumber}`} target="_blank">
+                    <Link
+                      href={`/p/${profile.participantNumber}`}
+                      target="_blank"
+                    >
                       <ExternalLink className="size-3" />
                       VIEW_PUBLIC_PROFILE
                     </Link>
