@@ -9,6 +9,6 @@ Allow: /i/
 # Block API routes from crawling
 Disallow: /api/
 
-# Sitemap (optional - can be added when available)
-# Sitemap: https://peru.ai-hackathon.co/sitemap.xml
+# Sitemap
+Sitemap: https://peru.ai-hackathon.co/sitemap.xml
 

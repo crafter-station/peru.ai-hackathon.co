@@ -16,6 +16,7 @@ const isPublicRoute = createRouteMatcher([
   "/share/badge/(.*)",
   "/workshops(.*)",
   "/participants",
+  "/sitemap.xml",
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
