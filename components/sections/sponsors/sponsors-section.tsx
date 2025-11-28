@@ -184,7 +184,7 @@ export default function SponsorsSection() {
 
           {/* Sponsor 6 - Repensar */}
           <a
-            href="https://bento.me/repensarok"
+            href="https://repensar.la"
             target="_blank"
             rel="noopener noreferrer"
             className="group relative px-4 py-3 rounded-xl border border-white/5 bg-gradient-to-br from-white/[0.02] to-transparent hover:border-white/10 hover:from-white/[0.04] transition-all duration-300 w-full flex items-center justify-center"
