@@ -254,10 +254,10 @@ export default function CreditsPage() {
               </div>
 
               {/* Divider */}
-              <div className="h-px bg-white/10 my-4 sm:my-6" />
+              {/* <div className="h-px bg-white/10 my-4 sm:my-6" /> */}
 
               {/* Cursor Credit */}
-              <div className="space-y-3 sm:space-y-4">
+              {/* <div className="space-y-3 sm:space-y-4">
                 <div className="mb-2 sm:mb-3">
                   <Image
                     src="/logo_cursor.svg"
@@ -270,7 +270,7 @@ export default function CreditsPage() {
                 <div className="bg-white/5 border border-white/10 p-4 sm:p-5">
                   <p className="text-white/60 text-sm sm:text-base md:text-lg">TBD</p>
                 </div>
-              </div>
+              </div> */}
             </div>
 
             <div className="text-center pt-4">
