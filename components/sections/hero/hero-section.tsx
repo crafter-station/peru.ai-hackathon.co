@@ -259,7 +259,7 @@ export default function HeroSection() {
 
         {/* CTA Buttons */}
         <div className="flex flex-col gap-4 justify-center items-center w-full max-w-xs mx-auto">
-          <Button
+          {/* <Button
             asChild
             size="lg"
             onClick={() => play()}
@@ -285,7 +285,7 @@ export default function HeroSection() {
                 ONBOARDING DE PARTICIPANTES
               </span>
             </Link>
-          </Button>
+          </Button> */}
 
           <Button
             asChild
