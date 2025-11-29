@@ -4,6 +4,7 @@ const isPublicRoute = createRouteMatcher([
   "/",
   "/tta(.*)",
   "/api/chat(.*)",
+  "/c(.*)",
   "/api/gallery(.*)",
   "/api/generate-image(.*)",
   "/api/guardrail(.*)",
