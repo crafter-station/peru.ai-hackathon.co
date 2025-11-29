@@ -291,7 +291,7 @@ export default function HeroSection() {
             asChild
             size="lg"
             onClick={() => play()}
-            className="w-full px-8 py-4 bg-white/10 text-white font-bold text-lg border-2 border-white/30 rounded-none hover:bg-white/20 hover:border-white/50"
+            className="w-full px-8 py-4 bg-brand-red text-white font-bold text-lg border-0 rounded-none hover:bg-brand-red/90"
             style={{ pointerEvents: "auto" }}
           >
             <a
