@@ -115,6 +115,7 @@ export const participants = pgTable("participants", {
   twitterUrl: text("twitter_url"),
   githubUrl: text("github_url"),
   websiteUrl: text("website_url"),
+  cursorCode: text("cursor_code"),
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

@@ -29,6 +29,7 @@ interface PublicProfile {
   twitterUrl: string | null;
   githubUrl: string | null;
   websiteUrl: string | null;
+  cursorCode: string | null;
   clerkUserId: string;
 }
 
@@ -133,6 +134,7 @@ export default function PublicProfilePage() {
         organization={profile.organization}
         websiteUrl={profile.websiteUrl}
         participantNumber={profile.participantNumber}
+        cursorCode={profile.cursorCode}
                     />
       <Separator />
 

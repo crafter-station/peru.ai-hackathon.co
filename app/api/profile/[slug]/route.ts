@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
 import { participants } from "@/lib/schema";
 import { eq, and, isNotNull } from "drizzle-orm";
@@ -47,6 +48,9 @@ export async function GET(
     );
   }
 
+  const { userId } = await auth();
+  const isOwnProfile = userId && userId === participant.clerkUserId;
+
   const publicProfile = {
     fullName: participant.fullName,
     organization: participant.organization,
@@ -62,6 +66,7 @@ export async function GET(
     twitterUrl: participant.twitterUrl,
     githubUrl: participant.githubUrl,
     websiteUrl: participant.websiteUrl,
+    cursorCode: isOwnProfile ? participant.cursorCode : null,
     clerkUserId: participant.clerkUserId,
   };
 

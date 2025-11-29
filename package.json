@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "seed:cursor-codes": "bun run scripts/seed-cursor-codes.ts"
   },
   "dependencies": {
     "@ai-sdk/groq": "^2.0.22",

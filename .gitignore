@@ -47,6 +47,7 @@ next-env.d.ts
 .env.local
 .env
 .cursor/
+cursor_codes.csv
 
 # clerk configuration (can include secrets)
 /.clerk/
