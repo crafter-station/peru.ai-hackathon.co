@@ -135,7 +135,10 @@ export default function PublicProfilePage() {
         websiteUrl={profile.websiteUrl}
         participantNumber={profile.participantNumber}
         cursorCode={profile.cursorCode}
-                    />
+        isLoggedIn={!!(isUserLoaded && user)}
+        clerkUserId={profile.clerkUserId}
+        profileNumber={profile.participantNumber}
+      />
       <Separator />
 
       <SocialLinks
