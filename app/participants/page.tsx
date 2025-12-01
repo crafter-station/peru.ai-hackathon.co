@@ -60,6 +60,73 @@ function ParticipantGrid({ items }: { items: ParticipantCard[] }) {
   );
 }
 
+function TeamHeader({ items }: { items: ParticipantCard[] }) {
+  if (!items || items.length === 0) return null;
+
+  return (
+    <div className="w-full bg-black text-white py-12 px-4 mb-12 rounded-xl border border-white/10 shadow-2xl">
+      <div className="flex flex-col items-center">
+
+        <div className="flex flex-col items-center mb-10 gap-2">
+          <a
+            href="https://crafterstation.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition-opacity duration-300 hover:opacity-100"
+            style={{ pointerEvents: "auto" }}
+          >
+            <Image
+              src="/crafter-logotipo.svg"
+              alt="Crafter Station"
+              width={120}
+              height={40}
+              className="h-5 md:h-6 w-auto"
+            />
+          </a>
+        </div>
+
+        <div className="flex flex-wrap justify-center gap-x-6 gap-y-10 md:gap-x-10 max-w-6xl">
+          {items.map((participant) => (
+            <Link
+              key={participant.id}
+              href={`/p/${participant.participantNumber}`}
+              className="flex flex-col items-center group cursor-pointer"
+            >
+              <span className="mb-3 text-sm md:text-base font-bold font-mono tracking-wider uppercase text-white/90 group-hover:text-terminal-green transition-colors">
+                {participant.fullName?.split(" ")[0] || "MEMBER"}
+              </span>
+              
+              <div className="relative w-24 h-24 md:w-28 md:h-28 border-2 border-[#E5E5E5] bg-[#1a1a1a] transition-transform duration-300 group-hover:-translate-y-2 group-hover:shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+                {participant.profilePhotoAiUrl ? (
+                  <Image
+                    src={participant.profilePhotoAiUrl}
+                    alt={participant.fullName || "Team Member"}
+                    fill
+                    className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+                    // Mantiene el estilo pixel art si las imágenes son de baja res/pixeladas
+                    style={{ imageRendering: "pixelated" }} 
+                    unoptimized
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-zinc-900 text-zinc-700 font-mono text-xs">
+                    No hay imagen, mi king
+                  </div>
+                )}
+              </div>
+              
+              {participant.organization && (
+                <span className="mt-2 text-xs text-white/60 font-mono text-center max-w-[120px] truncate">
+                  {participant.organization}
+                </span>
+              )}
+            </Link>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default async function ParticipantsPage() {
   const allParticipants = await db
     .select({
@@ -82,6 +149,20 @@ export default async function ParticipantsPage() {
     .toSorted(
       (a, b) => (b.participantNumber ?? 0) - (a.participantNumber ?? 0),
     );
+    
+  const CRAFTER_NUMBERS = [
+    404, // christian
+    111, // railly
+    101, // shiara
+    100, // edward
+    96, // carlos
+    95, // ignacio
+    0, // cueva
+  ];
+  
+  const crafterPeople = allParticipants.filter(
+    (p) => CRAFTER_NUMBERS.includes(p.participantNumber)
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -94,6 +175,8 @@ export default async function ParticipantsPage() {
             Hello world!
           </p>
         </div>
+        
+        <TeamHeader items={crafterPeople}/>
 
         {regularParticipants.length > 0 && (
           <section className="mb-12">
