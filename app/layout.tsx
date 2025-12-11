@@ -8,6 +8,7 @@ import { Providers } from "@/components/providers";
 import { ChatBubble } from "@/components/chat/chat-bubble";
 import { GithubBadge } from "@/components/github-badge";
 import { PostHogProvider } from "@/providers/posthog";
+import { PromoBanner } from "@/components/promo-banner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -164,6 +165,12 @@ export default function RootLayout({
         >
           <PostHogProvider>
             <Providers>
+              <PromoBanner
+                id="hack0-dev"
+                text="Descubre más hackathons en Perú en"
+                linkText="hack0.dev"
+                linkUrl="https://hack0.dev/"
+              />
               {children}
               <ChatBubble />
               <GithubBadge />
