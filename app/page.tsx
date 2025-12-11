@@ -9,6 +9,7 @@ import FooterSection from "@/components/sections/footer/footer-section";
 import JudgesSection from "@/components/sections/judges/judges-section";
 import PrizesSection from "@/components/sections/prizes/prizes-section";
 import AgendaSection from "@/components/sections/agenda/agenda-section";
+import TrophiesSection from "@/components/sections/trophies/trophies-section";
 
 export default function Page() {
   return (
@@ -18,6 +19,7 @@ export default function Page() {
       <SponsorsSection />
       <JudgesSection />
       <PrizesSection />
+      <TrophiesSection />
       <DetailsSection />
       <AgendaSection />
       <ChallengeSection />

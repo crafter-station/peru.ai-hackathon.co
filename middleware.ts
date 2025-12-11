@@ -11,6 +11,7 @@ const isPublicRoute = createRouteMatcher([
   "/api/profile/(.*)",
   "/api/badge/og-share/(.*)",
   "/api/badge/og/(.*)",
+  "/api/trophy/(.*)",
   "/i/(.*)",
   "/p/(.*)",
   "/sign-in(.*)",
