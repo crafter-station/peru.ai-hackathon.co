@@ -5,20 +5,8 @@ import Image from "next/image";
 import useSound from "use-sound";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import {
-  differenceInDays,
-  differenceInHours,
-  differenceInMinutes,
-  differenceInSeconds,
-} from "date-fns";
 
 export default function HeroSection() {
-  const [timeLeft, setTimeLeft] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  });
   const [play] = useSound("/sounds/bite.mp3", { volume: 0.5 });
   const [showWorkshopsIndicator, setShowWorkshopsIndicator] = useState(false);
 
@@ -42,29 +30,12 @@ export default function HeroSection() {
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  useEffect(() => {
-    const hackathonDate = new Date("2025-11-29T00:00:00");
-
-    const updateTimer = () => {
-      const now = new Date();
-      const totalSeconds = differenceInSeconds(hackathonDate, now);
-
-      if (totalSeconds <= 0) {
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-      } else {
-        setTimeLeft({
-          days: differenceInDays(hackathonDate, now),
-          hours: differenceInHours(hackathonDate, now) % 24,
-          minutes: differenceInMinutes(hackathonDate, now) % 60,
-          seconds: totalSeconds % 60,
-        });
-      }
-    };
-
-    updateTimer();
-    const timer = setInterval(updateTimer, 1000);
-    return () => clearInterval(timer);
-  }, []);
+  const scrollToRecap = () => {
+    play();
+    document
+      .getElementById("recap")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   return (
     <section className="min-h-screen flex items-center justify-center relative overflow-hidden py-8 md:py-12">
@@ -214,62 +185,33 @@ export default function HeroSection() {
           </p>
         </div>
 
-        {/* Countdown */}
+        {/* Event Completed Banner */}
         <div className="max-w-md mx-auto mb-8">
-          <p className="text-white  text-sm md:text-base font-bold">
-            29-30 de Noviembre
+          <p className="text-white text-sm md:text-base font-bold mb-2">
+            29-30 de Noviembre 2025
           </p>
           <div className="inline-flex items-center gap-2 mb-3">
             <div className="h-px bg-brand-red/30 w-8"></div>
             <span className="text-brand-red text-xs font-bold uppercase tracking-widest">
-              Comienza en
+              ¡Evento Finalizado!
             </span>
             <div className="h-px bg-brand-red/30 w-8"></div>
           </div>
-          <div className="flex justify-center gap-3 md:gap-4">
-            <div className="text-center">
-              <div className="text-2xl md:text-3xl font-black text-white mb-1">
-                {String(timeLeft.days).padStart(2, "0")}
-              </div>
-              <p className="text-xs text-muted-foreground uppercase">Días</p>
-            </div>
-            <div className="text-white text-2xl md:text-3xl font-black">:</div>
-            <div className="text-center">
-              <div className="text-2xl md:text-3xl font-black text-white mb-1">
-                {String(timeLeft.hours).padStart(2, "0")}
-              </div>
-              <p className="text-xs text-muted-foreground uppercase">Hrs</p>
-            </div>
-            <div className="text-white text-2xl md:text-3xl font-black">:</div>
-            <div className="text-center">
-              <div className="text-2xl md:text-3xl font-black text-white mb-1">
-                {String(timeLeft.minutes).padStart(2, "0")}
-              </div>
-              <p className="text-xs text-muted-foreground uppercase">Min</p>
-            </div>
-            <div className="text-white text-2xl md:text-3xl font-black">:</div>
-            <div className="text-center">
-              <div className="text-2xl md:text-3xl font-black text-white mb-1">
-                {String(timeLeft.seconds).padStart(2, "0")}
-              </div>
-              <p className="text-xs text-muted-foreground uppercase">Seg</p>
-            </div>
-          </div>
+          <p className="text-muted-foreground text-sm">
+            Gracias a todos los participantes por hacer de este evento un éxito
+          </p>
         </div>
 
         {/* CTA Buttons */}
         <div className="flex flex-col gap-4 justify-center items-center w-full max-w-xs mx-auto">
-          {/* <Button
-            asChild
+          {/* Primary CTA - View Recap */}
+          <Button
             size="lg"
-            onClick={() => play()}
-            className="w-full px-8 py-4 bg-brand-red text-white font-bold text-lg border-0 rounded-none hover:bg-brand-red/90"
+            onClick={scrollToRecap}
+            className="w-full px-8 py-4 bg-brand-red text-white font-bold text-lg border-0 rounded-none hover:bg-brand-red/90 animate-pulse hover:animate-none"
             style={{ pointerEvents: "auto" }}
           >
-            <Link
-              href="/onboarding"
-              className="flex items-center justify-center gap-3"
-            >
+            <div className="flex items-center justify-center gap-3">
               <div className="flex items-center justify-center w-6 h-6 bg-white/10 rounded-sm">
                 <svg
                   width="16"
@@ -278,20 +220,20 @@ export default function HeroSection() {
                   fill="currentColor"
                   className="w-4 h-4"
                 >
-                  <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+                  <path d="M8 5v14l11-7z" />
                 </svg>
               </div>
               <span className="tracking-wide uppercase text-sm font-black">
-                ONBOARDING DE PARTICIPANTES
+                Ver Recap del Evento
               </span>
-            </Link>
-          </Button> */}
+            </div>
+          </Button>
 
           <Button
             asChild
             size="lg"
             onClick={() => play()}
-            className="w-full px-8 py-4 bg-brand-red text-white font-bold text-lg border-0 rounded-none hover:bg-brand-red/90"
+            className="w-full px-8 py-4 bg-white/10 text-white font-bold text-lg border-2 border-white/30 rounded-none hover:bg-white/20 hover:border-white/50"
             style={{ pointerEvents: "auto" }}
           >
             <a

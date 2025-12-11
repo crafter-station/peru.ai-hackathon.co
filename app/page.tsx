@@ -1,5 +1,6 @@
 import SponsorsSection from "@/components/sections/sponsors/sponsors-section";
 import HeroSection from "@/components/sections/hero/hero-section";
+import RecapSection from "@/components/sections/recap/recap-section";
 import DetailsSection from "@/components/sections/details/details-section";
 import ChallengeSection from "@/components/sections/challenge/challenge-section";
 import EvaluationSection from "@/components/sections/evaluation/evaluation-section";
@@ -13,6 +14,7 @@ export default function Page() {
   return (
     <>
       <HeroSection />
+      <RecapSection />
       <SponsorsSection />
       <JudgesSection />
       <PrizesSection />
