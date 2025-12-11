@@ -113,7 +113,7 @@ export function GithubBadge() {
         target="_blank"
         rel="noopener noreferrer"
         onClick={handleClick}
-        className="github-badge fixed top-4 right-4 md:top-6 md:right-6 z-50 flex items-center gap-2.5 px-4 py-2 md:px-5 md:py-2.5 bg-black/40 backdrop-blur-sm border border-white/10 rounded-md opacity-60 hover:opacity-100 transition-opacity duration-300 group"
+        className="github-badge fixed top-[60px] right-4 md:top-[52px] md:right-6 z-50 flex items-center gap-2.5 px-4 py-2 md:px-5 md:py-2.5 bg-black/40 backdrop-blur-sm border border-white/10 rounded-md opacity-60 hover:opacity-100 transition-opacity duration-300 group"
         style={{ pointerEvents: "auto" }}
         initial={{ x: 0, opacity: 0.6 }}
         animate={shouldAnimate ? { x: -20, opacity: 0.6 } : { x: 0, opacity: 0.6 }}
