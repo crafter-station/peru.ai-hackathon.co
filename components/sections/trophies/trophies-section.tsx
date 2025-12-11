@@ -91,22 +91,36 @@ export default function TrophiesSection() {
                 </div>
               </div>
 
-              <h3 className="text-base md:text-lg lg:text-xl font-bold text-white mb-2 md:mb-3 leading-tight">
-                Inspirado en la Alpaca Peruana
+              <h3 className="text-base md:text-lg lg:text-xl font-bold text-white mb-3 md:mb-4 leading-tight">
+                Alpaca Tech: Más que un Trofeo
               </h3>
-              <p className="text-muted-foreground text-xs md:text-sm mb-2 md:mb-3 leading-relaxed">
-                Este trofeo único fue diseñado especialmente para el IA Hackathon
-                Perú 2025, inspirándose en la <strong className="text-white">alpaca</strong>, el animal más representativo de
-                Perú. El diseño fusiona la tradición peruana con un estilo{" "}
-                <strong className="text-white">futurista</strong>, creando una pieza que simboliza la innovación y la
-                herencia cultural.
+              <p className="text-muted-foreground text-xs md:text-sm mb-3 md:mb-4 leading-relaxed italic">
+                En una Hackatón de Inteligencia Artificial, donde el código construye el futuro, no podíamos entregar una copa genérica. Queríamos un símbolo que representara quiénes somos y hacia dónde vamos. Así nació el trofeo <strong className="text-white not-italic">"Alpaca Tech"</strong>.
               </p>
-              <p className="text-muted-foreground text-xs md:text-sm leading-relaxed">
-                La base del trofeo incorpora <strong className="text-white">patrones incaicos</strong>, añadiendo un
-                toque de arte tradicional peruano. Cada detalle fue cuidadosamente
-                curado para crear una estructura única que representa el reconocimiento
-                al esfuerzo, creatividad e innovación de nuestros participantes.
-              </p>
+              
+              <div className="space-y-3 md:space-y-4">
+                <div>
+                  <h4 className="text-white font-semibold text-xs md:text-sm mb-1.5 md:mb-2">
+                    ¿Por qué una Alpaca?
+                  </h4>
+                  <p className="text-muted-foreground text-xs md:text-sm leading-relaxed">
+                    Porque es <strong className="text-white">resistencia, adaptación y orgullo peruano</strong>. Pero esta no es una alpaca común. Diseñada bajo una estética <strong className="text-white">Low-Poly</strong> (baja poligonización), sus facetas angulares representan los datos y algoritmos que estructuran la IA.
+                  </p>
+                </div>
+
+                <div>
+                  <h4 className="text-white font-semibold text-xs md:text-sm mb-1.5 md:mb-2">
+                    El Diseño
+                  </h4>
+                  <p className="text-muted-foreground text-xs md:text-sm leading-relaxed">
+                    La figura se mantiene firme, equipada con un <strong className="text-white">casco tecnológico futurista</strong> que simboliza la visión y la protección de las nuevas ideas. Fabricado mediante <strong className="text-white">impresión 3D de alta precisión</strong>, este trofeo es una pieza de ingeniería en sí misma: sólida, geométrica y sin partes frágiles.
+                  </p>
+                </div>
+
+                <p className="text-muted-foreground text-xs md:text-sm leading-relaxed pt-2 border-t border-foreground/10">
+                  Este galardón no es solo un objeto decorativo; es la <strong className="text-white">prueba física de que la innovación global puede tener, y tiene, ADN peruano</strong>.
+                </p>
+              </div>
             </div>
           </div>
 
