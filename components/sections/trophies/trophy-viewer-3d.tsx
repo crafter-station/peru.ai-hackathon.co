@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useMemo, useState, useEffect } from "react";
+import { Suspense, useMemo, useState, useEffect, ErrorInfo, Component } from "react";
 import { Canvas, useLoader } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { STLLoader } from "three-stdlib";
@@ -10,6 +10,31 @@ type TrophyViewer3DProps = {
   stlUrl: string;
   className?: string;
 };
+
+class TrophyErrorBoundary extends Component<
+  { children: React.ReactNode; fallback: React.ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: React.ReactNode; fallback: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error("[TrophyViewer] Error loading trophy:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+    return this.props.children;
+  }
+}
 
 function TrophyModel({ url }: { url: string }) {
   const geometry = useLoader(STLLoader, url);
@@ -96,27 +121,37 @@ export default function TrophyViewer3D({
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
+  const errorFallback = (
+    <div className="w-full h-full flex items-center justify-center bg-black/50">
+      <div className="text-center p-4">
+        <p className="text-white/60 text-sm">No se pudo cargar el modelo 3D</p>
+      </div>
+    </div>
+  );
+
   return (
     <div className={`w-full h-full ${className}`}>
-      <Canvas
-        className="w-full h-full touch-none"
-        gl={{ antialias: !isMobile, alpha: true }}
-        dpr={isMobile ? 1 : [1, 2]}
-      >
-        <Suspense
-          fallback={
-            <>
-              <ambientLight intensity={0.5} />
-              <mesh>
-                <boxGeometry args={[2, 2, 2]} />
-                <meshStandardMaterial color="#333" wireframe />
-              </mesh>
-            </>
-          }
+      <TrophyErrorBoundary fallback={errorFallback}>
+        <Canvas
+          className="w-full h-full touch-none"
+          gl={{ antialias: !isMobile, alpha: true }}
+          dpr={isMobile ? 1 : [1, 2]}
         >
-          <Scene stlUrl={stlUrl} />
-        </Suspense>
-      </Canvas>
+          <Suspense
+            fallback={
+              <>
+                <ambientLight intensity={0.5} />
+                <mesh>
+                  <boxGeometry args={[2, 2, 2]} />
+                  <meshStandardMaterial color="#333" wireframe />
+                </mesh>
+              </>
+            }
+          >
+            <Scene stlUrl={stlUrl} />
+          </Suspense>
+        </Canvas>
+      </TrophyErrorBoundary>
     </div>
   );
 }
