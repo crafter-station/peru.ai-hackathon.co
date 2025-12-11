@@ -95,7 +95,7 @@ export default function TrophiesSection() {
                 Alpaca Tech: Más que un Trofeo
               </h3>
               <p className="text-muted-foreground text-xs md:text-sm mb-3 md:mb-4 leading-relaxed italic">
-                En una Hackatón de Inteligencia Artificial, donde el código construye el futuro, no podíamos entregar una copa genérica. Queríamos un símbolo que representara quiénes somos y hacia dónde vamos. Así nació el trofeo <strong className="text-white not-italic">"Alpaca Tech"</strong>.
+                En una Hackatón de Inteligencia Artificial, donde el código construye el futuro, no podíamos entregar una copa genérica. Queríamos un símbolo que representara quiénes somos y hacia dónde vamos. Así nació el trofeo <strong className="text-white not-italic">&ldquo;Alpaca Tech&rdquo;</strong>.
               </p>
               
               <div className="space-y-3 md:space-y-4">
