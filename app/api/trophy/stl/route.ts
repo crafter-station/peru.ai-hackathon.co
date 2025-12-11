@@ -55,20 +55,31 @@ export async function GET(request: NextRequest) {
   const origin = request.headers.get("origin");
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://peru.ai-hackathon.co";
   
+  const normalizeUrl = (url: string | null): string | null => {
+    if (!url) return null;
+    return url.replace(/^https?:\/\/(www\.)?/, "").toLowerCase();
+  };
+
+  const baseDomain = normalizeUrl(baseUrl);
+  const refererDomain = normalizeUrl(referer);
+  const originDomain = normalizeUrl(origin);
+  
   const isLocalhost = referer?.includes("localhost") || 
                       referer?.includes("127.0.0.1") ||
-                      referer?.match(/^http:\/\/192\.168\.\d+\.\d+/) ||
+                      referer?.match(/^https?:\/\/192\.168\.\d+\.\d+/) ||
                       origin?.includes("localhost") ||
                       origin?.includes("127.0.0.1") ||
-                      origin?.match(/^http:\/\/192\.168\.\d+\.\d+/);
+                      origin?.match(/^https?:\/\/192\.168\.\d+\.\d+/);
 
   const isAllowedOrigin =
-    (referer && (referer.startsWith(baseUrl) || isLocalhost)) ||
-    (origin && (origin === baseUrl || isLocalhost)) ||
-    isLocalhost;
+    isLocalhost ||
+    (refererDomain && refererDomain === baseDomain) ||
+    (originDomain && originDomain === baseDomain) ||
+    (referer && referer.includes("peru.ai-hackathon.co")) ||
+    (origin && origin.includes("peru.ai-hackathon.co"));
 
   if (!isAllowedOrigin) {
-    console.warn("[trophy/stl] Unauthorized access attempt:", { referer, origin });
+    console.warn("[trophy/stl] Unauthorized access attempt:", { referer, origin, baseDomain, refererDomain, originDomain });
     return NextResponse.json(
       { error: "Unauthorized access" },
       { status: 403 }
