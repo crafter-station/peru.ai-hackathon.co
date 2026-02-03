@@ -68,6 +68,7 @@ export async function GET(
     websiteUrl: participant.websiteUrl,
     cursorCode: isOwnProfile ? participant.cursorCode : null,
     clerkUserId: participant.clerkUserId,
+    certificateBlobUrl: participant.certificateBlobUrl,
   };
 
   return NextResponse.json(publicProfile);
