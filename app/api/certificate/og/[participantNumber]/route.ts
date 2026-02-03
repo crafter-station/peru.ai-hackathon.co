@@ -8,54 +8,23 @@ import { join } from "path";
 import QRCode from "qrcode";
 
 // Name text area coordinates (from ia-hack-pe-certificate.svg design)
-// Area: x=622, y=478, width=1109, height=100
 const NAME_X = 622;
-const NAME_CENTER_Y = 478 + 100 / 2; // 528
+const NAME_CENTER_Y = 528;
 
-// QR code position (right side, upper area)
+// QR code position
 const QR_X = 1620;
 const QR_Y = 750;
 const QR_SIZE = 160;
 
-// Cache font data to avoid reading file on every request
-let fontBase64Cache: string | null = null;
-
-async function loadFontBase64(): Promise<string> {
-  if (fontBase64Cache) return fontBase64Cache;
-
-  const fontPath = join(process.cwd(), "app/fonts/Adelle Mono/AdelleMono-Bold.ttf");
-  const fontBuffer = await readFile(fontPath);
-  fontBase64Cache = fontBuffer.toString("base64");
-  return fontBase64Cache;
-}
-
 async function generateCertificateSVG(
   fullName: string,
-  participantNumber: number,
   qrCodeDataUrl: string
 ): Promise<string> {
   // Read the base certificate SVG
   const svgPath = join(process.cwd(), "public", "ia-hack-pe-certificate.svg");
   const baseSvg = await readFile(svgPath, "utf-8");
 
-  // Load font as base64
-  const fontBase64 = await loadFontBase64();
-
-  // Create style with embedded font
-  const fontStyle = `
-    <defs>
-      <style type="text/css">
-        @font-face {
-          font-family: 'AdelleMono';
-          src: url('data:font/truetype;base64,${fontBase64}') format('truetype');
-          font-weight: 700;
-          font-style: normal;
-        }
-      </style>
-    </defs>
-  `;
-
-  // Create overlay elements: name and QR code
+  // Create overlay elements with system fonts (Arial works everywhere)
   const overlayElements = `
     <!-- Participant Name -->
     <text
@@ -66,7 +35,7 @@ async function generateCertificateSVG(
       font-size="64"
       font-weight="700"
       fill="#FFFFFF"
-      font-family="AdelleMono, Arial, sans-serif"
+      font-family="Arial, Helvetica, sans-serif"
       letter-spacing="0.06em"
     >${escapeXml(fullName.toUpperCase())}</text>
 
@@ -80,14 +49,13 @@ async function generateCertificateSVG(
     />
   `;
 
-  // Insert the font style after the opening <svg> tag and overlay elements before closing </svg>
-  let modifiedSvg = baseSvg.replace(/<svg([^>]*)>/, `<svg$1>${fontStyle}`);
-  modifiedSvg = modifiedSvg.replace("</svg>", `${overlayElements}</svg>`);
+  // Insert overlay elements before closing </svg>
+  const modifiedSvg = baseSvg.replace("</svg>", `${overlayElements}</svg>`);
 
   return modifiedSvg;
 }
 
-// Escape special XML characters to prevent injection
+// Escape special XML characters
 function escapeXml(text: string): string {
   return text
     .replace(/&/g, "&amp;")
@@ -113,7 +81,6 @@ export async function GET(
     }
 
     if (!db) {
-      console.error("[certificate-og] Database not configured");
       return NextResponse.json(
         { error: "Database not configured" },
         { status: 500 }
@@ -125,7 +92,6 @@ export async function GET(
     });
 
     if (!participant) {
-      console.error("[certificate-og] Participant not found:", participantNum);
       return NextResponse.json(
         { error: "Participant not found" },
         { status: 404 }
@@ -133,15 +99,15 @@ export async function GET(
     }
 
     if (!participant.fullName) {
-      console.error("[certificate-og] Full name not found for participant:", participantNum);
       return NextResponse.json(
         { error: "Participant name not found" },
         { status: 404 }
       );
     }
 
-    // Generate QR code linking to participant profile
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://www.peru.ai-hackathon.co";
+    // Generate QR code
+    const baseUrl =
+      process.env.NEXT_PUBLIC_BASE_URL || "https://www.peru.ai-hackathon.co";
     const qrUrl = `${baseUrl}/p/${participantNum}`;
     const qrCodeDataUrl = await QRCode.toDataURL(qrUrl, {
       width: QR_SIZE,
@@ -152,31 +118,25 @@ export async function GET(
       },
     });
 
-    // Generate SVG with name and QR code overlaid on certificate template
+    // Generate SVG with name and QR code
     const svgContent = await generateCertificateSVG(
       participant.fullName,
-      participantNum,
       qrCodeDataUrl
     );
 
     // Convert SVG to PNG
-    const pngBuffer = await sharp(Buffer.from(svgContent))
-      .png()
-      .toBuffer();
-
-    console.log("[certificate-og] Certificate image generated, size:", pngBuffer.length, "bytes");
+    const pngBuffer = await sharp(Buffer.from(svgContent)).png().toBuffer();
 
     return new NextResponse(new Uint8Array(pngBuffer), {
       headers: {
         "Content-Type": "image/png",
         "Cache-Control": "public, max-age=31536000, immutable",
-        "Content-Length": pngBuffer.length.toString(),
       },
     });
   } catch (error) {
-    console.error("[certificate-og] Error generating certificate image:", error);
+    console.error("[certificate-og] Error:", error);
     return NextResponse.json(
-      { error: "Error generating image", details: error instanceof Error ? error.message : "Unknown error" },
+      { error: "Error generating image" },
       { status: 500 }
     );
   }
