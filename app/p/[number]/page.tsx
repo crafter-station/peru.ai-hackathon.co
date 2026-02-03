@@ -32,6 +32,7 @@ interface PublicProfile {
   websiteUrl: string | null;
   cursorCode: string | null;
   clerkUserId: string;
+  certificateBlobUrl: string | null;
 }
 
 export default function PublicProfilePage() {
@@ -160,6 +161,8 @@ export default function PublicProfilePage() {
       <Certificates
         fullName={profile.fullName}
         participantNumber={profile.participantNumber}
+        certificateBlobUrl={profile.certificateBlobUrl}
+        isOwnProfile={isOwnProfile}
       />
       <Separator />
 

@@ -30,6 +30,7 @@ type ParticipantCard = {
   cursorCode?: string | null;
   badgeBlobUrl?: string | null;
   profilePhotoUrl?: string | null;
+  certificateBlobUrl?: string | null;
 };
 
 interface ParticipantModalProps {
@@ -228,6 +229,7 @@ export function ParticipantModal({
               <Certificates
                 fullName={displayProfile.fullName}
                 participantNumber={displayProfile.participantNumber}
+                certificateBlobUrl={displayProfile.certificateBlobUrl}
               />
             </div>
             <Separator />
