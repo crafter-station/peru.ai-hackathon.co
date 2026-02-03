@@ -32,20 +32,6 @@ export function Certificates({
     setCertificateUrl(initialCertificateUrl);
   }, [initialCertificateUrl]);
 
-  // Auto-generate certificate when page loads if not already generated
-  useEffect(() => {
-    if (
-      !certificateUrl &&
-      participantNumber &&
-      fullName &&
-      !isGenerating &&
-      !hasTriggeredGeneration.current
-    ) {
-      hasTriggeredGeneration.current = true;
-      handleGenerateCertificate();
-    }
-  }, [certificateUrl, participantNumber, fullName, isGenerating, handleGenerateCertificate]);
-
   const baseUrl =
     typeof window !== "undefined"
       ? window.location.origin
@@ -152,6 +138,20 @@ export function Certificates({
       setIsGenerating(false);
     }
   }, [participantNumber, triggerConfetti]);
+
+  // Auto-generate certificate when page loads if not already generated
+  useEffect(() => {
+    if (
+      !certificateUrl &&
+      participantNumber &&
+      fullName &&
+      !isGenerating &&
+      !hasTriggeredGeneration.current
+    ) {
+      hasTriggeredGeneration.current = true;
+      handleGenerateCertificate();
+    }
+  }, [certificateUrl, participantNumber, fullName, isGenerating, handleGenerateCertificate]);
 
   if (!fullName || !participantNumber) {
     return null;
