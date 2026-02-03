@@ -17,6 +17,18 @@ const QR_X = 1620;
 const QR_Y = 750;
 const QR_SIZE = 160;
 
+// Cache font data to avoid reading file on every request
+let fontBase64Cache: string | null = null;
+
+async function loadFontBase64(): Promise<string> {
+  if (fontBase64Cache) return fontBase64Cache;
+
+  const fontPath = join(process.cwd(), "app/fonts/Adelle Mono/AdelleMono-Bold.ttf");
+  const fontBuffer = await readFile(fontPath);
+  fontBase64Cache = fontBuffer.toString("base64");
+  return fontBase64Cache;
+}
+
 async function generateCertificateSVG(
   fullName: string,
   participantNumber: number,
@@ -25,6 +37,23 @@ async function generateCertificateSVG(
   // Read the base certificate SVG
   const svgPath = join(process.cwd(), "public", "ia-hack-pe-certificate.svg");
   const baseSvg = await readFile(svgPath, "utf-8");
+
+  // Load font as base64
+  const fontBase64 = await loadFontBase64();
+
+  // Create style with embedded font
+  const fontStyle = `
+    <defs>
+      <style type="text/css">
+        @font-face {
+          font-family: 'AdelleMono';
+          src: url('data:font/truetype;base64,${fontBase64}') format('truetype');
+          font-weight: 700;
+          font-style: normal;
+        }
+      </style>
+    </defs>
+  `;
 
   // Create overlay elements: name and QR code
   const overlayElements = `
@@ -37,9 +66,9 @@ async function generateCertificateSVG(
       font-size="64"
       font-weight="700"
       fill="#FFFFFF"
-      font-family="Arial, sans-serif"
+      font-family="AdelleMono, Arial, sans-serif"
       letter-spacing="0.06em"
-    >${fullName.toUpperCase()}</text>
+    >${escapeXml(fullName.toUpperCase())}</text>
 
     <!-- QR Code -->
     <image
@@ -51,10 +80,21 @@ async function generateCertificateSVG(
     />
   `;
 
-  // Insert the overlay elements before the closing </svg> tag
-  const modifiedSvg = baseSvg.replace("</svg>", `${overlayElements}</svg>`);
+  // Insert the font style after the opening <svg> tag and overlay elements before closing </svg>
+  let modifiedSvg = baseSvg.replace(/<svg([^>]*)>/, `<svg$1>${fontStyle}`);
+  modifiedSvg = modifiedSvg.replace("</svg>", `${overlayElements}</svg>`);
 
   return modifiedSvg;
+}
+
+// Escape special XML characters to prevent injection
+function escapeXml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
 }
 
 export async function GET(
