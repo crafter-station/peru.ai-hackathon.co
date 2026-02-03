@@ -8,8 +8,8 @@ import QRCode from "qrcode";
 import satori from "satori";
 
 // Certificate dimensions
-const CERTIFICATE_WIDTH = 1920;
-const CERTIFICATE_HEIGHT = 1080;
+const WIDTH = 1920;
+const HEIGHT = 1080;
 
 // Name position
 const NAME_X = 622;
@@ -20,16 +20,18 @@ const QR_X = 1620;
 const QR_Y = 750;
 const QR_SIZE = 160;
 
-// Cache for font
 let fontCache: ArrayBuffer | null = null;
 
 async function getFont(): Promise<ArrayBuffer> {
   if (fontCache) return fontCache;
 
-  // Fetch Inter Bold from Google Fonts
-  const fontUrl =
-    "https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuGKYAZ9hiJ-Ek-_EeA.woff";
-  const response = await fetch(fontUrl);
+  const baseUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "http://localhost:3000";
+
+  const response = await fetch(`${baseUrl}/fonts/AdelleMono-Bold.ttf`);
   fontCache = await response.arrayBuffer();
   return fontCache;
 }
@@ -90,13 +92,13 @@ export async function GET(
       },
     });
 
-    // Create text overlay with satori
-    const textElement = (
+    // Create text overlay using satori (embeds font data in SVG)
+    const textOverlay = (
       <div
         style={{
           display: "flex",
-          width: `${CERTIFICATE_WIDTH}px`,
-          height: `${CERTIFICATE_HEIGHT}px`,
+          width: `${WIDTH}px`,
+          height: `${HEIGHT}px`,
           position: "relative",
         }}
       >
@@ -105,12 +107,11 @@ export async function GET(
             position: "absolute",
             top: `${NAME_Y - 32}px`,
             left: `${NAME_X}px`,
-            color: "#FFFFFF",
+            color: "white",
             fontSize: "64px",
-            fontFamily: "Inter",
+            fontFamily: "Adelle Mono",
             fontWeight: 700,
             letterSpacing: "0.06em",
-            textTransform: "uppercase",
           }}
         >
           {participant.fullName.toUpperCase()}
@@ -118,13 +119,12 @@ export async function GET(
       </div>
     );
 
-    // Render text to SVG using satori
-    const textSvg = await satori(textElement, {
-      width: CERTIFICATE_WIDTH,
-      height: CERTIFICATE_HEIGHT,
+    const textSvg = await satori(textOverlay, {
+      width: WIDTH,
+      height: HEIGHT,
       fonts: [
         {
-          name: "Inter",
+          name: "Adelle Mono",
           data: fontData,
           weight: 700,
           style: "normal",
@@ -141,18 +141,12 @@ export async function GET(
 
     // Convert template to PNG
     const templatePng = await sharp(templatePath)
-      .resize(CERTIFICATE_WIDTH, CERTIFICATE_HEIGHT)
+      .resize(WIDTH, HEIGHT)
       .png()
       .toBuffer();
 
-    // Resize QR code
-    const qrCodeResized = await sharp(qrCodeBuffer)
-      .resize(QR_SIZE, QR_SIZE)
-      .png()
-      .toBuffer();
-
-    // Composite everything together
-    const finalImage = await sharp(templatePng)
+    // Composite: template + text + QR code
+    const pngBuffer = await sharp(templatePng)
       .composite([
         {
           input: Buffer.from(textSvg),
@@ -160,7 +154,7 @@ export async function GET(
           left: 0,
         },
         {
-          input: qrCodeResized,
+          input: qrCodeBuffer,
           top: QR_Y,
           left: QR_X,
         },
@@ -168,7 +162,7 @@ export async function GET(
       .png()
       .toBuffer();
 
-    return new NextResponse(new Uint8Array(finalImage), {
+    return new NextResponse(new Uint8Array(pngBuffer), {
       headers: {
         "Content-Type": "image/png",
         "Cache-Control": "public, max-age=31536000, immutable",
@@ -177,7 +171,10 @@ export async function GET(
   } catch (error) {
     console.error("[certificate-og] Error:", error);
     return NextResponse.json(
-      { error: "Error generating image" },
+      {
+        error: "Error generating image",
+        details: error instanceof Error ? error.message : "Unknown",
+      },
       { status: 500 }
     );
   }
