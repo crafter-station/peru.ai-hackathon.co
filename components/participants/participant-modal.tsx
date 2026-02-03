@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from "lucide-react";
+import Link from "next/link";
+import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, ExternalLink } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ProfileHeader } from "@/components/profile/profile-header";
@@ -10,6 +11,7 @@ import { SocialLinks } from "@/components/profile/social-links";
 import { TechStack } from "@/components/profile/tech-stack";
 import { Separator } from "@/components/profile/separator";
 import { Achievements } from "@/components/profile/achievements";
+import { Certificates } from "@/components/profile/certificates";
 
 type ParticipantCard = {
   id: string;
@@ -223,8 +225,28 @@ export function ParticipantModal({
             <Separator />
 
             <div className="w-full overflow-x-hidden">
+              <Certificates
+                fullName={displayProfile.fullName}
+                participantNumber={displayProfile.participantNumber}
+              />
+            </div>
+            <Separator />
+
+            <div className="w-full overflow-x-hidden">
               <TechStack techStack={displayProfile.techStack} />
             </div>
+            <Separator />
+
+            {displayProfile.participantNumber && (
+              <div className="w-full flex justify-center py-4">
+                <Button asChild variant="outline" className="font-mono">
+                  <Link href={`/p/${displayProfile.participantNumber}`}>
+                    <ExternalLink className="size-4 mr-2" />
+                    Ver perfil completo
+                  </Link>
+                </Button>
+              </div>
+            )}
           </div>
         </div>
 
