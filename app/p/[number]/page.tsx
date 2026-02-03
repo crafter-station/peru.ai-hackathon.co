@@ -162,7 +162,6 @@ export default function PublicProfilePage() {
         fullName={profile.fullName}
         participantNumber={profile.participantNumber}
         certificateBlobUrl={profile.certificateBlobUrl}
-        isOwnProfile={isOwnProfile}
       />
       <Separator />
 

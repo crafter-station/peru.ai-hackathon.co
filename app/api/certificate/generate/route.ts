@@ -1,18 +1,17 @@
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
 import { participants } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 import { generateCertificate } from "@/lib/generate-certificate";
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
-    const { userId } = await auth();
+    const { participantNumber } = await request.json();
 
-    if (!userId) {
+    if (!participantNumber) {
       return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
+        { error: "Participant number is required" },
+        { status: 400 }
       );
     }
 
@@ -23,9 +22,9 @@ export async function POST() {
       );
     }
 
-    // Find participant by clerk user ID
+    // Find participant by number
     const participant = await db.query.participants.findFirst({
-      where: eq(participants.clerkUserId, userId),
+      where: eq(participants.participantNumber, participantNumber),
     });
 
     if (!participant) {
@@ -37,9 +36,18 @@ export async function POST() {
 
     if (!participant.fullName) {
       return NextResponse.json(
-        { error: "Please complete your profile first" },
+        { error: "Participant name not found" },
         { status: 400 }
       );
+    }
+
+    // If certificate already exists, return it
+    if (participant.certificateBlobUrl) {
+      return NextResponse.json({
+        success: true,
+        url: participant.certificateBlobUrl,
+        cached: true,
+      });
     }
 
     // Generate the certificate
@@ -55,6 +63,7 @@ export async function POST() {
     return NextResponse.json({
       success: true,
       url: result.url,
+      cached: false,
     });
   } catch (error) {
     console.error("[certificate-generate] Error:", error);

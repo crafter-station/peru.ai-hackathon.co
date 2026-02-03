@@ -1,9 +1,9 @@
 "use client";
 
-import { Award, Copy, Share2, ExternalLink, Download, Sparkles } from "lucide-react";
+import { Award, Copy, Share2, ExternalLink, Download } from "lucide-react";
 import { Panel, PanelContent, PanelHeader, PanelTitle } from "./panel";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import confetti from "canvas-confetti";
 import Image from "next/image";
 
@@ -11,19 +11,18 @@ interface CertificatesProps {
   fullName?: string | null;
   participantNumber?: number | null;
   certificateBlobUrl?: string | null;
-  isOwnProfile?: boolean;
 }
 
 export function Certificates({
   fullName,
   participantNumber,
   certificateBlobUrl: initialCertificateUrl,
-  isOwnProfile = false,
 }: CertificatesProps) {
   const [copied, setCopied] = useState(false);
   const [canShare, setCanShare] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [certificateUrl, setCertificateUrl] = useState(initialCertificateUrl);
+  const hasTriggeredGeneration = useRef(false);
 
   useEffect(() => {
     setCanShare(typeof navigator !== "undefined" && !!navigator.share);
@@ -32,6 +31,20 @@ export function Certificates({
   useEffect(() => {
     setCertificateUrl(initialCertificateUrl);
   }, [initialCertificateUrl]);
+
+  // Auto-generate certificate when page loads if not already generated
+  useEffect(() => {
+    if (
+      !certificateUrl &&
+      participantNumber &&
+      fullName &&
+      !isGenerating &&
+      !hasTriggeredGeneration.current
+    ) {
+      hasTriggeredGeneration.current = true;
+      handleGenerateCertificate();
+    }
+  }, [certificateUrl, participantNumber, fullName, isGenerating, handleGenerateCertificate]);
 
   const baseUrl =
     typeof window !== "undefined"
@@ -78,7 +91,7 @@ export function Certificates({
     }
   };
 
-  const triggerConfetti = () => {
+  const triggerConfetti = useCallback(() => {
     const duration = 3000;
     const animationEnd = Date.now() + duration;
     const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
@@ -108,15 +121,17 @@ export function Certificates({
         colors: ["#B91F2E", "#FFFFFF", "#FFD700"],
       });
     }, 250);
-  };
+  }, []);
 
-  const handleGenerateCertificate = async () => {
-    if (isGenerating) return;
+  const handleGenerateCertificate = useCallback(async () => {
+    if (!participantNumber) return;
 
     setIsGenerating(true);
     try {
       const response = await fetch("/api/certificate/generate", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ participantNumber }),
       });
 
       if (!response.ok) {
@@ -127,15 +142,16 @@ export function Certificates({
       const data = await response.json();
       setCertificateUrl(data.url);
 
-      // Trigger confetti celebration!
-      triggerConfetti();
+      // Trigger confetti celebration only for new certificates!
+      if (!data.cached) {
+        triggerConfetti();
+      }
     } catch (error) {
       console.error("Error generating certificate:", error);
-      alert("Error al generar el certificado. Por favor intenta de nuevo.");
     } finally {
       setIsGenerating(false);
     }
-  };
+  }, [participantNumber, triggerConfetti]);
 
   if (!fullName || !participantNumber) {
     return null;
@@ -162,37 +178,19 @@ export function Certificates({
                 unoptimized
               />
             </div>
-          ) : isOwnProfile ? (
-            <div className="w-full aspect-video rounded-lg border-2 border-dashed border-edge flex flex-col items-center justify-center gap-4 bg-muted/30">
-              <Sparkles className="size-12 text-muted-foreground" />
-              <div className="text-center space-y-2">
-                <p className="font-mono text-sm text-muted-foreground">
-                  Tu certificado está listo para ser generado
-                </p>
-                <Button
-                  onClick={handleGenerateCertificate}
-                  disabled={isGenerating}
-                  className="font-mono"
-                >
-                  {isGenerating ? (
-                    <>
-                      <div className="size-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                      Generando...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="size-4 mr-2" />
-                      Generar Certificado
-                    </>
-                  )}
-                </Button>
-              </div>
-            </div>
           ) : (
             <div className="w-full aspect-video rounded-lg border-2 border-dashed border-edge flex flex-col items-center justify-center gap-4 bg-muted/30">
-              <Award className="size-12 text-muted-foreground" />
-              <p className="font-mono text-sm text-muted-foreground text-center">
-                El certificado aún no ha sido generado
+              <div className="flex gap-1 justify-center">
+                {[0, 1, 2].map((i) => (
+                  <div
+                    key={i}
+                    className="size-3 bg-foreground animate-pulse"
+                    style={{ animationDelay: `${i * 0.2}s` }}
+                  />
+                ))}
+              </div>
+              <p className="font-mono text-sm text-muted-foreground">
+                Generando certificado...
               </p>
             </div>
           )}
