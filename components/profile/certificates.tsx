@@ -1,0 +1,209 @@
+"use client";
+
+import { Award, Copy, Share2, ExternalLink, Download } from "lucide-react";
+import { Panel, PanelContent, PanelHeader, PanelTitle } from "./panel";
+import { CertificatePreviewClient } from "@/components/certificate/certificate-preview-client";
+import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
+
+interface CertificatesProps {
+  fullName?: string | null;
+  participantNumber?: number | null;
+}
+
+export function Certificates({
+  fullName,
+  participantNumber,
+}: CertificatesProps) {
+  const [copied, setCopied] = useState(false);
+  const [canShare, setCanShare] = useState(false);
+
+  useEffect(() => {
+    setCanShare(typeof navigator !== "undefined" && !!navigator.share);
+  }, []);
+
+  const baseUrl =
+    typeof window !== "undefined"
+      ? window.location.origin
+      : "https://www.peru.ai-hackathon.co";
+  const shareUrl = participantNumber
+    ? `${baseUrl}/share/certificate/${participantNumber}`
+    : "https://www.peru.ai-hackathon.co/";
+  const downloadUrl = participantNumber
+    ? `${baseUrl}/api/certificate/og/${participantNumber}`
+    : null;
+
+  const shareText = `🎓 ¡Lo logré! Completé 24 horas de código, creatividad e IA en la IA Hackathon Peru 2025 🚀
+
+📅 29-30 Nov | 📍 UPCH La Molina
+💻 El hackathon de inteligencia artificial más grande del Perú
+
+🔗 ${shareUrl}
+
+#IAHackathonPeru #AI #Hackathon #Peru`;
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(shareText);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error("Failed to copy:", error);
+    }
+  };
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Certificado - IA Hackathon Perú 2025",
+          text: shareText,
+          url: shareUrl,
+        });
+      } catch (error) {
+        if ((error as Error).name !== "AbortError") {
+          console.error("Error sharing:", error);
+        }
+      }
+    } else {
+      handleCopy();
+    }
+  };
+
+  if (!fullName || !participantNumber) {
+    return null;
+  }
+
+  return (
+    <Panel id="certificates">
+      <PanelHeader>
+        <PanelTitle className="flex items-center gap-3">
+          <Award className="size-6 text-brand-red" />
+          Certificados
+        </PanelTitle>
+      </PanelHeader>
+      <PanelContent className="space-y-6">
+        <div className="flex flex-col items-center gap-6">
+          <div className="w-full">
+            <CertificatePreviewClient
+              fullName={fullName}
+              participantNumber={participantNumber}
+            />
+          </div>
+          <div className="text-center space-y-2">
+            <p className="font-mono text-sm font-semibold text-foreground">
+              Certificado de Participación
+            </p>
+            <p className="font-mono text-xs text-muted-foreground">
+              24 horas de innovación con IA
+            </p>
+          </div>
+
+          <div className="w-full space-y-3 pt-2 border-t border-edge border-t-[1.5px] relative before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-edge/50 before:to-transparent">
+            <p className="font-mono text-xs text-muted-foreground text-center uppercase tracking-wider">
+              Compartir certificado
+            </p>
+            <div className="flex flex-wrap gap-2 justify-center">
+              {downloadUrl && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  asChild
+                  className="font-mono text-xs"
+                >
+                  <a href={downloadUrl} download={`certificado-ia-hackathon-${participantNumber}.png`}>
+                    <Download className="size-3" />
+                    Descargar
+                  </a>
+                </Button>
+              )}
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleCopy}
+                className="font-mono text-xs"
+              >
+                <Copy className="size-3" />
+                {copied ? "Copiado" : "Copiar"}
+              </Button>
+
+              {canShare && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleShare}
+                  className="font-mono text-xs"
+                >
+                  <Share2 className="size-3" />
+                  Compartir
+                </Button>
+              )}
+
+              <Button
+                variant="outline"
+                size="sm"
+                asChild
+                className="font-mono text-xs"
+              >
+                <a
+                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  LinkedIn
+                </a>
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                asChild
+                className="font-mono text-xs"
+              >
+                <a
+                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  X / Twitter
+                </a>
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                asChild
+                className="font-mono text-xs"
+              >
+                <a
+                  href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  WhatsApp
+                </a>
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                asChild
+                className="font-mono text-xs"
+              >
+                <a
+                  href={shareUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <ExternalLink className="size-3" />
+                  Ver página
+                </a>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </PanelContent>
+    </Panel>
+  );
+}
