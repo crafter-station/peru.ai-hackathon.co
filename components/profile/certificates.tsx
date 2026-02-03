@@ -49,6 +49,25 @@ export function Certificates({
 
 #IAHackathonPeru #AI #Hackathon #Peru`;
 
+  const handleDownload = async () => {
+    if (!certificateUrl) return;
+
+    try {
+      const response = await fetch(certificateUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `certificado-ia-hackathon-${participantNumber}.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading certificate:", error);
+    }
+  };
+
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(shareText);
@@ -214,16 +233,11 @@ export function Certificates({
                   <Button
                     variant="outline"
                     size="sm"
-                    asChild
+                    onClick={handleDownload}
                     className="font-mono text-xs"
                   >
-                    <a
-                      href={certificateUrl}
-                      download={`certificado-ia-hackathon-${participantNumber}.png`}
-                    >
-                      <Download className="size-3" />
-                      Descargar
-                    </a>
+                    <Download className="size-3" />
+                    Descargar
                   </Button>
 
                   <Button
