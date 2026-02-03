@@ -1,26 +1,37 @@
 "use client";
 
-import { Award, Copy, Share2, ExternalLink, Download } from "lucide-react";
+import { Award, Copy, Share2, ExternalLink, Download, Sparkles } from "lucide-react";
 import { Panel, PanelContent, PanelHeader, PanelTitle } from "./panel";
-import { CertificatePreviewClient } from "@/components/certificate/certificate-preview-client";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
+import confetti from "canvas-confetti";
+import Image from "next/image";
 
 interface CertificatesProps {
   fullName?: string | null;
   participantNumber?: number | null;
+  certificateBlobUrl?: string | null;
+  isOwnProfile?: boolean;
 }
 
 export function Certificates({
   fullName,
   participantNumber,
+  certificateBlobUrl: initialCertificateUrl,
+  isOwnProfile = false,
 }: CertificatesProps) {
   const [copied, setCopied] = useState(false);
   const [canShare, setCanShare] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [certificateUrl, setCertificateUrl] = useState(initialCertificateUrl);
 
   useEffect(() => {
     setCanShare(typeof navigator !== "undefined" && !!navigator.share);
   }, []);
+
+  useEffect(() => {
+    setCertificateUrl(initialCertificateUrl);
+  }, [initialCertificateUrl]);
 
   const baseUrl =
     typeof window !== "undefined"
@@ -29,9 +40,6 @@ export function Certificates({
   const shareUrl = participantNumber
     ? `${baseUrl}/share/certificate/${participantNumber}`
     : "https://www.peru.ai-hackathon.co/";
-  const downloadUrl = participantNumber
-    ? `${baseUrl}/api/certificate/og/${participantNumber}`
-    : null;
 
   const shareText = `🎓 ¡Lo logré! Completé 24 horas de código, creatividad e IA en la IA Hackathon Peru 2025 🚀
 
@@ -70,6 +78,65 @@ export function Certificates({
     }
   };
 
+  const triggerConfetti = () => {
+    const duration = 3000;
+    const animationEnd = Date.now() + duration;
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
+
+    const randomInRange = (min: number, max: number) =>
+      Math.random() * (max - min) + min;
+
+    const interval = setInterval(() => {
+      const timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        return clearInterval(interval);
+      }
+
+      const particleCount = 50 * (timeLeft / duration);
+
+      confetti({
+        ...defaults,
+        particleCount,
+        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+        colors: ["#B91F2E", "#FFFFFF", "#FFD700"],
+      });
+      confetti({
+        ...defaults,
+        particleCount,
+        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+        colors: ["#B91F2E", "#FFFFFF", "#FFD700"],
+      });
+    }, 250);
+  };
+
+  const handleGenerateCertificate = async () => {
+    if (isGenerating) return;
+
+    setIsGenerating(true);
+    try {
+      const response = await fetch("/api/certificate/generate", {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to generate certificate");
+      }
+
+      const data = await response.json();
+      setCertificateUrl(data.url);
+
+      // Trigger confetti celebration!
+      triggerConfetti();
+    } catch (error) {
+      console.error("Error generating certificate:", error);
+      alert("Error al generar el certificado. Por favor intenta de nuevo.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   if (!fullName || !participantNumber) {
     return null;
   }
@@ -84,124 +151,165 @@ export function Certificates({
       </PanelHeader>
       <PanelContent className="space-y-6">
         <div className="flex flex-col items-center gap-6">
-          <div className="w-full">
-            <CertificatePreviewClient
-              fullName={fullName}
-              participantNumber={participantNumber}
-            />
-          </div>
-          <div className="text-center space-y-2">
-            <p className="font-mono text-sm font-semibold text-foreground">
-              Certificado de Participación
-            </p>
-            <p className="font-mono text-xs text-muted-foreground">
-              24 horas de innovación con IA
-            </p>
-          </div>
-
-          <div className="w-full space-y-3 pt-2 border-t border-edge border-t-[1.5px] relative before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-edge/50 before:to-transparent">
-            <p className="font-mono text-xs text-muted-foreground text-center uppercase tracking-wider">
-              Compartir certificado
-            </p>
-            <div className="flex flex-wrap gap-2 justify-center">
-              {downloadUrl && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  asChild
-                  className="font-mono text-xs"
-                >
-                  <a href={downloadUrl} download={`certificado-ia-hackathon-${participantNumber}.png`}>
-                    <Download className="size-3" />
-                    Descargar
-                  </a>
-                </Button>
-              )}
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleCopy}
-                className="font-mono text-xs"
-              >
-                <Copy className="size-3" />
-                {copied ? "Copiado" : "Copiar"}
-              </Button>
-
-              {canShare && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleShare}
-                  className="font-mono text-xs"
-                >
-                  <Share2 className="size-3" />
-                  Compartir
-                </Button>
-              )}
-
-              <Button
-                variant="outline"
-                size="sm"
-                asChild
-                className="font-mono text-xs"
-              >
-                <a
-                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  LinkedIn
-                </a>
-              </Button>
-
-              <Button
-                variant="outline"
-                size="sm"
-                asChild
-                className="font-mono text-xs"
-              >
-                <a
-                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  X / Twitter
-                </a>
-              </Button>
-
-              <Button
-                variant="outline"
-                size="sm"
-                asChild
-                className="font-mono text-xs"
-              >
-                <a
-                  href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  WhatsApp
-                </a>
-              </Button>
-
-              <Button
-                variant="outline"
-                size="sm"
-                asChild
-                className="font-mono text-xs"
-              >
-                <a
-                  href={shareUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <ExternalLink className="size-3" />
-                  Ver página
-                </a>
-              </Button>
+          {/* Certificate Preview */}
+          {certificateUrl ? (
+            <div className="w-full relative aspect-video rounded-lg overflow-hidden bg-muted">
+              <Image
+                src={certificateUrl}
+                alt={`Certificado de ${fullName}`}
+                fill
+                className="object-contain"
+                unoptimized
+              />
             </div>
-          </div>
+          ) : isOwnProfile ? (
+            <div className="w-full aspect-video rounded-lg border-2 border-dashed border-edge flex flex-col items-center justify-center gap-4 bg-muted/30">
+              <Sparkles className="size-12 text-muted-foreground" />
+              <div className="text-center space-y-2">
+                <p className="font-mono text-sm text-muted-foreground">
+                  Tu certificado está listo para ser generado
+                </p>
+                <Button
+                  onClick={handleGenerateCertificate}
+                  disabled={isGenerating}
+                  className="font-mono"
+                >
+                  {isGenerating ? (
+                    <>
+                      <div className="size-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                      Generando...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="size-4 mr-2" />
+                      Generar Certificado
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="w-full aspect-video rounded-lg border-2 border-dashed border-edge flex flex-col items-center justify-center gap-4 bg-muted/30">
+              <Award className="size-12 text-muted-foreground" />
+              <p className="font-mono text-sm text-muted-foreground text-center">
+                El certificado aún no ha sido generado
+              </p>
+            </div>
+          )}
+
+          {certificateUrl && (
+            <>
+              <div className="text-center space-y-2">
+                <p className="font-mono text-sm font-semibold text-foreground">
+                  Certificado de Participación
+                </p>
+                <p className="font-mono text-xs text-muted-foreground">
+                  24 horas de innovación con IA
+                </p>
+              </div>
+
+              <div className="w-full space-y-3 pt-2 border-t border-edge border-t-[1.5px] relative before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-edge/50 before:to-transparent">
+                <p className="font-mono text-xs text-muted-foreground text-center uppercase tracking-wider">
+                  Compartir certificado
+                </p>
+                <div className="flex flex-wrap gap-2 justify-center">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    asChild
+                    className="font-mono text-xs"
+                  >
+                    <a
+                      href={certificateUrl}
+                      download={`certificado-ia-hackathon-${participantNumber}.png`}
+                    >
+                      <Download className="size-3" />
+                      Descargar
+                    </a>
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleCopy}
+                    className="font-mono text-xs"
+                  >
+                    <Copy className="size-3" />
+                    {copied ? "Copiado" : "Copiar"}
+                  </Button>
+
+                  {canShare && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleShare}
+                      className="font-mono text-xs"
+                    >
+                      <Share2 className="size-3" />
+                      Compartir
+                    </Button>
+                  )}
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    asChild
+                    className="font-mono text-xs"
+                  >
+                    <a
+                      href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      LinkedIn
+                    </a>
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    asChild
+                    className="font-mono text-xs"
+                  >
+                    <a
+                      href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      X / Twitter
+                    </a>
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    asChild
+                    className="font-mono text-xs"
+                  >
+                    <a
+                      href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      WhatsApp
+                    </a>
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    asChild
+                    className="font-mono text-xs"
+                  >
+                    <a href={shareUrl} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="size-3" />
+                      Ver página
+                    </a>
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </PanelContent>
     </Panel>
