@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import { Achievements } from "@/components/profile/achievements";
+import { Certificates } from "@/components/profile/certificates";
 import { Overview } from "@/components/profile/overview";
 import { ProfileCover } from "@/components/profile/profile-cover";
 import { ProfileHeader } from "@/components/profile/profile-header";
@@ -152,6 +153,12 @@ export default function PublicProfilePage() {
 
       <Achievements
         badgeBlobUrl={profile.badgeBlobUrl}
+        participantNumber={profile.participantNumber}
+      />
+      <Separator />
+
+      <Certificates
+        fullName={profile.fullName}
         participantNumber={profile.participantNumber}
       />
       <Separator />
