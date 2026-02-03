@@ -2,8 +2,8 @@ import { Metadata } from "next";
 import { db } from "@/lib/db";
 import { participants } from "@/lib/schema";
 import { eq } from "drizzle-orm";
-import { CertificatePreview } from "@/components/certificate/certificate-preview";
 import { notFound } from "next/navigation";
+import Image from "next/image";
 
 type Props = {
   params: Promise<{ participantNumber: string }>;
@@ -100,10 +100,24 @@ export default async function ShareCertificatePage({ params }: Props) {
           </h1>
         </div>
 
-        <CertificatePreview
-          fullName={participant.fullName}
-          participantNumber={participantNum}
-        />
+        {participant.certificateBlobUrl ? (
+          <div className="w-full relative aspect-video rounded-lg overflow-hidden">
+            <Image
+              src={participant.certificateBlobUrl}
+              alt={`Certificado de ${participant.fullName}`}
+              fill
+              className="object-contain"
+              unoptimized
+              priority
+            />
+          </div>
+        ) : (
+          <div className="w-full aspect-video rounded-lg border-2 border-dashed border-white/20 flex items-center justify-center">
+            <p className="font-adelle-mono text-sm text-white/40">
+              Certificado pendiente de generación
+            </p>
+          </div>
+        )}
 
         <div className="space-y-4 pt-4">
           <p className="font-adelle-mono text-lg text-white">

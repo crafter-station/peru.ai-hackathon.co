@@ -41,16 +41,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // If certificate already exists, return it
-    if (participant.certificateBlobUrl) {
-      return NextResponse.json({
-        success: true,
-        url: participant.certificateBlobUrl,
-        cached: true,
-      });
-    }
-
-    // Generate the certificate
+    // Always generate a fresh certificate
     const result = await generateCertificate(participant.id);
 
     if (!result.success) {
