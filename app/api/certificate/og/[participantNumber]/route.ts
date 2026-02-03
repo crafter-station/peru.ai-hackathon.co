@@ -3,66 +3,35 @@ import { db } from "@/lib/db";
 import { participants } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 import sharp from "sharp";
-import { readFile } from "fs/promises";
 import { join } from "path";
 import QRCode from "qrcode";
+import satori from "satori";
 
-// Name text area coordinates (from ia-hack-pe-certificate.svg design)
+// Certificate dimensions
+const WIDTH = 1920;
+const HEIGHT = 1080;
+
+// Name position
 const NAME_X = 622;
-const NAME_CENTER_Y = 528;
+const NAME_Y = 528;
 
 // QR code position
 const QR_X = 1620;
 const QR_Y = 750;
 const QR_SIZE = 160;
 
-async function generateCertificateSVG(
-  fullName: string,
-  qrCodeDataUrl: string
-): Promise<string> {
-  // Read the base certificate SVG
-  const svgPath = join(process.cwd(), "public", "ia-hack-pe-certificate.svg");
-  const baseSvg = await readFile(svgPath, "utf-8");
+// Cache font
+let fontCache: ArrayBuffer | null = null;
 
-  // Create overlay elements with system fonts (Arial works everywhere)
-  const overlayElements = `
-    <!-- Participant Name -->
-    <text
-      x="${NAME_X}"
-      y="${NAME_CENTER_Y}"
-      text-anchor="start"
-      dominant-baseline="middle"
-      font-size="64"
-      font-weight="700"
-      fill="#FFFFFF"
-      font-family="Arial, Helvetica, sans-serif"
-      letter-spacing="0.06em"
-    >${escapeXml(fullName.toUpperCase())}</text>
+async function getFont(): Promise<ArrayBuffer> {
+  if (fontCache) return fontCache;
 
-    <!-- QR Code -->
-    <image
-      href="${qrCodeDataUrl}"
-      x="${QR_X}"
-      y="${QR_Y}"
-      width="${QR_SIZE}"
-      height="${QR_SIZE}"
-    />
-  `;
-
-  // Insert overlay elements before closing </svg>
-  const modifiedSvg = baseSvg.replace("</svg>", `${overlayElements}</svg>`);
-
-  return modifiedSvg;
-}
-
-// Escape special XML characters
-function escapeXml(text: string): string {
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&apos;");
+  // Use Google Fonts Inter as fallback (works everywhere)
+  const fontUrl =
+    "https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuGKYAZ9hiA.woff2";
+  const response = await fetch(fontUrl);
+  fontCache = await response.arrayBuffer();
+  return fontCache;
 }
 
 export async function GET(
@@ -105,29 +74,102 @@ export async function GET(
       );
     }
 
-    // Generate QR code
+    // Load font and generate QR code in parallel
     const baseUrl =
       process.env.NEXT_PUBLIC_BASE_URL || "https://www.peru.ai-hackathon.co";
     const qrUrl = `${baseUrl}/p/${participantNum}`;
-    const qrCodeDataUrl = await QRCode.toDataURL(qrUrl, {
-      width: QR_SIZE,
-      margin: 0,
-      color: {
-        dark: "#FFFFFF",
-        light: "#00000000",
-      },
-    });
 
-    // Generate SVG with name and QR code
-    const svgContent = await generateCertificateSVG(
-      participant.fullName,
-      qrCodeDataUrl
+    const [font, qrCodeBuffer] = await Promise.all([
+      getFont(),
+      QRCode.toBuffer(qrUrl, {
+        errorCorrectionLevel: "M",
+        type: "png",
+        width: QR_SIZE,
+        margin: 0,
+        color: {
+          dark: "#FFFFFF",
+          light: "#00000000",
+        },
+      }),
+    ]);
+
+    // Create text overlay using satori
+    const textElement = (
+      <div
+        style={{
+          display: "flex",
+          width: `${WIDTH}px`,
+          height: `${HEIGHT}px`,
+          position: "relative",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            top: `${NAME_Y - 32}px`,
+            left: `${NAME_X}px`,
+            color: "#FFFFFF",
+            fontSize: "64px",
+            fontFamily: "Inter",
+            fontWeight: 700,
+            letterSpacing: "0.06em",
+            textTransform: "uppercase",
+          }}
+        >
+          {participant.fullName.toUpperCase()}
+        </div>
+      </div>
     );
 
-    // Convert SVG to PNG
-    const pngBuffer = await sharp(Buffer.from(svgContent)).png().toBuffer();
+    // Render text to SVG
+    const textSvg = await satori(textElement, {
+      width: WIDTH,
+      height: HEIGHT,
+      fonts: [
+        {
+          name: "Inter",
+          data: font,
+          weight: 700,
+          style: "normal",
+        },
+      ],
+    });
 
-    return new NextResponse(new Uint8Array(pngBuffer), {
+    // Load template and composite
+    const templatePath = join(
+      process.cwd(),
+      "public",
+      "ia-hack-pe-certificate.svg"
+    );
+
+    const templatePng = await sharp(templatePath)
+      .resize(WIDTH, HEIGHT)
+      .png()
+      .toBuffer();
+
+    const qrResized = await sharp(qrCodeBuffer)
+      .resize(QR_SIZE, QR_SIZE)
+      .png()
+      .toBuffer();
+
+    // Composite all layers
+    const finalImage = await sharp(templatePng)
+      .composite([
+        {
+          input: Buffer.from(textSvg),
+          top: 0,
+          left: 0,
+        },
+        {
+          input: qrResized,
+          top: QR_Y,
+          left: QR_X,
+        },
+      ])
+      .png()
+      .toBuffer();
+
+    return new NextResponse(new Uint8Array(finalImage), {
       headers: {
         "Content-Type": "image/png",
         "Cache-Control": "public, max-age=31536000, immutable",
