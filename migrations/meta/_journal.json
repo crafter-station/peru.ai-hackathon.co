@@ -71,6 +71,13 @@
       "when": 1763615678230,
       "tag": "0009_robust_lockjaw",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1770087595380,
+      "tag": "0010_secret_marauders",
+      "breakpoints": true
     }
   ]
 }
