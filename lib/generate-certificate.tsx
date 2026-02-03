@@ -1,6 +1,5 @@
 import sharp from "sharp";
 import path from "path";
-import fs from "fs/promises";
 import QRCode from "qrcode";
 import satori from "satori";
 import { put } from "@vercel/blob";
@@ -8,19 +7,27 @@ import { db } from "@/lib/db";
 import { participants } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 
-let fontsCache: { regular: Buffer; bold: Buffer } | null = null;
+let fontsCache: { regular: ArrayBuffer; bold: ArrayBuffer } | null = null;
+
+function getBaseUrl() {
+  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  return "http://localhost:3000";
+}
 
 async function getFonts() {
   if (!fontsCache) {
+    const baseUrl = getBaseUrl();
     const [regular, bold] = await Promise.all([
-      fs.readFile(
-        path.join(
-          process.cwd(),
-          "app/fonts/Adelle Mono/AdelleMono-Regular.ttf"
-        )
+      fetch(`${baseUrl}/fonts/AdelleMono-Regular.ttf`).then((res) =>
+        res.arrayBuffer()
       ),
-      fs.readFile(
-        path.join(process.cwd(), "app/fonts/Adelle Mono/AdelleMono-Bold.ttf")
+      fetch(`${baseUrl}/fonts/AdelleMono-Bold.ttf`).then((res) =>
+        res.arrayBuffer()
       ),
     ]);
     fontsCache = { regular, bold };
@@ -58,7 +65,10 @@ export async function generateCertificate(participantId: string) {
     }
 
     if (!participant.fullName) {
-      console.error("[certificate] Full name not found for participant:", participantId);
+      console.error(
+        "[certificate] Full name not found for participant:",
+        participantId
+      );
       return { success: false, error: "Participant name not found" };
     }
 
@@ -186,7 +196,9 @@ export async function generateCertificate(participantId: string) {
       .png({ quality: 90 })
       .toBuffer();
 
-    console.log("[certificate] Certificate composed, uploading to Vercel Blob");
+    console.log(
+      "[certificate] Certificate composed, uploading to Vercel Blob"
+    );
 
     // Upload to Vercel Blob
     const timestamp = Date.now();
@@ -199,7 +211,10 @@ export async function generateCertificate(participantId: string) {
       }
     );
 
-    console.log("[certificate] Certificate uploaded:", certificateBlobResult.url);
+    console.log(
+      "[certificate] Certificate uploaded:",
+      certificateBlobResult.url
+    );
 
     // Update participant record
     await db
