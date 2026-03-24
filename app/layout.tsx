@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import { Analytics } from "@vercel/analytics/react";
+import Script from "next/script";
 import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import { Providers } from "@/components/providers";
@@ -177,6 +178,7 @@ export default function RootLayout({
               <Analytics />
             </Providers>
           </PostHogProvider>
+          <Script defer src="https://counterscale.raillyhugo.workers.dev/tracker.js" data-site-id="peru-ai-hackathon" />
         </body>
       </html>
     </ClerkProvider>
