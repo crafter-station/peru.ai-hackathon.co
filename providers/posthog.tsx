@@ -1,8 +1,45 @@
 "use client";
 
 import posthog from "posthog-js";
+import type { CaptureResult } from "posthog-js";
 import { PostHogProvider as PHProvider } from "posthog-js/react";
 import { useEffect, useState } from "react";
+
+// Noise from crypto-wallet browser extensions (MetaMask, Coinbase Wallet, …)
+// that inject into `window.ethereum`. These are EIP-1193 provider errors thrown
+// by the extension, not by our app — this site has no web3 integration — so we
+// drop them before ingestion to keep error tracking signal-heavy.
+const WALLET_EXTENSION_NOISE = [
+  /disconnected from all chains/i,
+  /ProviderDisconnectedError/i,
+  /ChainDisconnectedError/i,
+];
+
+function isWalletExtensionNoise(event: CaptureResult): boolean {
+  if (event.event !== "$exception") {
+    return false;
+  }
+
+  const exceptionList = event.properties?.$exception_list;
+  if (!Array.isArray(exceptionList)) {
+    return false;
+  }
+
+  return exceptionList.some((exception) => {
+    const value = typeof exception?.value === "string" ? exception.value : "";
+    const type = typeof exception?.type === "string" ? exception.type : "";
+    return WALLET_EXTENSION_NOISE.some(
+      (pattern) => pattern.test(value) || pattern.test(type),
+    );
+  });
+}
+
+function beforeSend(event: CaptureResult | null): CaptureResult | null {
+  if (event && isWalletExtensionNoise(event)) {
+    return null;
+  }
+  return event;
+}
 
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
   const [isInitialized, setIsInitialized] = useState(false);
@@ -21,6 +58,7 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
         capture_pageleave: true,
         autocapture: true,
         capture_exceptions: true,
+        before_send: beforeSend,
         session_recording: {
           recordCrossOriginIframes: true,
           maskAllInputs: false,
