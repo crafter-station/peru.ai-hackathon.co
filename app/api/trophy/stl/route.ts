@@ -87,12 +87,42 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const response = await fetch(TROPHY_STL_URL, {
-      headers: {
-        "User-Agent": "IA-Hackathon-Peru/1.0",
-      },
-      cache: "no-store",
-    });
+    // Retry the upstream fetch to absorb transient blob-storage hiccups. A
+    // hanging or failing upstream request would otherwise stall the response
+    // and surface to clients as a dropped connection ("Failed to fetch").
+    const UPSTREAM_TIMEOUT_MS = 15000;
+    const UPSTREAM_MAX_ATTEMPTS = 3;
+
+    let response: Response | null = null;
+    let lastError: unknown;
+
+    for (let attempt = 1; attempt <= UPSTREAM_MAX_ATTEMPTS; attempt++) {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), UPSTREAM_TIMEOUT_MS);
+      try {
+        response = await fetch(TROPHY_STL_URL, {
+          headers: {
+            "User-Agent": "IA-Hackathon-Peru/1.0",
+          },
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        if (response.ok) break;
+        // 4xx responses won't fix themselves on retry; only retry on 5xx.
+        if (response.status < 500 || attempt === UPSTREAM_MAX_ATTEMPTS) break;
+      } catch (error) {
+        lastError = error;
+        response = null;
+      } finally {
+        clearTimeout(timeout);
+      }
+    }
+
+    if (!response) {
+      throw lastError instanceof Error
+        ? lastError
+        : new Error("Upstream STL fetch failed");
+    }
 
     if (!response.ok) {
       console.error(
