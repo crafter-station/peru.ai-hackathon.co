@@ -10,6 +10,7 @@ import { ChatBubble } from "@/components/chat/chat-bubble";
 import { GithubBadge } from "@/components/github-badge";
 import { PostHogProvider } from "@/providers/posthog";
 import { PromoBanner } from "@/components/promo-banner";
+import { ChunkErrorHandler } from "@/components/chunk-error-handler";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -164,6 +165,7 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} ${adelleMonoFont.variable} ${adelleMonoFlexFont.variable} antialiased`}
         >
+          <ChunkErrorHandler />
           <PostHogProvider>
             <Providers>
               <PromoBanner
