@@ -1,6 +1,14 @@
 "use client";
 
-import { Suspense, useMemo, useState, useEffect, ErrorInfo, Component } from "react";
+import {
+  Suspense,
+  useMemo,
+  useState,
+  useEffect,
+  useRef,
+  ErrorInfo,
+  Component,
+} from "react";
 import { Canvas, useLoader } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { STLLoader } from "three-stdlib";
@@ -10,6 +18,28 @@ type TrophyViewer3DProps = {
   stlUrl: string;
   className?: string;
 };
+
+// Probe whether the browser can give us a WebGL context. Some devices, mostly
+// Android Chrome phones, cannot, and three.js throws while it sets up the
+// renderer. That throw runs after r3f measures the Canvas, so the error
+// boundary below does not catch it and it reaches the window handler.
+function isWebGLAvailable(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const canvas = document.createElement("canvas");
+    const context =
+      canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+    if (!context) return false;
+    // Free the probe context so we do not hold one on devices with a small
+    // context budget.
+    (context as WebGLRenderingContext)
+      .getExtension("WEBGL_lose_context")
+      ?.loseContext();
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 class TrophyErrorBoundary extends Component<
   { children: React.ReactNode; fallback: React.ReactNode },
@@ -110,7 +140,11 @@ export default function TrophyViewer3D({
   stlUrl,
   className = "",
 }: TrophyViewer3DProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [inView, setInView] = useState(false);
+  const [webglSupported, setWebglSupported] = useState<boolean | null>(null);
+  const [contextLost, setContextLost] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -121,6 +155,35 @@ export default function TrophyViewer3D({
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
+  // Mount the viewer only once its section scrolls into view, so we do not
+  // spend a WebGL context on visitors who never reach it.
+  useEffect(() => {
+    const node = containerRef.current;
+    if (!node) return;
+    if (typeof IntersectionObserver === "undefined") {
+      setInView(true);
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setInView(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "200px" },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  // Probe for WebGL support once the section is visible.
+  useEffect(() => {
+    if (inView && webglSupported === null) {
+      setWebglSupported(isWebGLAvailable());
+    }
+  }, [inView, webglSupported]);
+
   const errorFallback = (
     <div className="w-full h-full flex items-center justify-center bg-black/50">
       <div className="text-center p-4">
@@ -129,29 +192,44 @@ export default function TrophyViewer3D({
     </div>
   );
 
+  const showFallback = webglSupported === false || contextLost;
+
   return (
-    <div className={`w-full h-full ${className}`}>
-      <TrophyErrorBoundary fallback={errorFallback}>
-        <Canvas
-          className="w-full h-full touch-none"
-          gl={{ antialias: !isMobile, alpha: true }}
-          dpr={isMobile ? 1 : [1, 2]}
-        >
-          <Suspense
-            fallback={
-              <>
-                <ambientLight intensity={0.5} />
-                <mesh>
-                  <boxGeometry args={[2, 2, 2]} />
-                  <meshStandardMaterial color="#333" wireframe />
-                </mesh>
-              </>
-            }
+    <div ref={containerRef} className={`w-full h-full ${className}`}>
+      {showFallback ? (
+        errorFallback
+      ) : inView && webglSupported ? (
+        <TrophyErrorBoundary fallback={errorFallback}>
+          <Canvas
+            className="w-full h-full touch-none"
+            gl={{ antialias: !isMobile, alpha: true }}
+            dpr={isMobile ? 1 : [1, 2]}
+            onCreated={({ gl }) => {
+              // Degrade to the fallback instead of throwing if the context drops.
+              gl.domElement.addEventListener("webglcontextlost", (event) => {
+                event.preventDefault();
+                setContextLost(true);
+              });
+            }}
           >
-            <Scene stlUrl={stlUrl} />
-          </Suspense>
-        </Canvas>
-      </TrophyErrorBoundary>
+            <Suspense
+              fallback={
+                <>
+                  <ambientLight intensity={0.5} />
+                  <mesh>
+                    <boxGeometry args={[2, 2, 2]} />
+                    <meshStandardMaterial color="#333" wireframe />
+                  </mesh>
+                </>
+              }
+            >
+              <Scene stlUrl={stlUrl} />
+            </Suspense>
+          </Canvas>
+        </TrophyErrorBoundary>
+      ) : (
+        <div className="w-full h-full bg-black/50" />
+      )}
     </div>
   );
 }
