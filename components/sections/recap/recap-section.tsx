@@ -45,8 +45,7 @@ export default function RecapSection() {
 
   const handlePlayClick = () => {
     if (videoRef.current) {
-      videoRef.current.play();
-      setIsPlaying(true);
+      videoRef.current.play().catch(() => {});
     }
   };
 
